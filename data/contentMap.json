@@ -1,0 +1,64 @@
+{
+  "getting_started": [
+   
+    {
+      "title": "Fundamentals",
+      "links": [
+        {
+          "title": "Rate Limiting",
+          "path": "/getting-started/fundamentals/rate-limiting/"
+        },
+        {
+          "title": "Authentication",
+          "path": "/getting-started/fundamentals/authentication/"
+        },
+        {
+          "title": "Design",
+          "links": [
+            {
+              "title": "gRPC-REST Transcoding, RPC - REST Coexistence",
+              "path": "/getting-started/fundamentals/design/grpc-rest-transcoding/"
+            },
+            {
+              "title": "Data Dictionaries",
+              "path": "/getting-started/fundamentals/design/data-dictionaries/"
+            },
+            {
+              "title": "Client Side State Management",
+              "path": "/getting-started/fundamentals/design/client-side-state-management/"
+            },
+            {
+              "title": "Streaming Responses",
+              "path": "/getting-started/fundamentals/design/streaming-responses/"
+            },
+            {
+              "title": "Handling Large Responses",
+              "path": "/getting-started/fundamentals/design/handling-large-responses/"
+            }
+          ]
+        },
+        {
+          "title": "Core NDC Concepts",
+          "links": [
+            {
+              "title": "Offer & OfferItem",
+              "path": "/getting-started/fundamentals/core-ndc-concepts/offer-and-offer-items/"
+            },
+            {
+              "title": "Fare Components",
+              "path": "/getting-started/fundamentals/core-ndc-concepts/fare-component/"
+            },
+            {
+              "title": "Service",
+              "path": "/getting-started/fundamentals/core-ndc-concepts/service/"
+            },
+            {
+              "title": "Order and Order Items",
+              "path": "/getting-started/fundamentals/core-ndc-concepts/order-and-order-items/"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+[
+  {
+    "id": "verteil",
+    "path": "content/",
+    "schema": {
+      "path": "markdoc/schema.ts",
+      "type": "esm",
+      "watch": true
+    }
+  }
+]
