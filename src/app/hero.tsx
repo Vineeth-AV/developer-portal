@@ -10,7 +10,7 @@ export const Hero = () => {
         <div className="mx-auto flex flex-col items-center justify-center gap-5 px-6 text-center lg:gap-6">
           <div className="relative mb-4 flex aspect-square w-28 items-center justify-center rounded-full border border-lightBorder/40 bg-white/40 dark:border-darkBorder/20 dark:bg-transparent">
             <Image
-              src="/images/icerpc-logo-alt.svg"
+              src="/images/verteil-logo-alt.svg"
               alt="Verteil Logo"
               className="relative"
               priority={true}

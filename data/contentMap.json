@@ -13,6 +13,14 @@
           "path": "/getting-started/fundamentals/authentication/"
         },
         {
+          "title": "Versioning and Compatibility",
+          "path": "/getting-started/fundamentals/versioning-and-compatibility/"
+        },
+        {
+          "title": "Errors",
+          "path": "/getting-started/fundamentals/errors/"
+        },
+        {
           "title": "Design",
           "links": [
             {
@@ -59,6 +67,30 @@
           ]
         }
       ]
-    }
+    },
+    {
+      "title": "Scenarios",
+      "links":[
+        {
+          "title": "Shopping",
+          "links": [
+            {
+              "title": "Aggregated vs Specific airline search",
+              "path": "/getting-started/Scenarios/Shopping/aggregated-vs-specific-airline-search/"
+            },
+            {
+              "title": "Oneway vs Return vs Multicity search",
+              "path": "/getting-started/Scenarios/Shopping/oneway-vs-return-vs-multicity-search/"
+            },
+            {
+              "title": "Departure and/or arrival time preferences",
+              "path": "/getting-started/Scenarios/Shopping/departure -arrival-time-preferences/"
+            }
+            
+          ]
+        }
+      ]
+    }  
   ]
 }
+

@@ -5,7 +5,7 @@ export const Explore = () => {
     <div className="mb-10 grid grid-cols-1  gap-4 md:grid-cols-2 lg:grid-cols-3">
       <ExploreCard
         title="Getting Started"
-        description="Learn how to install IceRPC and write your first IceRPC application."
+        description=""
         href="/getting-started"
       />
     </div>

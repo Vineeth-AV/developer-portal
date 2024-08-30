@@ -53,7 +53,7 @@ const Logo = () => (
       <Image
         src={logoIcon}
         height={20}
-        alt="IceRPC Logo"
+        alt="Vertel Logo"
         className="mt-2"
         priority={true}
       />

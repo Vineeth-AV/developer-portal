@@ -54,9 +54,9 @@ export const SearchButton = ({ className }: Props) => {
   return (
     <div className={clsx(className, style.search)} id="search">
       <DocSearch
-        appId={process.env.NEXT_PUBLIC_ALGOLIA_APP_ID ?? ''}
-        apiKey={process.env.NEXT_PUBLIC_ALGOLIA_SEARCH_KEY ?? ''}
-        indexName="icerpc"
+        appId={process.env.NEXT_PUBLIC_APP_ID ?? ''}
+        apiKey={process.env.NEXT_PUBLIC_SEARCH_KEY ?? ''}
+        indexName=""
         insights={true}
         searchParameters={{
          }}

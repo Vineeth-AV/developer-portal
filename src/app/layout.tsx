@@ -20,10 +20,6 @@ export const metadata: Metadata = {
   description: 'Welcome to the Verteil Docs.',
   keywords: [
     'Verteil',
-    'RPC',
-    'Ice',
-    'ZeroC',
-    'networking',
     'documentation',
     'docs',
     'guide'
@@ -36,29 +32,28 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Verteil Docs',
     description: 'Welcome to the Verteil Docs.',
-    creator: '@zeroc'
+    creator: '@verteil'
   },
   openGraph: {
     type: 'website',
     title: 'Verteil Docs',
     description: 'Welcome to the Verteil Docs.',
-    url: 'https://docs.Verteil.dev/',
+    url: 'https://www.verteil.com/',
     locale: 'en_US',
     images: {
-      url: `https://docs.Verteil.dev/api/og?title=${'Verteil Docs'}&description=${'Welcome to the Verteil Docs.'}&path=${encodeURIComponent(
-        '/'
+      url: `
       )}`
     }
   },
   category: 'Software',
-  metadataBase: new URL('https://docs.Verteil.dev'),
+  metadataBase: new URL('https://www.verteil.com/'),
   other: {
     'application/ld+json': JSON.stringify({
       "@context": "https://schema.org",
       "@type": "TechArticle",
       "headline": "Verteil Documentation",
       "description": "Comprehensive guide to using Verteil, including setup, usage, and advanced features.",
-      "mainEntityOfPage": "https://docs.Verteil.dev",
+      "mainEntityOfPage": "https://www.verteil.com/",
       "author": {
         "@type": "Organization",
         "name": "Verteil Team"
@@ -68,7 +63,7 @@ export const metadata: Metadata = {
         "name": "Verteil",
         "logo": {
           "@type": "ImageObject",
-          "url": "https://docs.Verteil.dev/Verteil-logo.svg"
+          "url": ""
         }
       },
     }),
@@ -78,19 +73,17 @@ export const metadata: Metadata = {
 const organizationSchema = {
   '@context': 'https://schema.org',
   '@type': 'Organization',
-  name: 'ZeroC',
-  url: 'https://www.zeroc.com/',
-  logo: 'https://download.zeroc.com/brand-assets/zeroc-logo.svg',
+  name: '',
+  url: '',
+  logo: '',
   sameAs: [
-    'https://x.com/zeroc',
-    'https://www.linkedin.com/company/zeroc-inc/',
-    'https://github.com/zeroc-inc'
+   
   ],
   brand: {
     '@type': 'Brand',
     name: 'Verteil',
-    url: 'https://docs.Verteil.dev/',
-    logo: 'https://download.zeroc.com/brand-assets/Verteil-logo.svg'
+    url: 'https://www.verteil.com/',
+    logo: ''
   }
 };
 

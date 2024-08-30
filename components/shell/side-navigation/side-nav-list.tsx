@@ -120,7 +120,7 @@ export const SideNavList = ({
     const category = data;
     return [
       <li key={category.title} className="list-none">
-        <h2 className="my-[10px] text-sm font-semibold dark:text-white">
+        <h2 className="my-[8px] text-sm font-semibold dark:text-white">
           {category.title}
         </h2>
         <ul
