@@ -19,8 +19,7 @@ export const Document = ({
   description,
   path,
   readingTime,
-  headings,
-  showAside = true,
+ 
   showNavigation = true
 }: Props) => {
   return (
