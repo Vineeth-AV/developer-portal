@@ -1,6 +1,6 @@
 import { ReactElement } from 'react';
 import { AsideItem, Divider, Title } from 'components';
-import { PageHistory, Aside, Feedback } from '@/components/shell';
+import { PageHistory, Feedback } from '@/components/shell';
 
 type Props = {
   children: ReactElement[] | ReactElement;
@@ -25,7 +25,7 @@ export const Document = ({
 }: Props) => {
   return (
     <div className="flex shrink flex-row justify-center overflow-y-clip lg:justify-start">
-      <article className="mx-6 mt-10 size-full max-w-[52rem] md:mx-10 lg:mx-16">
+      <article className="mx-6 mt-10 size-full max-w-[full] md:mx-10 lg:mx-16">
         {true && (
           <Title
             title={title}
@@ -47,12 +47,7 @@ export const Document = ({
         <Divider id="feedback-divider" margin="my-0" />
         <Feedback />
       </article>
-      {showAside && (
-        <Aside
-          asideItems={headings.filter(Boolean) as AsideItem[]}
-          path={path}
-        />
-      )}
+      
     </div>
   );
 };

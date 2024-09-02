@@ -120,12 +120,12 @@ export const SideNavList = ({
     const category = data;
     return [
       <li key={category.title} className="list-none">
-        <h2 className="my-[8px] text-sm font-semibold dark:text-white">
+        <h2 className="my-[1px] text-sm font-semibold dark:text-white">
           {category.title}
         </h2>
         <ul
           key={`${category.title}-list`}
-          className="ml-1 border-l-[1.5px] border-lightBorder pl-4 dark:border-[#3D3D3D]"
+          className="ml-1 border-l-[.5px] border-lightBorder pl-4 dark:border-[#3D3D3D]"
         >
           {category.links.map((link) => (
             <SideNavList
@@ -157,7 +157,7 @@ const ListItem = (
   noLeftPadding = false,
   onClick: React.MouseEventHandler<HTMLAnchorElement> | undefined
 ): React.ReactElement => {
-  const leftPadding = noLeftPadding ? 'ml-0' : 'ml-4'; // Adjust padding here for better alignment
+  const leftPadding = noLeftPadding ? 'ml-0' : 'ml-1'; // Adjust padding here for better alignment
 
   if (isLink(link)) {
     const isCurrentPage = path === link.path.replace(/\/$/, '');
@@ -170,7 +170,7 @@ const ListItem = (
             isCurrentPage
               ? noLeftPadding
                 ? 'font-medium text-primary dark:text-white'
-                : 'border-l-[1.5px] border-primary pl-4 font-medium text-primary dark:border-white/80 dark:text-white'
+                : 'border-l-[1.5px] border-primary pl-1 font-medium text-primary dark:border-white/80 dark:text-white'
               : 'hover:text-zinc-900 dark:hover:text-white'
           )}
           onClick={onClick}

@@ -35,7 +35,7 @@ export const Heading = ({
         </span>
         <HeadingCopyButton id={id} />
       </div>
-      {level >= 1 && level <= 3 && showDividers && <Divider margin="my-4" />}
+      {level >= 1 && level <= 3 && showDividers && <Divider margin="my-0" />}
     </Component>
   );
 };

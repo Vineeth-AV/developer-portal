@@ -7,7 +7,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { MobileMenu } from './mobile-menu';
 import { MobileSideNav } from '@/components/shell/side-navigation/mobile-side-nav';
 import { ThemeToggle } from '@/components/theme-toggle';
-import logoIcon from 'public/icerpc-logo.svg';
+import logoIcon from 'public/verteil-logo.svg';
 import { TopNavigationItems } from './top-nav-items';
  import { SearchButton } from '@/components/shell/search-button';
 
@@ -27,7 +27,7 @@ export const TopNav = () => (
           <Logo />
           <div className="hidden items-center lg:flex">
             <SearchButton className="w-full min-w-[300px]" />
-            <div className="mx-6 flex h-[30px] items-center border-l border-lightBorder pl-4 dark:border-darkBorder">
+            <div className="mx-6 flex h-[10px] items-center border-l border-lightBorder pl-4 dark:border-darkBorder">
               <ThemeToggle />
                
             </div>
@@ -36,7 +36,7 @@ export const TopNav = () => (
         </div>
         <div className="flex w-full grow items-start   justify-between text-sm lg:h-[2.65rem]">
           <nav className="my-1 hidden items-center lg:flex">
-            <ul className="flex space-x-4 lg:ml-[1.9rem]">
+            <ul className="flex space-x-4 lg:ml-[0 rem]">
               <TopNavigationItems />
             </ul>
           </nav>
@@ -49,7 +49,7 @@ export const TopNav = () => (
 
 const Logo = () => (
   <Link href="/">
-    <div className="mb-3 ml-[1.3rem] mr-0 mt-5 flex items-center justify-start gap-1 pb-4 lg:ml-[2.6rem]">
+    <div className="mb-3 ml-[0.3rem] mr-0 mt-5 flex items-center justify-start gap-1 pb-4 lg:ml-[0.0rem]">
       <Image
         src={logoIcon}
         height={20}
@@ -57,7 +57,7 @@ const Logo = () => (
         className="mt-2"
         priority={true}
       />
-      <div className="ml-1 pt-[8px] text-xl font-bold text-black dark:text-white">
+      <div className="ml-0 pt-[0px] text-xl font-bold text-black dark:text-white">
         Docs
       </div>
     </div>
