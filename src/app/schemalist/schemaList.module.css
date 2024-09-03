@@ -1,0 +1,44 @@
+/* SchemaList.module.css */
+.container {
+  padding: 20px;
+  padding-top: 100px;
+}
+
+.title {
+  font-size: 24px;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.list {
+  list-style-type: none;
+  padding: 0;
+}
+
+.listItem {
+  cursor: pointer;
+  margin: 10px 0;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.listItem:hover {
+  background-color: #f0f0f0;
+  color: #0070f3;
+}
+
+.listItem::after {
+  content: '';
+  display: block;
+  width: 100%;
+  height: 1px;
+  background: #0070f3;
+  margin-top: 5px;
+  transition: background 0.3s ease;
+}
+
+.listItem:hover::after {
+  background: #005bb5;
+}

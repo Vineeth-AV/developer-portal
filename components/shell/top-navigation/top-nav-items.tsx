@@ -13,6 +13,10 @@ export const TopNavigationItems = () => {
       href: '/api-reference'
     },
     {
+      name: 'Schema List',
+      href: '/schemalist'
+    },
+    {
       name: 'Schema Viewer',
       href: '/schema'
     }

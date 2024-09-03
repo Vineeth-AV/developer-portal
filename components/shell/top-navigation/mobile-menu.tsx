@@ -51,6 +51,10 @@ export const TopMenuModal = ({ isOpen, closeModal }: TopMenuModalProps) => {
       href: '/api-reference'
     },
     {
+      name: 'Schema List',
+      href: '/schemalist'
+    },
+    {
       name: 'Schema Viewer',
       href: '/schema'
     }
