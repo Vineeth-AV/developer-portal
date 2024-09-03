@@ -55,7 +55,8 @@ export async function GET() {
     
     // Parse YAML content
     const data: OpenAPISpec = yaml.load(fileContents) as OpenAPISpec;
-    
+    // const data: OpenAPISpec = JSON.parse(fileContents) as OpenAPISpec;;
+
     // Extract only the schemas
     const schemas = data.components?.schemas || {};
 

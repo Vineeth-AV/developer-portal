@@ -400,7 +400,6 @@ import { pointRadial } from 'd3-shape';
 import useForceUpdate from './useForceUpdate';
 import LinkControls from './LinkControls';
 import getLinkComponent from './getLinkComponent';
-import yaml from 'js-yaml';
 
 interface TreeNode {
   name: string;
@@ -414,6 +413,7 @@ export type LinkTypesProps = {
   width: number;
   height: number;
   margin?: { top: number; right: number; bottom: number; left: number };
+  openapi: any; // Add the openapi prop here
 };
 
 const transformOpenAPIToTree = (openapi: any): TreeNode => {
@@ -444,6 +444,7 @@ export default function OpenAPITree({
   width: totalWidth,
   height: totalHeight,
   margin = defaultMargin,
+  openapi, // Receive the openapi schema from parent
 }: LinkTypesProps) {
   const [data, setData] = useState<TreeNode | null>(null);
   const [layout, setLayout] = useState<string>('cartesian');
@@ -453,14 +454,11 @@ export default function OpenAPITree({
   const forceUpdate = useForceUpdate();
 
   useEffect(() => {
-    fetch('/airshopping.yaml')
-      .then((response) => response.text())
-      .then((yamlText) => {
-        const openapi = yaml.load(yamlText);
-        const treeData = transformOpenAPIToTree(openapi);
-        setData(treeData);
-      });
-  }, []);
+    if (openapi) {
+      const treeData = transformOpenAPIToTree(openapi);
+      setData(treeData);
+    }
+  }, [openapi]);
 
   if (!data) return <div>Loading...</div>;
 

@@ -41,11 +41,11 @@
 // app/schemas/page.tsx
 // app/components/SchemaList.tsx
 'use client';
+
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import styles from './schemaList.module.css'
+import styles from 'styles/schemalist.module.css'; // Correct path to CSS module
 
-// Define a TypeScript type for schema data
 interface Schema {
   type: string;
   properties?: Record<string, any>;
@@ -59,7 +59,7 @@ interface SchemaListResponse {
   [key: string]: Schema;
 }
 
-const SchemaList = () => {
+const SchemaList: React.FC = () => {
   const router = useRouter();
   const [schemas, setSchemas] = useState<SchemaListResponse>({});
   const [error, setError] = useState<string | null>(null);
@@ -68,13 +68,12 @@ const SchemaList = () => {
     const fetchSchemas = async () => {
       try {
         const response = await fetch('/api/schemas');
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
+        if (!response.ok) throw new Error('Failed to fetch schemas');
+        
         const data: SchemaListResponse = await response.json();
         setSchemas(data);
-      } catch (error) {
-        console.error('Error fetching schemas:', error);
+      } catch (err) {
+        console.error('Error fetching schemas:', err);
         setError('Failed to load schemas');
       }
     };
@@ -82,29 +81,33 @@ const SchemaList = () => {
     fetchSchemas();
   }, []);
 
-  const handleClick = (schemaName: string) => {
-    localStorage.setItem('selectedSchema', JSON.stringify(schemas[schemaName]));
-    router.push(`/schema/${schemaName}`);
-  };
+  // const handleSchemaClick = (schemaName: string) => {
+  //   localStorage.setItem('selectedSchema', JSON.stringify(schemas[schemaName]));
+  //   router.push(`/schema`);
+  // };
 
+  const handleSchemaClick = (schemaName: string) => {
+    localStorage.setItem('selectedSchema', JSON.stringify({ name: schemaName }));
+    router.push(`/schema?schema=${schemaName}`);
+};
   if (error) {
     return <div>Error: {error}</div>;
   }
 
   return (
-    <div className={styles.container}>
+    <div className={styles['container']}>
       <h1 className={styles.title}>Schema List</h1>
       <ul className={styles.list}>
         {Object.keys(schemas).length === 0 ? (
           <li>No schemas available</li>
         ) : (
-          Object.keys(schemas).map((key) => (
+          Object.keys(schemas).map((schemaName) => (
             <li
-              key={key}
-              onClick={() => handleClick(key)}
-              className={styles.listItem}
+              key={schemaName}
+              onClick={() => handleSchemaClick(schemaName)}
+              className={styles['listColumn']} // Correct usage of hyphenated class name
             >
-              {key}
+              {schemaName}
             </li>
           ))
         )}
@@ -114,3 +117,5 @@ const SchemaList = () => {
 };
 
 export default SchemaList;
+
+
