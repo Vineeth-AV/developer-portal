@@ -8,9 +8,10 @@ import { usePathname } from 'next/navigation';
 type TopNavigationItemProps = {
   name: string;
   href: string;
+  subMenu?: { name: string; href: string }[]; // Optional submenu items
 };
 
-const TopNavigationItem = ({ name, href }: TopNavigationItemProps) => {
+const TopNavigationItem = ({ name, href, subMenu }: TopNavigationItemProps) => {
   const path = usePathname();
   const prefetch = href.startsWith('http') ? false : undefined;
   const baseClassName =
@@ -21,10 +22,21 @@ const TopNavigationItem = ({ name, href }: TopNavigationItemProps) => {
   const linkClassName = clsx(baseClassName, isActive && activeClassName);
 
   return (
-    <li key={href}>
+    <li key={href} className="relative group">
       <Link href={href} className={linkClassName} prefetch={prefetch}>
         {name}
       </Link>
+      {subMenu && (
+        <ul className="absolute left-0 mt-2 flex space-x-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+          {subMenu.map((item) => (
+            <li key={item.href} className="hover:bg-gray-100 dark:hover:bg-gray-700">
+              <Link href={item.href} className="block py-2 px-4 text-gray-900 dark:text-gray-100">
+                {item.name}
+              </Link>
+            </li>
+          ))}
+        </ul>
+      )}
     </li>
   );
 };
@@ -37,6 +49,8 @@ function isActivePath(path: string, href: string): boolean {
 }
 
 export default TopNavigationItem;
+
+
 // 'use client';
 
 // import Link from 'next/link';

@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import OpenAPITree from '@/components/OpenAPITree';
 import { useSearchParams } from 'next/navigation';
+import styles from './schema.module.css'; // Correct path to CSS module
 
 export default function SchemaViewer() {
   const searchParams = useSearchParams();
@@ -27,8 +28,7 @@ export default function SchemaViewer() {
   }, [searchParams]);
 
   return (
-    <div style={{ height: '250vh' }}>
-      <h1>OpenAPI Tree Visualization</h1>
+    <div className={styles.container}>
       {schemaName ? (
         <OpenAPITree
           width={width}

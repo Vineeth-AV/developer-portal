@@ -51,13 +51,25 @@ export const TopMenuModal = ({ isOpen, closeModal }: TopMenuModalProps) => {
       href: '/api-reference'
     },
     {
-      name: 'Schema List',
+      name: 'Schema Viewer',
       href: '/schemalist'
     },
     {
-      name: 'Schema Viewer',
-      href: '/schema'
-    }
+      name: 'Support',
+      href: 'https://verteil.freshdesk.com/support/login'
+    },
+    {
+      name: 'Upcoming features',
+      href: '/'
+    },
+    {
+      name: 'Dashboard',
+      href: '/'
+    },
+    // {
+    //   name: 'Schema Viewer',
+    //   href: '/schema'
+    // }
   ];
 
   return (

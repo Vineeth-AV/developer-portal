@@ -18,24 +18,9 @@ export const negativeFeedbackOptions: FeedbackOption[] = [
     id: 1
   },
   {
-    title: 'Could not find what I was looking for',
-    description: 'Missing important information.',
-    id: 2
-  },
-  {
-    title: 'Hard to understand',
-    description: 'Too complicated or unclear.',
-    id: 3
-  },
-  {
-    title: 'Code examples are incorrect',
-    description: 'The code examples do not work as expected.',
-    id: 4
-  },
-  {
     title: 'Other',
     description: 'Something else.',
-    id: 5
+    id: 2
   }
 ];
 
@@ -46,24 +31,9 @@ export const positiveFeedbackOptions: FeedbackOption[] = [
     id: 1
   },
   {
-    title: 'Easy to understand',
-    description: 'The information is easy to understand.',
-    id: 2
-  },
-  {
-    title: 'Solves my problem',
-    description: 'The information helped me solve my problem.',
-    id: 3
-  },
-  {
-    title: 'Helped me decide to use the feature',
-    description: 'The information helped me decide to use the feature.',
-    id: 4
-  },
-  {
     title: 'Other',
     description: 'Something else.',
-    id: 5
+    id: 2
   }
 ];
 

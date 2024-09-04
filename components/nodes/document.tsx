@@ -1,6 +1,6 @@
 import { ReactElement } from 'react';
 import { AsideItem, Divider, Title } from 'components';
-import { PageHistory, Feedback } from '@/components/shell';
+import { PageHistory,Aside, Feedback } from '@/components/shell';
 
 type Props = {
   children: ReactElement[] | ReactElement;
@@ -19,7 +19,7 @@ export const Document = ({
   description,
   path,
   readingTime,
- 
+  headings,
   showNavigation = true
 }: Props) => {
   return (
@@ -46,7 +46,12 @@ export const Document = ({
         <Divider id="feedback-divider" margin="my-0" />
         <Feedback />
       </article>
-      
+      {true && (
+        <Aside
+          asideItems={headings.filter(Boolean) as AsideItem[]}
+          path={path}
+        />
+      )}
     </div>
   );
 };

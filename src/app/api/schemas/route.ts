@@ -66,3 +66,85 @@ export async function GET() {
     return NextResponse.error();
   }
 }
+
+// import { NextResponse } from 'next/server';
+// import fs from 'fs';
+// import path from 'path';
+
+// // Define types for the expected structure of the JSON data
+// interface Schema {
+//   type: string;
+//   properties?: Record<string, any>;
+//   items?: Schema;
+//   format?: string;
+//   example?: any;
+//   required?: string[];
+// }
+
+// interface Components {
+//   definitions: Record<string, Schema>;
+// }
+
+// interface OpenAPISpec {
+//   components?: Components;
+// }
+
+// export async function GET() {
+//   try {
+//     // Fetch the JSON file from the public directory
+//     const filePath = path.join(process.cwd(), 'public', 'data.json');
+//     const fileContents = fs.readFileSync(filePath, 'utf8');
+//     console.log("fileContents" +fileContents)
+//     // Parse JSON content
+//     const data: OpenAPISpec = JSON.parse(fileContents) as OpenAPISpec;
+
+//     // Extract only the schemas
+//     const definitions = data.components?.definitions || {};
+
+//     return NextResponse.json(definitions);
+//   } catch (error) {
+//     console.error('Error fetching or parsing JSON file:', error);
+//     return NextResponse.error();
+//   }
+// }
+
+// import { NextResponse } from 'next/server';
+// import fs from 'fs';
+// import path from 'path';
+
+// // Define types for the expected structure of the JSON data
+// interface Schema {
+//   type: string;
+//   properties?: Record<string, any>;
+//   items?: Schema;
+//   format?: string;
+//   example?: any;
+//   required?: string[];
+// }
+
+// interface Definitions {
+//   [key: string]: Schema;
+// }
+
+// interface OpenAPISpec {
+//   definitions?: Definitions;
+// }
+
+// export async function GET() {
+//   try {
+//     // Fetch the JSON file from the public directory
+//     const filePath = path.join(process.cwd(), 'public', 'data.json');
+//     const fileContents = fs.readFileSync(filePath, 'utf8');
+    
+//     // Parse JSON content
+//     const data: OpenAPISpec = JSON.parse(fileContents) as OpenAPISpec;
+
+//     // Extract only the definitions
+//     const definitions = data.definitions || {};
+
+//     return NextResponse.json(definitions);
+//   } catch (error) {
+//     console.error('Error fetching or parsing JSON file:', error);
+//     return NextResponse.error();
+//   }
+// }

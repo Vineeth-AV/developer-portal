@@ -1305,20 +1305,491 @@ export default function OpenAPITree({
 //     </div>
 //   );
 // }
+//th
+//this code is for yaml
+// import React, { useEffect, useState } from 'react';
+// import { Group } from '@visx/group';
+// import { hierarchy, Tree } from '@visx/hierarchy';
+// import { LinearGradient } from '@visx/gradient';
+// import { pointRadial } from 'd3-shape';
+// import yaml from 'js-yaml'; // Import js-yaml for parsing YAML files
+// import useForceUpdate from './useForceUpdate'; // Custom hook to force re-render
+// import LinkControls from './LinkControls'; // Controls for link types, layout, etc.
+// import getLinkComponent from './getLinkComponent'; // Function to get the correct link component based on settings
+
+// export interface TreeNode {
+//   name: string;
+//   isExpanded?: boolean;
+//   children?: TreeNode[];
+// }
+
+// const defaultMargin = { top: 30, left: 30, right: 30, bottom: 70 };
+
+// export type LinkTypesProps = {
+//   width: number;
+//   height: number;
+//   margin?: { top: number; right: number; bottom: number; left: number };
+//   schemaName: string; // Prop to receive the schema name
+// };
+
+// const transformSchemaToNode = (schemaName: string, definitions: { [key: string]: any }): TreeNode => {
+//   const schema = definitions[schemaName];
+//   if (!schema) return { name: schemaName, children: [], isExpanded: false };
+
+//   const properties = schema.properties
+//     ? Object.keys(schema.properties).map((prop) => ({
+//         name: `${prop}: ${schema.properties[prop].type}`,
+//         children: schema.properties[prop].$ref
+//           ? [transformSchemaToNode(schema.properties[prop].$ref.split('/').pop()!, definitions)]
+//           : [],
+//         isExpanded: false,
+//       }))
+//     : [];
+
+//   return {
+//     name: schemaName,
+//     children: properties,
+//     isExpanded: false,
+//   };
+// };
+
+// const transformOpenApiToTree = (data: any, schemaName: string): TreeNode => {
+//   const definitions = data.components?.schemas || data.definitions;
+//   if (!definitions) return { name: 'No Definitions', children: [], isExpanded: false };
+
+//   const schemaNode = transformSchemaToNode(schemaName, definitions);
+
+//   return {
+//     name: schemaName,
+//     children: [schemaNode],
+//     isExpanded: true, // Start with the root node expanded
+//   };
+// };
+
+// export default function OpenAPITree({
+//   width: totalWidth,
+//   height: totalHeight,
+//   margin = defaultMargin,
+//   schemaName, // Prop received
+// }: LinkTypesProps) {
+//   const [data, setData] = useState<TreeNode>({
+//     name: 'Loading...',
+//     children: [],
+//   });
+//   const [layout, setLayout] = useState<string>('cartesian');
+//   const [orientation, setOrientation] = useState<string>('horizontal');
+//   const [linkType, setLinkType] = useState<string>('step');
+//   const [stepPercent, setStepPercent] = useState<number>(0.1);
+//   const forceUpdate = useForceUpdate();
+
+//   useEffect(() => {
+//     const fetchData = async () => {
+//       try {
+//         const response = await fetch('/data.yaml');
+//         const yamlText = await response.text();
+//         const openapi = yaml.load(yamlText);
+//         const transformedData = transformOpenApiToTree(openapi, schemaName); // Use schemaName here
+//         setData(transformedData);
+//       } catch (error) {
+//         console.error('Error fetching or parsing YAML file:', error);
+//         setData({ name: 'Error loading data', children: [] });
+//       }
+//     };
+//     fetchData();
+//   }, [schemaName]); // Re-fetch data when schemaName changes
+
+//   const innerWidth = totalWidth - margin.left - margin.right;
+//   const innerHeight = totalHeight - margin.top - margin.bottom;
+
+//   const handleNodeClick = (node: any) => {
+//     node.data.isExpanded = !node.data.isExpanded; // Toggle expansion
+//     setData({ ...data }); // Trigger re-render by updating state
+//     forceUpdate(); // Force a re-render
+//   };
+
+//   let origin: { x: number; y: number };
+//   let sizeWidth: number;
+//   let sizeHeight: number;
+
+//   if (layout === 'polar') {
+//     origin = {
+//       x: innerWidth / 2,
+//       y: innerHeight / 2,
+//     };
+//     sizeWidth = 2 * Math.PI;
+//     sizeHeight = Math.min(innerWidth, innerHeight) / 2;
+//   } else {
+//     origin = { x: 0, y: 0 };
+//     if (orientation === 'vertical') {
+//       sizeWidth = innerWidth;
+//       sizeHeight = innerHeight;
+//     } else {
+//       sizeWidth = innerHeight;
+//       sizeHeight = innerWidth;
+//     }
+//   }
+
+//   const LinkComponent = getLinkComponent({ layout, linkType, orientation });
+
+//   // Fixed distance between nodes
+//   const nodeSpacing = 100; // Adjust this value as needed
+
+//   return totalWidth < 10 ? null : (
+//     <div>
+//       <LinkControls
+//         layout={layout}
+//         orientation={orientation}
+//         linkType={linkType}
+//         stepPercent={stepPercent}
+//         setLayout={setLayout}
+//         setOrientation={setOrientation}
+//         setLinkType={setLinkType}
+//         setStepPercent={setStepPercent}
+//       />
+//       <svg width={totalWidth} height={totalHeight}>
+//         <LinearGradient id="links-gradient" from="#fd9b93" to="#fe6e9e" />
+//         <rect width={totalWidth} height={totalHeight} rx={14} fill="#ffffff" />
+//         <Group top={margin.top} left={margin.left}>
+//           <Tree
+//             root={hierarchy(data, (d) => (d.isExpanded ? d.children : null))}
+//             size={[sizeWidth, sizeHeight]}
+//             separation={(a, b) => (a.parent === b.parent ? nodeSpacing : nodeSpacing / 2) / a.depth}
+//           >
+//             {(tree) => (
+//               <Group top={origin.y} left={origin.x}>
+//                 {tree.links().map((link, i) => (
+//                   <LinkComponent
+//                     key={i}
+//                     data={link}
+//                     percent={stepPercent}
+//                     stroke="rgb(0,0,0)"
+//                     strokeWidth="1"
+//                     fill="none"
+//                   />
+//                 ))}
+
+//                 {tree.descendants().map((node, key) => {
+//                   const width = 100;
+//                   const height = 40;
+
+//                   let top: number;
+//                   let left: number;
+//                   if (layout === 'polar') {
+//                     const [radialX, radialY] = pointRadial(node.x, node.y);
+//                     top = radialY;
+//                     left = radialX;
+//                   } else if (orientation === 'vertical') {
+//                     top = node.y;
+//                     left = node.x;
+//                   } else {
+//                     top = node.x;
+//                     left = node.y;
+//                   }
+
+//                   return (
+//                     <Group top={top} left={left} key={key}>
+//                       <circle
+//                         cx={-width / 2 - 50} // Adjust position relative to the node
+//                         cy={0}
+//                         r={10} // Radius of the circle
+//                         fill={node.data.isExpanded ? '#000000' : '#ffffff'} // Fill color depending on expanded state
+//                         stroke="#000000" // Stroke color
+//                         strokeWidth={2}
+//                         onClick={() => handleNodeClick(node)}
+//                         style={{ cursor: 'pointer' }}
+//                       />
+
+//                       <circle cx={-width / 2 - 55} cy={0} r={3} fill="black" />
+//                       <circle cx={-width / 2 - 45} cy={0} r={3} fill="black" />
+//                       <circle cx={-width / 2 + 45} cy={0} r={3} fill="black" />
+
+//                       <rect
+//                         height={height}
+//                         width={width}
+//                         y={-height / 2}
+//                         x={-width / 2}
+//                         fill="#ffffff"
+//                         stroke={node.data.children ? 'black' : 'black'}
+//                         strokeWidth={2}
+//                         strokeDasharray={'2,2'}
+//                         strokeOpacity={node.data.children ? 1 : 0.6}
+//                         rx={10}
+//                         style={{ cursor: 'pointer' }}
+//                         onClick={() => handleNodeClick(node)}
+//                       />
+
+//                       <text
+//                         dy=".33em"
+//                         fontSize={12}
+//                         fontFamily="Arial"
+//                         textAnchor="middle"
+//                         style={{ pointerEvents: 'none' }}
+//                         fill={node.depth === 0 ? '#71248e' : node.children ? 'black' : 'black'}
+//                       >
+//                         {node.data.name}
+//                       </text>
+//                     </Group>
+//                   );
+//                 })}
+//               </Group>
+//             )}
+//           </Tree>
+//         </Group>
+//       </svg>
+//     </div>
+//   );
+// }
+
+//this is for json
+// import React, { useEffect, useState } from 'react';
+// import { Group } from '@visx/group';
+// import { hierarchy, Tree } from '@visx/hierarchy';
+// import { LinearGradient } from '@visx/gradient';
+// import { pointRadial } from 'd3-shape';
+// import useForceUpdate from './useForceUpdate'; // Custom hook to force re-render
+// import LinkControls from './LinkControls'; // Controls for link types, layout, etc.
+// import getLinkComponent from './getLinkComponent'; // Function to get the correct link component based on settings
+
+// export interface TreeNode {
+//   name: string;
+//   isExpanded?: boolean;
+//   children?: TreeNode[];
+// }
+
+// const defaultMargin = { top: 30, left: 30, right: 30, bottom: 70 };
+
+// export type LinkTypesProps = {
+//   width: number;
+//   height: number;
+//   margin?: { top: number; right: number; bottom: number; left: number };
+//   schemaName: string; // Prop to receive the schema name
+// };
+
+// const transformSchemaToNode = (schemaName: string, definitions: { [key: string]: any }): TreeNode => {
+//   const schema = definitions[schemaName];
+//   if (!schema) return { name: schemaName, children: [], isExpanded: false };
+
+//   const properties = schema.properties
+//     ? Object.keys(schema.properties).map((prop) => ({
+//         name: `${prop}: ${schema.properties[prop].type}`,
+//         children: schema.properties[prop].$ref
+//           ? [transformSchemaToNode(schema.properties[prop].$ref.split('/').pop()!, definitions)]
+//           : [],
+//         isExpanded: false,
+//       }))
+//     : [];
+
+//   return {
+//     name: schemaName,
+//     children: properties,
+//     isExpanded: false,
+//   };
+// };
+
+// const transformOpenApiToTree = (data: any, schemaName: string): TreeNode => {
+//   const definitions = data.components?.schemas || data.definitions;
+//   if (!definitions) return { name: 'No Definitions', children: [], isExpanded: false };
+
+//   const schemaNode = transformSchemaToNode(schemaName, definitions);
+
+//   return {
+//     name: schemaName,
+//     children: [schemaNode],
+//     isExpanded: true, // Start with the root node expanded
+//   };
+// };
+
+// export default function OpenAPITree({
+//   width: totalWidth,
+//   height: totalHeight,
+//   margin = defaultMargin,
+//   schemaName, // Prop received
+// }: LinkTypesProps) {
+//   const [data, setData] = useState<TreeNode>({
+//     name: 'Loading...',
+//     children: [],
+//   });
+//   const [layout, setLayout] = useState<string>('cartesian');
+//   const [orientation, setOrientation] = useState<string>('horizontal');
+//   const [linkType, setLinkType] = useState<string>('step');
+//   const [stepPercent, setStepPercent] = useState<number>(0.1);
+//   const forceUpdate = useForceUpdate();
+
+//   useEffect(() => {
+//     const fetchData = async () => {
+//       try {
+//         const response = await fetch('/data.json'); // Fetch the JSON file instead of YAML
+//         const jsonData = await response.json(); // Parse the JSON data
+//         const transformedData = transformOpenApiToTree(jsonData, schemaName); // Use schemaName here
+//         setData(transformedData);
+//       } catch (error) {
+//         console.error('Error fetching or parsing JSON file:', error);
+//         setData({ name: 'Error loading data', children: [] });
+//       }
+//     };
+//     fetchData();
+//   }, [schemaName]); // Re-fetch data when schemaName changes
+
+//   const innerWidth = totalWidth - margin.left - margin.right;
+//   const innerHeight = totalHeight - margin.top - margin.bottom;
+
+//   const handleNodeClick = (node: any) => {
+//     node.data.isExpanded = !node.data.isExpanded; // Toggle expansion
+//     setData({ ...data }); // Trigger re-render by updating state
+//     forceUpdate(); // Force a re-render
+//   };
+
+//   let origin: { x: number; y: number };
+//   let sizeWidth: number;
+//   let sizeHeight: number;
+
+//   if (layout === 'polar') {
+//     origin = {
+//       x: innerWidth / 2,
+//       y: innerHeight / 2,
+//     };
+//     sizeWidth = 2 * Math.PI;
+//     sizeHeight = Math.min(innerWidth, innerHeight) / 2;
+//   } else {
+//     origin = { x: 0, y: 0 };
+//     if (orientation === 'vertical') {
+//       sizeWidth = innerWidth;
+//       sizeHeight = innerHeight;
+//     } else {
+//       sizeWidth = innerHeight;
+//       sizeHeight = innerWidth;
+//     }
+//   }
+
+//   const LinkComponent = getLinkComponent({ layout, linkType, orientation });
+
+//   // Fixed distance between nodes
+//   const nodeSpacing = 100; // Adjust this value as needed
+
+//   return totalWidth < 10 ? null : (
+//     <div>
+//       <LinkControls
+//         layout={layout}
+//         orientation={orientation}
+//         linkType={linkType}
+//         stepPercent={stepPercent}
+//         setLayout={setLayout}
+//         setOrientation={setOrientation}
+//         setLinkType={setLinkType}
+//         setStepPercent={setStepPercent}
+//       />
+//       <svg width={totalWidth} height={totalHeight}>
+//         <LinearGradient id="links-gradient" from="#fd9b93" to="#fe6e9e" />
+//         <rect width={totalWidth} height={totalHeight} rx={14} fill="#ffffff" />
+//         <Group top={margin.top} left={margin.left}>
+//           <Tree
+//             root={hierarchy(data, (d) => (d.isExpanded ? d.children : null))}
+//             size={[sizeWidth, sizeHeight]}
+//             separation={(a, b) => (a.parent === b.parent ? nodeSpacing : nodeSpacing / 2) / a.depth}
+//           >
+//             {(tree) => (
+//               <Group top={origin.y} left={origin.x}>
+//                 {tree.links().map((link, i) => (
+//                   <LinkComponent
+//                     key={i}
+//                     data={link}
+//                     percent={stepPercent}
+//                     stroke="rgb(0,0,0)"
+//                     strokeWidth="1"
+//                     fill="none"
+//                   />
+//                 ))}
+
+//                 {tree.descendants().map((node, key) => {
+//                   const width = 100;
+//                   const height = 40;
+
+//                   let top: number;
+//                   let left: number;
+//                   if (layout === 'polar') {
+//                     const [radialX, radialY] = pointRadial(node.x, node.y);
+//                     top = radialY;
+//                     left = radialX;
+//                   } else if (orientation === 'vertical') {
+//                     top = node.y;
+//                     left = node.x;
+//                   } else {
+//                     top = node.x;
+//                     left = node.y;
+//                   }
+
+//                   return (
+//                     <Group top={top} left={left} key={key}>
+//                       <circle
+//                         cx={-width / 2 - 50} // Adjust position relative to the node
+//                         cy={0}
+//                         r={10} // Radius of the circle
+//                         fill={node.data.isExpanded ? '#000000' : '#ffffff'} // Fill color depending on expanded state
+//                         stroke="#000000" // Stroke color
+//                         strokeWidth={2}
+//                         onClick={() => handleNodeClick(node)}
+//                         style={{ cursor: 'pointer' }}
+//                       />
+
+//                       <circle cx={-width / 2 - 55} cy={0} r={3} fill="black" />
+//                       <circle cx={-width / 2 - 45} cy={0} r={3} fill="black" />
+//                       <circle cx={-width / 2 + 45} cy={0} r={3} fill="black" />
+
+//                       <rect
+//                         height={height}
+//                         width={width}
+//                         y={-height / 2}
+//                         x={-width / 2}
+//                         fill="#ffffff"
+//                         stroke={node.data.children ? 'black' : 'black'}
+//                         strokeWidth={2}
+//                         strokeDasharray={'2,2'}
+//                         strokeOpacity={node.data.children ? 1 : 0.6}
+//                         rx={10}
+//                         style={{ cursor: 'pointer' }}
+//                         onClick={() => {}}
+//                       />
+
+//                       <text
+//                         dy=".33em"
+//                         fontSize={12}
+//                         fontFamily="Arial"
+//                         textAnchor="middle"
+//                         style={{ pointerEvents: 'none' }}
+//                         fill={node.depth === 0 ? '#71248e' : node.children ? 'black' : 'black'}
+//                       >
+//                         {node.data.name}
+//                       </text>
+//                     </Group>
+//                   );
+//                 })}
+//               </Group>
+//             )}
+//           </Tree>
+//         </Group>
+//       </svg>
+//     </div>
+//   );
+// }
+
+
+
+
 import React, { useEffect, useState } from 'react';
 import { Group } from '@visx/group';
 import { hierarchy, Tree } from '@visx/hierarchy';
 import { LinearGradient } from '@visx/gradient';
 import { pointRadial } from 'd3-shape';
-import yaml from 'js-yaml'; // Import js-yaml for parsing YAML files
-import useForceUpdate from './useForceUpdate'; // Custom hook to force re-render
-import LinkControls from './LinkControls'; // Controls for link types, layout, etc.
-import getLinkComponent from './getLinkComponent'; // Function to get the correct link component based on settings
+import useForceUpdate from './useForceUpdate';
+import LinkControls from './LinkControls';
+import getLinkComponent from './getLinkComponent';
+import yaml from 'js-yaml'; // Import js-yaml to parse YAML content
 
 export interface TreeNode {
   name: string;
   isExpanded?: boolean;
   children?: TreeNode[];
+  dataType?: string; // Optional field to store data type
 }
 
 const defaultMargin = { top: 30, left: 30, right: 30, bottom: 70 };
@@ -1327,8 +1798,9 @@ export type LinkTypesProps = {
   width: number;
   height: number;
   margin?: { top: number; right: number; bottom: number; left: number };
-  schemaName: string; // Prop to receive the schema name
+  schemaName: string;
 };
+
 
 const transformSchemaToNode = (schemaName: string, definitions: { [key: string]: any }): TreeNode => {
   const schema = definitions[schemaName];
@@ -1336,7 +1808,8 @@ const transformSchemaToNode = (schemaName: string, definitions: { [key: string]:
 
   const properties = schema.properties
     ? Object.keys(schema.properties).map((prop) => ({
-        name: `${prop}: ${schema.properties[prop].type}`,
+        name: prop,  // Only the property name, not type
+        dataType: schema.properties[prop].type,  // Store data type separately
         children: schema.properties[prop].$ref
           ? [transformSchemaToNode(schema.properties[prop].$ref.split('/').pop()!, definitions)]
           : [],
@@ -1360,7 +1833,7 @@ const transformOpenApiToTree = (data: any, schemaName: string): TreeNode => {
   return {
     name: schemaName,
     children: [schemaNode],
-    isExpanded: true, // Start with the root node expanded
+    isExpanded: true,
   };
 };
 
@@ -1368,7 +1841,7 @@ export default function OpenAPITree({
   width: totalWidth,
   height: totalHeight,
   margin = defaultMargin,
-  schemaName, // Prop received
+  schemaName,
 }: LinkTypesProps) {
   const [data, setData] = useState<TreeNode>({
     name: 'Loading...',
@@ -1378,6 +1851,7 @@ export default function OpenAPITree({
   const [orientation, setOrientation] = useState<string>('horizontal');
   const [linkType, setLinkType] = useState<string>('step');
   const [stepPercent, setStepPercent] = useState<number>(0.1);
+  const [tooltip, setTooltip] = useState<{ x: number; y: number; content: string } | null>(null);
   const forceUpdate = useForceUpdate();
 
   useEffect(() => {
@@ -1386,23 +1860,36 @@ export default function OpenAPITree({
         const response = await fetch('/airshopping.yaml');
         const yamlText = await response.text();
         const openapi = yaml.load(yamlText);
-        const transformedData = transformOpenApiToTree(openapi, schemaName); // Use schemaName here
+        const transformedData = transformOpenApiToTree(openapi, schemaName);
         setData(transformedData);
       } catch (error) {
-        console.error('Error fetching or parsing YAML file:', error);
+        console.error('Error fetching or parsing JSON file:', error);
         setData({ name: 'Error loading data', children: [] });
       }
     };
     fetchData();
-  }, [schemaName]); // Re-fetch data when schemaName changes
+  }, [schemaName]);
 
   const innerWidth = totalWidth - margin.left - margin.right;
   const innerHeight = totalHeight - margin.top - margin.bottom;
 
   const handleNodeClick = (node: any) => {
-    node.data.isExpanded = !node.data.isExpanded; // Toggle expansion
-    setData({ ...data }); // Trigger re-render by updating state
+    node.data.isExpanded = !node.data.isExpanded;
+    setData({ ...data }); // Trigger re-render
     forceUpdate(); // Force a re-render
+  };
+
+  const handleNodeClickForToolTip = (node: any,  event: React.MouseEvent<SVGGElement, MouseEvent>) => {
+    // Show tooltip above the clicked node
+    setTooltip({
+      x: event.clientX,
+      y: event.clientY - 40, // Adjust Y position to show above the node
+      content: node.data.name,
+    });
+  };
+
+  const hideTooltip = () => {
+    setTooltip(null);
   };
 
   let origin: { x: number; y: number };
@@ -1429,8 +1916,7 @@ export default function OpenAPITree({
 
   const LinkComponent = getLinkComponent({ layout, linkType, orientation });
 
-  // Fixed distance between nodes
-  const nodeSpacing = 100; // Adjust this value as needed
+  const nodeSpacing = 100;
 
   return totalWidth < 10 ? null : (
     <div>
@@ -1487,16 +1973,16 @@ export default function OpenAPITree({
                   return (
                     <Group top={top} left={left} key={key}>
                       <circle
-                        cx={-width / 2 - 50} // Adjust position relative to the node
+                        cx={-width / 2 - 50}
                         cy={0}
-                        r={10} // Radius of the circle
-                        fill={node.data.isExpanded ? '#000000' : '#ffffff'} // Fill color depending on expanded state
-                        stroke="#000000" // Stroke color
+                        r={10}
+                        fill={node.data.isExpanded ? '#000000' : '#ffffff'}
+                        stroke="#000000"
                         strokeWidth={2}
                         onClick={() => handleNodeClick(node)}
+                       
                         style={{ cursor: 'pointer' }}
                       />
-
                       <circle cx={-width / 2 - 55} cy={0} r={3} fill="black" />
                       <circle cx={-width / 2 - 45} cy={0} r={3} fill="black" />
                       <circle cx={-width / 2 + 45} cy={0} r={3} fill="black" />
@@ -1513,7 +1999,8 @@ export default function OpenAPITree({
                         strokeOpacity={node.data.children ? 1 : 0.6}
                         rx={10}
                         style={{ cursor: 'pointer' }}
-                        onClick={() => handleNodeClick(node)}
+                        onMouseLeave={hideTooltip}
+                        onMouseEnter={(event) => handleNodeClickForToolTip(node,event)}
                       />
 
                       <text
@@ -1534,6 +2021,22 @@ export default function OpenAPITree({
           </Tree>
         </Group>
       </svg>
+      {tooltip && (
+        <div
+          style={{
+            position: 'absolute',
+            left: tooltip.x,
+            top: tooltip.y,
+            background: 'white',
+            border: '1px solid black',
+            padding: '5px',
+            borderRadius: '3px',
+            pointerEvents: 'none',
+          }}
+        >
+          {tooltip.content}
+        </div>
+      )}
     </div>
   );
 }

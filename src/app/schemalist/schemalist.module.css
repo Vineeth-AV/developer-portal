@@ -1,23 +1,33 @@
-/* MyPage.module.css */
-
 .container {
-  display: flex;
-  gap: 2rem;
+  padding: 2rem;
+  padding-top: 8rem;
 }
 
-.listColumn {
+.title {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.list {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* Creates two columns */
+  gap: .1rem; /* Space between items */
   list-style: none;
   padding: 0;
   margin: 0;
 }
 
-.listItem {
+.link {
   position: relative;
   padding-left: 1.5rem;
   margin-bottom: 0.5rem;
+  color: #4a86e8;
+  text-decoration: none;
+  font-weight: bold;
+  position: relative;
 }
 
-.listItem::before {
+.link::before {
   content: '';
   position: absolute;
   left: 0;
@@ -27,13 +37,6 @@
   height: 0.6rem;
   border: 2px solid #4a86e8;
   border-radius: 50%;
-}
-
-.link {
-  color: #4a86e8;
-  text-decoration: none;
-  font-weight: bold;
-  position: relative;
 }
 
 .link::after {
