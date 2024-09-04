@@ -93,10 +93,15 @@
 //     );
 //   }
 // };
-
+'use client'
 import Link from 'next/link';
 import clsx from 'clsx';
+import { useState } from 'react';
 import { Divider } from '@/components/divider';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
+
+
 import {
   SideBarDivider,
   SideBarLink,
@@ -105,37 +110,67 @@ import {
   isLink
 } from 'types';
 
+// Expand/Collapse icons (replace with your preferred icons)
+const ExpandIcon = () => <span></span>; // Example expand icon
+const CollapseIcon = () => <span>➖</span>; // Example collapse icon
+
 type SideNavListProps = {
   data: SideBarSourceType;
   path: string;
   onClick?: React.MouseEventHandler<HTMLAnchorElement> | undefined;
+  level?: number; // Track the level of the menu item
 };
 
 export const SideNavList = ({
   data,
   path,
-  onClick
+  onClick,
+  level = 0, // Default to top-level menu
 }: SideNavListProps): React.ReactElement[] => {
+  const [expanded, setExpanded] = useState<Record<string, boolean>>({});
+
+  const handleToggle = (title: string) => {
+    setExpanded((prev) => ({
+      ...prev,
+      [title]: !prev[title], // Toggle the expanded state of the clicked item
+    }));
+  };
+
   if (isCategory(data)) {
     const category = data;
+
+    // Check if this is a second-level category (level === 1)
+    const isSecondLevel = level === 1;
+
+    // Determine if the second-level item should be expandable
+    const shouldExpand = isSecondLevel && category.links && category.links.length > 0;
+
     return [
       <li key={category.title} className="list-none">
-        <h2 className="my-[1px] text-sm font-semibold dark:text-white">
-          {category.title}
-        </h2>
-        <ul
-          key={`${category.title}-list`}
-          className="ml-1 border-l-[.5px] border-lightBorder pl-4 dark:border-[#3D3D3D]"
+        <div
+          className="flex items-center justify-between my-[1px] text-sm font-semibold dark:text-white"
+          onClick={shouldExpand ? () => handleToggle(category.title) : undefined}
+          style={{ cursor: shouldExpand ? 'pointer' : 'default' }} // Change cursor if expandable
         >
-          {category.links.map((link) => (
-            <SideNavList
-              key={link.title}
-              data={link}
-              path={path}
-              onClick={onClick}
-            />
-          ))}
-        </ul>
+          {category.title}
+          {shouldExpand && (expanded[category.title] ? <KeyboardArrowUpIcon /> : <ExpandMoreIcon />)}
+        </div>
+        {(expanded[category.title] || !shouldExpand) && ( // Only show children if expanded or not expandable
+          <ul
+            key={`${category.title}-list`}
+            className="ml-1 border-l-[.5px] border-lightBorder pl-4 dark:border-[#3D3D3D]"
+          >
+            {category.links.map((link) => (
+              <SideNavList
+                key={link.title}
+                data={link}
+                path={path}
+                onClick={onClick}
+                level={level + 1} // Increment level for children
+              />
+            ))}
+          </ul>
+        )}
       </li>
     ];
   } else if (isLink(data)) {
@@ -189,3 +224,5 @@ const ListItem = (
     );
   }
 };
+
+
