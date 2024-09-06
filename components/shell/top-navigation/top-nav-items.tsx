@@ -32,7 +32,7 @@ export const TopNavigationItems = () => {
       name: 'Dashboard',
       href: '/'
     },
-  ].map((item) => (
+      ].map((item) => (
     <TopNavigationItem key={item.href} name={item.name} href={item.href} subMenu={item.subMenu} />
   ));
 };

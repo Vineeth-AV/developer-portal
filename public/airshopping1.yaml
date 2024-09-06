@@ -1,0 +1,3817 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Verteil API
+  description: |
+    This is the API schema for the V1 version of the Verteil API.
+  contact:
+    name: Verteil support
+    email: support@verteil.com
+  termsOfService: https://vdc-schema.stage.verteil.com/v1/terms.html
+  license:
+    name: Proprietery License
+    url: https://vdc-schema.stage.verteil.com/v1/license.html
+servers:
+  - url: https://api.stage.verteil.com
+    description: Verteil API
+paths:
+  /oauth2/token:
+    post:
+      summary: Login
+      security:
+        - basicAuth: []
+      parameters:
+        - in: query
+          name: grant_type
+          description: >-
+            This value should not be passed when invoking the request. This
+            represents the grant type in OAuth2. Typically it will be Client
+            Credentials
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: scope
+          description: >-
+            This value should not be passed when invoking the request. This
+            represents the scope of this request. Typically it will be api
+          required: true
+          schema:
+            type: string
+      description: |
+        This operation is to do the basic authentication request.
+      tags:
+        - Login
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRQ'
+      responses:
+        '200':
+          description: Login Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginRS'
+  /entrygate/rest/request:airShopping:
+    post:
+      summary: AirShopping
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: header
+          name: service
+          description: >-
+            This value should be passed as header. It represents service to be
+            invoked
+          required: true
+          schema:
+            type: string
+            enum:
+              - AirShopping
+        - in: header
+          name: resource
+          description: >-
+            This value should be passed as header. It represents resource to be
+            invoked. This value is not needed for all the requests, its
+            applicable for only certain requests
+          required: false
+          schema:
+            type: string
+        - in: header
+          name: ThirdpartyId
+          description: >-
+            This value should be passed as header. It represents Carrier to be
+            used. eg: BA 
+          required: false
+          schema:
+            type: string
+        - in: header
+          name: OfficeId
+          description: >-
+            This value should be passed as header. It represents the office to
+            which user belongs. eg: TA 
+          required: false
+          schema:
+            type: string
+      description: |
+        This operation is to do the air shopping request.
+      tags:
+        - AirShopping
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AirShoppingRQ'
+      responses:
+        '200':
+          description: Airshopping Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AirShoppingRS'
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+    basicAuth:
+      type: http
+      scheme: basic
+  schemas:
+    LoginRQ:
+      type: object
+      nullable: true
+    LoginRS:
+      type: object
+      properties:
+        access_token:
+          type: string
+        token_type:
+          type: string
+        expires_in:
+          type: integer
+        scope:
+          type: string
+    AirShoppingRS:
+      type: object
+      required:
+        - DataLists
+        - Metadata
+        - OffersGroup
+      description: 'null'
+      properties:
+        Errors:
+          type: object
+          required:
+            - Error
+          description: Error information
+          properties:
+            Error:
+              type: array
+              description: 'null'
+              items:
+                required:
+                  - ShortText
+                  - value
+                  - Code
+                properties:
+                  Owner:
+                    type: string
+                    description: |+
+                      Offer responsible airline
+
+                  ShortText:
+                    type: string
+                    description: |+
+                      This is a short text identifying the error.
+
+                  value:
+                    type: string
+                    description: |+
+                      This is a descriptive message about the error.
+
+                  Code:
+                    type: string
+                    description: >+
+                      This categorizes the error into one of the following three
+                      categories-
+
+
+                      1.INTERNAL_ERROR- Technical error within VDC or a network
+                      error communicating with the airline.
+
+
+                      2.VALIDATION_FAILURE- Business validation failure within
+                      VDC
+
+
+                      3.AIRLINE_ERROR- Error from airline system  business or
+                      technical error.
+
+                  Reason:
+                    type: string
+                    description: |+
+                      This provides a standardized reason for the error
+
+        DataLists:
+          type: object
+          required:
+            - OriginDestinationList
+            - FlightSegmentList
+          description: 'null'
+          properties:
+            CheckedBagAllowanceList:
+              type: object
+              required:
+                - CheckedBagAllowance
+              description: >+
+                List contains one or more than one Check-in baggage allowance
+                details associated with offers.
+
+              properties:
+                CheckedBagAllowance:
+                  type: array
+                  description: >+
+                    Baggage is considered as not included in the fare for below
+                    scenarios 
+
+
+                    Checked baggage with piece allowance as zero
+
+
+                    Checked baggage with piece weight allowance in which piece
+                    allowance as zero
+
+
+                    Checked baggage with piece weight and dimension allowance in
+                    which piece allowance is zero
+
+                  items:
+                    required:
+                      - ListKey
+                      - AllowanceDescription
+                    properties:
+                      ListKey:
+                        type: string
+                        description: |+
+                          Unique object key
+
+                      PieceAllowance:
+                        type: array
+                        description: >+
+                          If the airline business model supports piece allowance
+                          or PieceWeight allowance the piece information will be
+                          provided under this object.
+
+                        items:
+                          required:
+                            - ApplicableParty
+                            - TotalQuantity
+                          properties:
+                            ApplicableParty:
+                              type: string
+                              description: >+
+                                Value will always be Traveler.Meaning the
+                                baggage information is applicable for each
+                                traveler.
+
+                            PieceMeasurements:
+                              type: array
+                              description: 'null'
+                              items:
+                                required:
+                                  - Quantity
+                                properties:
+                                  Quantity:
+                                    type: integer
+                                    description: |+
+                                      Total piece of bags allowed
+
+                            TotalQuantity:
+                              type: integer
+                              description: |+
+                                Total piece of bags allowed
+
+                            PieceAllowanceCombination:
+                              type: string
+                              description: >+
+                                Possible values are AND / OR
+
+
+                                The element is used to provide baggage allowance
+                                with and/or condition.
+
+
+                                E.g. 1 piece bag or 1 Bicycle
+
+
+                                E.g. 1 piece bag and 1 Bicycle
+
+                      WeightAllowance:
+                        type: object
+                        required:
+                          - ApplicableParty
+                          - MaximumWeight
+                        description: 'null'
+                        properties:
+                          ApplicableParty:
+                            type: string
+                            description: >+
+                              Value will always be Traveler.Meaning the baggage
+                              information is applicable for each traveler.
+
+                          MaximumWeight:
+                            type: array
+                            description: >+
+                              If the airline provides weight information in
+                              different units of measurement (UOM) E.g.
+                              Kilogram, pounds etc. The values under the object
+                              will repeat for each UOM value.
+
+                            items:
+                              required:
+                                - UOM
+                                - Value
+                              properties:
+                                UOM:
+                                  type: string
+                                  description: >+
+                                    Unit of measurement (UOM) E.g. Kilogram,
+                                    pound etc.
+
+                                Value:
+                                  type: number
+                                  description: >+
+                                    Total Weight information will be provided
+                                    here if the airline business model is weight
+                                    allowance and Per piece weight will be
+                                    provided here in case if the airline
+                                    business model is PieceWeightAllowance.
+
+                      AllowanceDescription:
+                        type: object
+                        required:
+                          - ApplicableParty
+                          - Descriptions
+                        description: 'null'
+                        properties:
+                          ApplicableParty:
+                            type: string
+                            description: >+
+                              Value will always be Traveler.Meaning the baggage
+                              information is applicable for each traveler.
+
+                          Descriptions:
+                            type: object
+                            required:
+                              - Description
+                            description: 'null'
+                            properties:
+                              Description:
+                                type: array
+                                description: >+
+                                  The elements under the description will be
+                                  repeated if there are more than one
+                                  description.
+
+                                items:
+                                  required:
+                                    - Text
+                                  properties:
+                                    Text:
+                                      type: object
+                                      required:
+                                        - value
+                                      description: 'null'
+                                      properties:
+                                        value:
+                                          type: string
+                                          description: >+
+                                            Dimension and baggage type if available
+                                            will be provided here in textual format.
+
+            FlightList:
+              type: object
+              required:
+                - Flight
+              description: 'null'
+              properties:
+                Flight:
+                  type: array
+                  description: |+
+                    Flight details
+
+                  items:
+                    required:
+                      - SegmentReferences
+                      - FlightKey
+                    properties:
+                      SegmentReferences:
+                        type: object
+                        required:
+                          - value
+                        description: >+
+                          List of flight segment references associated with this
+                          flight
+
+                        properties:
+                          OffPoint:
+                            type: string
+                            description: |+
+                              Flight off boarding airport code
+
+                          value:
+                            type: array
+                            description: 'null'
+                            items:
+                              properties: {}
+                          OnPoint:
+                            type: string
+                            description: |+
+                              Flight on boarding airport code
+
+                      FlightKey:
+                        type: string
+                        description: |+
+                          Unique flight key
+
+                      Journey:
+                        type: object
+                        required:
+                          - Time
+                        description: |+
+                          Flight journey details
+
+                        properties:
+                          Time:
+                            type: string
+                            description: |2+
+                               Data is of Time format, Total journey duration of this flight
+
+                              PT<Hour>H<Minutes>M
+
+                          Distance:
+                            type: object
+                            required:
+                              - UOM
+                              - Value
+                            description: 'null'
+                            properties:
+                              UOM:
+                                type: string
+                                description: 'null'
+                              Value:
+                                type: number
+                                description: |2+
+                                   Data is of Decimal format, but json doesn't support it. So considering it as string, Distance to be traveled
+
+            MediaList:
+              type: object
+              required:
+                - Media
+              description: >+
+                The object contains a list of rich media groups belonging to a
+                PriceClassList.
+
+              properties:
+                Media:
+                  type: array
+                  description: 'null'
+                  items:
+                    required:
+                      - ListKey
+                    properties:
+                      ListKey:
+                        type: string
+                        description: 'null'
+                      MediaLinks:
+                        type: array
+                        description: 'null'
+                        items:
+                          required:
+                            - Type
+                            - Size
+                            - Url
+                          properties:
+                            Type:
+                              type: string
+                              description: |+
+                                Media types involve image, video and webpage.
+
+                            Size:
+                              type: string
+                              description: >+
+                                Size of the media can be small, medium, large
+                                and unknown.
+
+                            Url:
+                              type: string
+                              description: 'null'
+            PriceClassList:
+              type: object
+              required:
+                - PriceClass
+              description: |+
+                Price information about the different classes in the airline
+
+              properties:
+                PriceClass:
+                  type: array
+                  description: |+
+                    Price class details
+
+                  items:
+                    required:
+                      - DisplayOrder
+                      - ObjectKey
+                      - Name
+                    properties:
+                      Descriptions:
+                        type: object
+                        required:
+                          - Description
+                        description: >+
+                          Marketing information about the fare product is
+                          returned here
+
+                        properties:
+                          Description:
+                            type: array
+                            description: >+
+                              This is a list and will be repeated for each
+                              marketing information
+
+                            items:
+                              required:
+                                - Text
+                              properties:
+                                Category:
+                                  type: string
+                                  description: >+
+                                    Example- Dining, Loyalty, Baggage Allowance,
+                                    Seat, Check in priority, Lounge etc.
+
+                                Media:
+                                  type: array
+                                  description: 'null'
+                                  items:
+                                    required:
+                                      - MediaRef
+                                    properties:
+                                      MediaRef:
+                                        type: string
+                                        description: 'null'
+                                Text:
+                                  type: object
+                                  required:
+                                    - value
+                                  description: |+
+                                    Marketing information
+
+                                    Example- No checked baggage allowance
+
+                                  properties:
+                                    value:
+                                      type: string
+                                      description: 'null'
+                      DisplayOrder:
+                        type: string
+                        description: 'null'
+                      ObjectKey:
+                        type: string
+                        description: 'null'
+                      Code:
+                        type: string
+                        description: 'null'
+                      Name:
+                        type: string
+                        description: |+
+                          Fare product name
+
+                          Possible values are
+
+                          Handbaggageonly
+
+                          Basic
+
+                          Plus
+
+                          PlusFlex
+
+                          BusinessUK
+
+            OriginDestinationList:
+              type: object
+              required:
+                - OriginDestination
+              description: 'null'
+              properties:
+                OriginDestination:
+                  type: array
+                  description: |+
+                    Origin and destination details
+
+                  items:
+                    required:
+                      - ArrivalCode
+                      - FlightReferences
+                      - DepartureCode
+                      - OriginDestinationKey
+                    properties:
+                      ArrivalCode:
+                        type: object
+                        required:
+                          - value
+                        description: |+
+                          Arrival city code of the destination
+
+                        properties:
+                          value:
+                            type: string
+                            description: 'null'
+                      FlightReferences:
+                        type: object
+                        required:
+                          - value
+                        description: >+
+                          References of the flight, List of flight references
+                          associated with this origin and destination.
+
+                        properties:
+                          value:
+                            type: array
+                            description: 'null'
+                            items:
+                              properties: {}
+                      DepartureCode:
+                        type: object
+                        required:
+                          - value
+                        description: |+
+                          Departure city code of the origin
+
+                        properties:
+                          value:
+                            type: string
+                            description: 'null'
+                      OriginDestinationKey:
+                        type: string
+                        description: >+
+                          Unique origin and destination key. This is for
+                          particular OD and will get repeated for each OD.
+
+            FareList:
+              type: object
+              required:
+                - FareGroup
+              description: >+
+                This is a list and will be repeated to return unique fare basis
+                code for the itinerary
+
+              properties:
+                FareGroup:
+                  type: array
+                  description: 'null'
+                  items:
+                    required:
+                      - ListKey
+                    properties:
+                      ListKey:
+                        type: string
+                        description: |+
+                          Reference key for the bag detail association in offer
+
+                      FareBasisCode:
+                        type: object
+                        required:
+                          - Code
+                        description: 'null'
+                        properties:
+                          Code:
+                            type: string
+                            description: |+
+                              Fare basis code
+
+                      refs:
+                        type: array
+                        description: >+
+                          Reference to the Metadatakey which is used in
+                          FareRules service.
+
+                        items:
+                          properties: {}
+                      Fare:
+                        type: object
+                        required:
+                          - FareCode
+                        description: 'null'
+                        properties:
+                          FareDetail:
+                            type: object
+                            required:
+                              - Remarks
+                            description: 'null'
+                            properties:
+                              Remarks:
+                                type: object
+                                required:
+                                  - Remark
+                                description: 'null'
+                                properties:
+                                  Remark:
+                                    type: array
+                                    description: 'null'
+                                    items:
+                                      required:
+                                        - value
+                                      properties:
+                                        value:
+                                          type: string
+                                          description: >+
+                                            The Fare type of an offer can be
+                                            identified by referring the code given
+                                            in the remarks
+
+
+                                            Marine Fare- MR
+
+
+                                            Agency Private Fare- PVT
+
+
+                                            Inclusive Tours Fare- IT
+
+
+                                            Inclusive Tours Fare Deferred- ITD (BA
+                                            specific)
+
+
+                                            Inclusive Tours Fare Semi Deferred- ITSD
+                                            (BA specific)
+
+
+                                            Corporate Fare- CF
+
+
+                                            Published Fare- PUBL
+
+
+                                            Contract bulk- CB
+
+
+                                            Humanitarian-HR
+
+
+                                            Private adult-PA
+
+
+                                            Student Fare-STU
+
+
+                                            Labour Fare-LBR
+
+
+                                            Cruise Fare -CRU
+
+
+                                            Visit Family and Relatives -VFR
+
+
+                                            NOTE- Fare type will be provided only
+                                            for airlines which provide sufficient
+                                            information to identify fare types. If
+                                            fare type is not provided, consider as
+                                            UNKNOWN fare type.
+
+                          FareCode:
+                            type: object
+                            required:
+                              - Code
+                            description: 'null'
+                            properties:
+                              Code:
+                                type: string
+                                description: |+
+                                  Fare codes supplied by airline
+
+                                  Example-
+
+                                  70J = Published
+
+                                  749 or 758 = Private
+
+            CarryOnAllowanceList:
+              type: object
+              required:
+                - CarryOnAllowance
+              description: >+
+                List contains one or more than one Carry on/hand baggage
+                allowance details associated with offers.
+
+              properties:
+                CarryOnAllowance:
+                  type: array
+                  description: >+
+                    Baggage is considered as not included in the fare for below
+                    scenarios 
+
+
+                    Carryon baggage with piece allowance as zero
+
+
+                    Carryon baggage with piece weight allowance in which piece
+                    allowance as zero
+
+
+                    Carryon baggage with piece weight and dimension allowance in
+                    which piece allowance is zero
+
+                  items:
+                    required:
+                      - ListKey
+                      - AllowanceDescription
+                    properties:
+                      ListKey:
+                        type: string
+                        description: |+
+                          Unique object key
+
+                      PieceAllowance:
+                        type: array
+                        description: >+
+                          If the airline business model supports piece allowance
+                          or PieceWeight allowance the piece information will be
+                          provided under this object.
+
+                        items:
+                          required:
+                            - ApplicableParty
+                            - TotalQuantity
+                          properties:
+                            ApplicableParty:
+                              type: string
+                              description: >+
+                                Value will always be Traveler. Meaning the
+                                baggage information is applicable for each
+                                traveler.
+
+                            PieceMeasurements:
+                              type: array
+                              description: 'null'
+                              items:
+                                required:
+                                  - Quantity
+                                properties:
+                                  Quantity:
+                                    type: integer
+                                    description: |+
+                                      Total piece of bags allowed
+
+                            TotalQuantity:
+                              type: integer
+                              description: |+
+                                Total piece of bags allowed.
+
+                            PieceAllowanceCombination:
+                              type: string
+                              description: >+
+                                Possible values are AND / OR
+
+
+                                The element is used to provide baggage allowance
+                                with and/or condition.
+
+
+                                E.g. 1 piece bag OR 1 golf equipment
+
+
+                                E.g. 1 piece bag AND 1 golf equipment
+
+                            ApplicableBag:
+                              type: string
+                              description: 'null'
+                      WeightAllowance:
+                        type: object
+                        required:
+                          - ApplicableParty
+                        description: 'null'
+                        properties:
+                          ApplicableParty:
+                            type: string
+                            description: >+
+                              Value will always be Traveler.Meaning the baggage
+                              information is applicable for each traveler.
+
+                          MaximumWeight:
+                            type: array
+                            description: >+
+                              If the airline provides weight information in
+                              different units of measurement (UOM) E.g.
+                              Kilogram, pounds etc. The values under the object
+                              will repeat for each UOM value.
+
+                            items:
+                              required:
+                                - UOM
+                                - Value
+                              properties:
+                                UOM:
+                                  type: string
+                                  description: >+
+                                    Unit of measurement (UOM) E.g. Kilogram,
+                                    pounds etc.
+
+                                Value:
+                                  type: integer
+                                  description: >+
+                                    Total Weight information will be provided
+                                    here if the airline business model is weight
+                                    allowance and Per piece weight will be
+                                    provided here in case if the airline
+                                    business model is PieceWeightAllowance.
+
+                      AllowanceDescription:
+                        type: object
+                        required:
+                          - ApplicableParty
+                          - Descriptions
+                        description: 'null'
+                        properties:
+                          ApplicableParty:
+                            type: string
+                            description: >+
+                              Value will always be Traveler which means the
+                              baggage information is applicable for each
+                              traveler.
+
+                          Descriptions:
+                            type: object
+                            required:
+                              - Description
+                            description: 'null'
+                            properties:
+                              Description:
+                                type: array
+                                description: >+
+                                  The elements under the description will be
+                                  repeated if there are more than one
+                                  description.
+
+                                items:
+                                  required:
+                                    - Text
+                                  properties:
+                                    Text:
+                                      type: object
+                                      required:
+                                        - value
+                                      description: 'null'
+                                      properties:
+                                        value:
+                                          type: string
+                                          description: >+
+                                            Dimension and baggage type if available
+                                            will be provided here in textual format.
+
+            FlightSegmentList:
+              type: object
+              required:
+                - FlightSegment
+              description: 'null'
+              properties:
+                FlightSegment:
+                  type: array
+                  description: |+
+                    Flight segment details.
+
+                  items:
+                    required:
+                      - SegmentKey
+                      - Departure
+                      - MarketingCarrier
+                      - Arrival
+                    properties:
+                      SegmentKey:
+                        type: string
+                        description: |+
+                          Segment Key referred to each offer.
+
+                      FlightDetail:
+                        type: object
+                        required:
+                          - FlightDuration
+                        description: 'null'
+                        properties:
+                          FlightDuration:
+                            type: object
+                            required:
+                              - Value
+                            description: |+
+                              Flight segment duration
+
+                            properties:
+                              Value:
+                                type: string
+                                description: |+
+                                  PT<Hour>H<Minutes>M
+
+                          Stops:
+                            type: object
+                            required:
+                              - StopQuantity
+                            description: |+
+                              Number of stops
+
+                            properties:
+                              StopLocations:
+                                type: object
+                                required:
+                                  - StopLocation
+                                description: >+
+                                  Stop locations. The hidden stop details are
+                                  returned here. This is a list and is repeated
+                                  to return each hidden stop details.
+
+
+                                  This section will be returned only when the
+                                  StopQuantity is non- Zero value (meaning the
+                                  flight stops somewhere before reaching its
+                                  final destination)
+
+                                properties:
+                                  StopLocation:
+                                    type: array
+                                    description: |+
+                                      Stop location details
+
+                                    items:
+                                      required:
+                                        - AirportCode
+                                      properties:
+                                        DepartureTime:
+                                          type: string
+                                          description: |2+
+                                             Data is of Time format, (HH-MM)
+
+                                        AirportCode:
+                                          type: object
+                                          required:
+                                            - value
+                                          description: 'null'
+                                          properties:
+                                            value:
+                                              type: string
+                                              description: 'null'
+                                        ArrivalDate:
+                                          type: string
+                                          description: |2+
+                                             Data is of Date format, (YYYY-MM-DD)
+
+                                        DepartureDate:
+                                          type: string
+                                          description: |2+
+                                             Data is of Date format, (YYYY-MM-DD)
+
+                                        ArrivalTime:
+                                          type: string
+                                          description: |2+
+                                             Data is of Time format, (HH-MM)
+
+                              StopQuantity:
+                                type: integer
+                                description: 'null'
+                      Equipment:
+                        type: object
+                        required:
+                          - AircraftCode
+                        description: |+
+                          Aircraft information
+
+                        properties:
+                          AircraftCode:
+                            type: object
+                            required:
+                              - value
+                            description: 'null'
+                            properties:
+                              value:
+                                type: string
+                                description: 'null'
+                          Name:
+                            type: string
+                            description: 'null'
+                      Departure:
+                        type: object
+                        required:
+                          - AirportCode
+                          - Time
+                          - Date
+                        description: |+
+                          Departure information
+
+                        properties:
+                          AirportCode:
+                            type: object
+                            required:
+                              - value
+                            description: |+
+                              Departure airport IATA code
+
+                            properties:
+                              value:
+                                type: string
+                                description: 'null'
+                          AirportName:
+                            type: string
+                            description: |+
+                              Departure airport name
+
+                          Time:
+                            type: string
+                            description: |2+
+                               Data is of Time format, Local Departure time i.e. local to the departure location
+
+                              (HH-MM)
+
+                          Terminal:
+                            type: object
+                            required:
+                              - Name
+                            description: 'null'
+                            properties:
+                              Name:
+                                type: string
+                                description: |+
+                                  Departure Terminal
+
+                          Date:
+                            type: string
+                            description: |2+
+                               Data is of Date format, Local Departure date i.e. local to the departure location
+
+                              (YYYY-MM-DDT00-00-00.000)
+
+                      MarketingCarrier:
+                        type: object
+                        required:
+                          - AirlineID
+                          - FlightNumber
+                        description: |+
+                          Marketing carrier information
+
+                        properties:
+                          AirlineID:
+                            type: object
+                            required:
+                              - value
+                            description: |+
+                              Marketing carrier code
+
+                            properties:
+                              value:
+                                type: string
+                                description: 'null'
+                          FlightNumber:
+                            type: object
+                            required:
+                              - value
+                            description: |+
+                              Marketing flight number
+
+                            properties:
+                              value:
+                                type: string
+                                description: 'null'
+                          Name:
+                            type: string
+                            description: |+
+                              Marketing carrier name
+
+                      OperatingCarrier:
+                        type: object
+                        required:
+                          - AirlineID
+                          - Name
+                        description: |+
+                          Operating carrier information
+
+                        properties:
+                          AirlineID:
+                            type: object
+                            required:
+                              - value
+                            description: |+
+                              Operating carrier code
+
+                            properties:
+                              value:
+                                type: string
+                                description: 'null'
+                          Disclosures:
+                            type: array
+                            description: 'null'
+                            items:
+                              required:
+                                - Description
+                              properties:
+                                Description:
+                                  type: array
+                                  description: 'null'
+                                  items:
+                                    required:
+                                      - Text
+                                    properties:
+                                      Text:
+                                        type: object
+                                        required:
+                                          - value
+                                        description: 'null'
+                                        properties:
+                                          value:
+                                            type: string
+                                            description: 'null'
+                          Name:
+                            type: string
+                            description: |+
+                              Operating carrier name
+
+                      Arrival:
+                        type: object
+                        required:
+                          - AirportCode
+                          - Time
+                          - Date
+                        description: |+
+                          Arrival information
+
+                        properties:
+                          ChangeOfDay:
+                            type: integer
+                            description: |+
+                              Number of days between arrival and departure
+
+                          AirportCode:
+                            type: object
+                            required:
+                              - value
+                            description: |+
+                              Arrival airport IATA code
+
+                            properties:
+                              value:
+                                type: string
+                                description: 'null'
+                          AirportName:
+                            type: string
+                            description: |+
+                              Arrival airport name
+
+                          Time:
+                            type: string
+                            description: |2+
+                               Data is of Time format, Local Arrival time i.e. local to the arrival location (HH-MM)
+
+                          Terminal:
+                            type: object
+                            required:
+                              - Name
+                            description: 'null'
+                            properties:
+                              Name:
+                                type: string
+                                description: |+
+                                  Arrival Terminal
+
+                          Date:
+                            type: string
+                            description: |2+
+                               Data is of Date format, Local Arrival date i.e. local to the arrival location
+
+                              (YYYY-MM-DDT00-00-00.000)
+
+            AnonymousTravelerList:
+              type: object
+              required:
+                - AnonymousTraveler
+              description: |+
+                List of all passengers to whom the shopping response is returned
+
+                 The node is mandatory except when there is a FQTV applied. 
+
+              properties:
+                AnonymousTraveler:
+                  type: array
+                  description: >+
+                    This is repeated for each passenger corresponding to the PTC
+                    submitted in the AirShoppingRQ
+
+                  items:
+                    required:
+                      - ObjectKey
+                      - PTC
+                    properties:
+                      ObjectKey:
+                        type: string
+                        description: >+
+                          This key is referred from each offer provided by the
+                          airline. Thus, the recipient of this response
+                          understands which is the offer belonging to this
+                          traveler.
+
+                      PTC:
+                        type: object
+                        required:
+                          - value
+                        description: |+
+                          Passenger type code of this passenger
+
+                          The following passenger type codes needs to be passed
+
+                          ADT - Adult
+
+                          CHD - Child
+
+                          INF - Infant
+
+                        properties:
+                          value:
+                            type: string
+                            description: >+
+                              Passenger Type Code, specifies the passenger type
+                              code. Specify Passenger Type
+
+
+                              Values are- ADT,CHD,INF
+
+
+                              Where
+
+
+                              ADT = Adult
+
+
+                              CHD = Child
+
+
+                              INF = Infant
+
+                      Age:
+                        type: object
+                        description: >+
+                          The field is mandatory for certain airlines like ZG,
+                          hence dependent on the airline response.
+
+
+                          This must always be provided for Child passengers in
+                          case of ZG.
+
+
+                          Though this is an optional element, it is recommended
+                          to provide the passenger's age, as it will be used to
+                          identify if the passenger is a young adult. Young
+                          adult provision is applicable only in case of British
+                          Airways.
+
+                        properties:
+                          Value:
+                            type: object
+                            required:
+                              - value
+                            description: 'null'
+                            properties:
+                              value:
+                                type: integer
+                                description: |+
+                                  Age of child traveler.
+
+                          BirthDate:
+                            type: object
+                            required:
+                              - value
+                            description: 'null'
+                            properties:
+                              value:
+                                type: string
+                                description: |2+
+                                   Data is of Date format, Deprecated
+
+                                  YYYY-MM-DD
+
+            PenaltyList:
+              type: object
+              required:
+                - Penalty
+              description: >+
+                List contains one or more than one PenaltyList allowance details
+                associated with offers.
+
+              properties:
+                Penalty:
+                  type: object
+                  required:
+                    - Details
+                    - ObjectKey
+                  description: 'null'
+                  properties:
+                    Details:
+                      type: object
+                      required:
+                        - Detail
+                      description: 'null'
+                      properties:
+                        Detail:
+                          type: array
+                          description: 'null'
+                          items:
+                            required:
+                              - Type
+                            properties:
+                              Type:
+                                type: string
+                                description: |+
+                                  Possible values.
+
+                                  > Cancel
+
+                                  > Cancel-Noshow
+
+                                  > Change
+
+                                  > Change-Noshow
+
+                                  > Upgrade
+
+                                  > NoShow
+
+                                  > Other
+
+                              Amounts:
+                                type: object
+                                required:
+                                  - Amount
+                                description: 'null'
+                                properties:
+                                  Amount:
+                                    type: array
+                                    description: >+
+                                      If the airline provides a penalty based on
+                                      multiple AmountApplication values
+                                      (Max/Min). They will be listed one after
+                                      the under this object.
+
+                                    items:
+                                      required:
+                                        - AmountApplication
+                                      properties:
+                                        ApplicableFeeRemarks:
+                                          type: object
+                                          required:
+                                            - Remark
+                                          description: 'null'
+                                          properties:
+                                            Remark:
+                                              type: array
+                                              description: >+
+                                                Remarks provided by the airline will be
+                                                provided under this object. If there are
+                                                multiple remarks they will be provided
+                                                as separate values under this object
+                                                separated by comma.
+
+                                              items:
+                                                required:
+                                                  - value
+                                                properties:
+                                                  value:
+                                                    type: string
+                                                    description: >+
+                                                      Remarks provided by the airline about
+                                                      the penalty in text format.
+
+                                        CurrencyAmountValue:
+                                          type: object
+                                          required:
+                                            - value
+                                            - Code
+                                          description: 'null'
+                                          properties:
+                                            value:
+                                              type: number
+                                              description: |2+
+                                                 Data is of Money format, Amount
+
+                                            Code:
+                                              type: string
+                                              description: >+
+                                                Currency code E.g. INR, EUR, USD etc.
+                                                Note- The code returned might be based
+                                                on the itinerarys point of origin
+                                                currency code.
+
+
+                                                NOTE- Please refer to Currency Metadata
+                                                for decimal information.
+
+                                        AmountApplication:
+                                          type: string
+                                          description: |+
+                                            Possible values are- MAX and MIN
+
+                              Application:
+                                type: object
+                                required:
+                                  - Code
+                                description: 'null'
+                                properties:
+                                  Code:
+                                    type: integer
+                                    description: >+
+                                      Possible values- 1,2,3 and 4.
+
+
+                                      1- After departure No show (Subsequent
+                                      segment in case of multiple segments)
+
+
+                                      2- Prior to departure
+
+
+                                      3- After departure
+
+
+                                      4- Before departure No show
+
+
+                                      NOTE- More values may be added in future.
+
+                    CancelFeeInd:
+                      type: boolean
+                      description: >+
+                        This indicator will be present only if the Penalty-Type
+                        value is Cancel.
+
+
+                        Possible values are True or False
+
+
+                        True- Cancel fee is applicable
+
+
+                        False- Cancel Fee is not applicable
+
+                    ChangeAllowedInd:
+                      type: boolean
+                      description: >+
+                        true or false
+
+
+                        When FareType allows Modifications/Changes, the field is
+                        set as true. When the FareType doesnt allow
+                        Modifications/Changes the field is set as false.
+
+                    ObjectKey:
+                      type: string
+                      description: |+
+                        Unique object key
+
+                    UpgradeFeeInd:
+                      type: boolean
+                      description: >+
+                        This indicator will be present only if the Penalty-Type
+                        value is Upgrade.
+
+
+                        Possible values are True or False
+
+
+                        True- Upgrade fee is applicable
+
+
+                        False- UpgradeFee is not applicable.
+
+                    ChangeFeeInd:
+                      type: boolean
+                      description: >+
+                        This indicator will be present only if the Penalty-Type
+                        value is Change.
+
+
+                        Possible values are True or False
+
+
+                        True- Change fee is applicable
+
+
+                        False- Change Fee is not applicable.
+
+                    RefundableInd:
+                      type: boolean
+                      description: >+
+                        This indicator will be present only if the Penalty-Type
+                        value is Cancel.
+
+
+                        Possible values are True or False
+
+
+                        True- Refund is allowed
+
+
+                        False- Refund is not allowed
+
+            RecognizedTravelerList:
+              type: object
+              required:
+                - RecognizedTraveler
+              description: The list will be present when FQTV is applied in shopping
+              properties:
+                RecognizedTraveler:
+                  type: array
+                  description: 'null'
+                  items:
+                    required:
+                      - FQTVs
+                      - ObjectKey
+                      - PTC
+                      - Name
+                    properties:
+                      FQTVs:
+                        type: array
+                        description: 'null'
+                        items:
+                          required:
+                            - AirlineID
+                            - Account
+                          properties:
+                            AirlineID:
+                              type: object
+                              required:
+                                - value
+                              description: 'null'
+                              properties:
+                                value:
+                                  type: string
+                                  description: 'null'
+                            Account:
+                              type: object
+                              required:
+                                - Number
+                              description: 'null'
+                              properties:
+                                Number:
+                                  type: array
+                                  description: 'null'
+                                  items:
+                                    required:
+                                      - value
+                                    properties:
+                                      value:
+                                        type: integer
+                                        description: FQTV account number
+                            ProgramID:
+                              type: string
+                              description: >+
+                                Program ID corresponds to a specific reward or
+                                discount program.
+
+                                 The possible values are
+                                 1.Business- used in case of ABN for QF or other Business reward programs
+                                 2.Discount Pass , used for Abonnement card for AFKL flights
+
+                                 3. Overseas France Pass , used for Abonnement card for AFKL flights. 
+
+                      ObjectKey:
+                        type: string
+                        description: 'null'
+                      PTC:
+                        type: object
+                        required:
+                          - value
+                        description: 'null'
+                        properties:
+                          value:
+                            type: string
+                            description: ADT/CHD/INF
+                      Age:
+                        type: object
+                        description: 'null'
+                        properties:
+                          Value:
+                            type: object
+                            required:
+                              - value
+                            description: 'null'
+                            properties:
+                              value:
+                                type: string
+                                description: ' Data is of Date format, null'
+                          BirthDate:
+                            type: object
+                            required:
+                              - value
+                            description: 'null'
+                            properties:
+                              value:
+                                type: integer
+                                description: 'null'
+                      Name:
+                        type: object
+                        required:
+                          - Given
+                          - Surname
+                        description: >+
+                          This field is optional only when  ProgramID is
+                          'Business'. It contains the Name of the Frequent Flier
+                          in Title/Given name/Surname. 
+
+                        properties:
+                          Given:
+                            type: array
+                            description: 'null'
+                            items:
+                              required:
+                                - value
+                              properties:
+                                value:
+                                  type: string
+                                  description: 'null'
+                          Title:
+                            type: string
+                            description: 'null'
+                          Surname:
+                            type: object
+                            required:
+                              - value
+                            description: 'null'
+                            properties:
+                              value:
+                                type: string
+                                description: 'null'
+        Metadata:
+          type: object
+          required:
+            - Shopping
+            - Other
+          description: 'null'
+          properties:
+            Shopping:
+              type: object
+              required:
+                - ShopMetadataGroup
+              description: 'null'
+              properties:
+                ShopMetadataGroup:
+                  type: object
+                  required:
+                    - Offer
+                  description: 'null'
+                  properties:
+                    Offer:
+                      type: object
+                      required:
+                        - >-
+                          disclosureMetadatasOrOfferMetadatasOrOfferInstructionMetadatas
+                      description: 'null'
+                      properties:
+                        disclosureMetadatasOrOfferMetadatasOrOfferInstructionMetadatas:
+                          type: array
+                          description: 'null'
+                          items:
+                            required:
+                              - OfferMetadatas
+                            properties:
+                              OfferMetadatas:
+                                type: object
+                                required:
+                                  - OfferMetadata
+                                description: 'null'
+                                properties:
+                                  OfferMetadata:
+                                    type: array
+                                    description: 'null'
+                                    items:
+                                      required:
+                                        - AugmentationPoint
+                                        - MetadataKey
+                                      properties:
+                                        AugmentationPoint:
+                                          type: object
+                                          required:
+                                            - AugPoint
+                                          description: 'null'
+                                          properties:
+                                            AugPoint:
+                                              type: array
+                                              description: 'null'
+                                              items:
+                                                required:
+                                                  - any
+                                                  - Key
+                                                properties:
+                                                  any:
+                                                    type: object
+                                                    required:
+                                                      - VdcAugPoint
+                                                    description: 'null'
+                                                    properties:
+                                                      VdcAugPoint:
+                                                        type: array
+                                                        description: >+
+                                                          The section list of offers belonging to
+                                                          the same flight group. It can be used by
+                                                          consumers to identify offers w.r.t same
+                                                          flight combination E.g. Offer(s) with
+                                                          onward flight XX100 and return XX200
+
+                                                        items:
+                                                          required:
+                                                            - Key
+                                                          properties:
+                                                            Values:
+                                                              type: array
+                                                              description: |+
+                                                                nullOther associated offer ids
+
+                                                                Other associated offer ids
+
+                                                              items:
+                                                                properties: {}
+                                                            Key:
+                                                              type: string
+                                                              description: >+
+                                                                Key offer id
+
+
+                                                                Key offer which can be used to identify
+                                                                the flight combination and group the
+                                                                offers provided as values
+
+                                                  Key:
+                                                    type: string
+                                                    description: |+
+                                                      Airline Code
+
+                                        MetadataKey:
+                                          type: string
+                                          description: |+
+                                            Shows all the associated offers
+
+                                            Example- OTHER_ASSOCIATED_OFFERS
+
+            Other:
+              type: object
+              required:
+                - OtherMetadata
+              description: 'null'
+              properties:
+                OtherMetadata:
+                  type: array
+                  description: 'null'
+                  items:
+                    properties:
+                      PriceMetadatas:
+                        type: object
+                        required:
+                          - PriceMetadata
+                        description: |+
+                          This object is used to refer for
+
+                          Fare Rules List Key (at a segment level)
+
+                        properties:
+                          PriceMetadata:
+                            type: array
+                            description: 'null'
+                            items:
+                              required:
+                                - AugmentationPoint
+                                - MetadataKey
+                              properties:
+                                AugmentationPoint:
+                                  type: object
+                                  required:
+                                    - AugPoint
+                                  description: >+
+                                    Adding proprietary data structures to NDC
+                                    schemas
+
+                                  properties:
+                                    AugPoint:
+                                      type: array
+                                      description: 'null'
+                                      items:
+                                        required:
+                                          - any
+                                        properties:
+                                          any@type:
+                                            type: string
+                                            description: 'null'
+                                          any:
+                                            type: object
+                                            required:
+                                              - value
+                                            description: 'null'
+                                            properties:
+                                              value:
+                                                type: string
+                                                description: 'null'
+                                MetadataKey:
+                                  type: string
+                                  description: 'null'
+                      CurrencyMetadatas:
+                        type: object
+                        required:
+                          - CurrencyMetadata
+                        description: 'null'
+                        properties:
+                          CurrencyMetadata:
+                            type: array
+                            description: >+
+                              This is where the decimal information that has to
+                              be applied for the currency code is returned
+
+
+                              If the information is not provided it is assumed
+                              that the consumer does not have to apply decimal
+                              logic i.e. the amounts already have decimal
+                              applied.
+
+                            items:
+                              required:
+                                - MetadataKey
+                                - Decimals
+                              properties:
+                                MetadataKey:
+                                  type: string
+                                  description: |+
+                                    Unique key
+
+                                Decimals:
+                                  type: integer
+                                  description: >+
+                                    Number of decimal applicable for the
+                                    currency code returned in the response
+
+
+                                    Example- GBP 2. It means the amount GBP 2000
+                                    provided has to be interpreted as GBP 20.00.
+
+                      RuleMetadatas:
+                        type: object
+                        required:
+                          - RuleMetadata
+                        description: 'null'
+                        properties:
+                          RuleMetadata:
+                            type: array
+                            description: 'null'
+                            items:
+                              required:
+                                - MetadataKey
+                              properties:
+                                Values:
+                                  type: object
+                                  required:
+                                    - Value
+                                  description: 'null'
+                                  properties:
+                                    Value:
+                                      type: array
+                                      description: 'null'
+                                      items:
+                                        required:
+                                          - Instruction
+                                        properties:
+                                          Instruction:
+                                            type: object
+                                            description: 'null'
+                                            properties: {}
+                                MetadataKey:
+                                  type: string
+                                  description: 'null'
+                      DescriptionMetadatas:
+                        type: object
+                        required:
+                          - DescriptionMetadata
+                        description: >+
+                          ShoppingResponseIDs from ORA will be mentioned in this
+                          section. In case of aggregated search Shopping
+                          Response IDs from each airline will be provided in
+                          this array.
+
+                        properties:
+                          DescriptionMetadata:
+                            type: array
+                            description: >+
+                              The section contains ResponseID from the airline.
+                              In case of aggregated search ResponseID from each
+                              airline will be available in this section.
+
+                            items:
+                              required:
+                                - AugmentationPoint
+                                - MetadataKey
+                              properties:
+                                AugmentationPoint:
+                                  type: object
+                                  required:
+                                    - AugPoint
+                                  description: 'null'
+                                  properties:
+                                    AugPoint:
+                                      type: array
+                                      description: 'null'
+                                      items:
+                                        required:
+                                          - Owner
+                                          - Key
+                                        properties:
+                                          Owner:
+                                            type: string
+                                            description: |+
+                                              Airline code of the Shopping response ID
+
+                                          Key:
+                                            type: string
+                                            description: |+
+                                              Shopping response ID from the airline
+
+                                MetadataKey:
+                                  type: string
+                                  description: >+
+                                    Unique key for the Shopping Response ID
+                                    list.
+
+        OffersGroup:
+          type: object
+          required:
+            - AirlineOffers
+          description: >-
+            This represents the complete set of offers from different airlines
+            aggregated and sorted based on price
+          properties:
+            AirlineOffers:
+              type: array
+              description: >-
+                This contains information regarding, flight, price details, fare
+                details, class of service.
+              items:
+                required:
+                  - AirlineOffer
+                properties:
+                  Owner:
+                    type: object
+                    description: 'null'
+                    properties:
+                      value:
+                        type: string
+                        description: IATA code of the airline
+                  AirlineOffer:
+                    type: array
+                    description: List of offers for the requested date.
+                    items:
+                      required:
+                        - OfferID
+                        - PricedOffer
+                        - TotalPrice
+                      properties:
+                        OfferID:
+                          type: object
+                          required:
+                            - Owner
+                            - Channel
+                            - value
+                          description: |+
+                            An unique offer id
+
+                          properties:
+                            Owner:
+                              type: string
+                              description: >+
+                                The Owner will determine the airline which is
+                                making the offer. Usually it would be the two
+                                character airline IATA code
+
+
+                                Example- BA, AC etc.
+
+
+                                In the case of certain airlines such as
+                                Lufthansa Group airlines, which is a consortium
+                                of Lufthansa, Swiss, Brussels, Austrian, the
+                                owner would be coming as a three character code
+                                = LHG. The recipient of this response should
+                                identify this as a Lufthansa group offer.
+
+                            Channel:
+                              type: string
+                              description: >+
+                                The channel through which the booking takes
+                                place, New Distribution Capabilities 
+
+
+                                NDC, Direct_Connect
+
+                            value:
+                              type: string
+                              description: 'null'
+                        PricedOffer:
+                          type: object
+                          required:
+                            - Associations
+                            - OfferPrice
+                          description: >+
+                            PricedOffer section corresponds to a particular
+                            passenger type
+
+
+                            Note- When there are different PTC - Adult, Child,
+                            Infant, then each priced offer corresponds to the
+                            specific passenger types.
+
+                          properties:
+                            Associations:
+                              type: array
+                              description: >+
+                                This is where the flights that are associated
+                                with this offer are returned
+
+
+                                Flight association is returned outside
+                                OfferPrice as flights are applicable for all
+                                passengers
+
+                              items:
+                                required:
+                                  - PriceClass
+                                  - ApplicableFlight
+                                properties:
+                                  PriceClass:
+                                    type: object
+                                    required:
+                                      - PriceClassReference
+                                    description: >+
+                                      Fare product name for the offer is
+                                      returned here. Fare product name is
+                                      returned only for offers returned in the
+                                      specific cabin for this offer.
+
+                                    properties:
+                                      PriceClassReference:
+                                        type: string
+                                        description: >+
+                                          Reference to a fare product name
+
+
+                                          Possible values are
+
+
+                                          Hand Baggage Only
+
+
+                                          Basic
+
+
+                                          Plus
+
+
+                                          PlusFlex
+
+
+                                          BusinessUK
+
+
+                                          The attributes for each fare product are
+                                          returned in DataLists/PriceClassList
+
+                                  ApplicableFlight:
+                                    type: object
+                                    required:
+                                      - FlightReferences
+                                      - FlightSegmentReference
+                                      - OriginDestinationReferences
+                                    description: >+
+                                      Flights that are applicable for this
+                                      offer. ApplicableFlight will be repeated
+                                      per O&D.
+
+                                    properties:
+                                      FlightReferences:
+                                        type: object
+                                        required:
+                                          - value
+                                        description: >+
+                                          Reference to a flight that is applicable
+                                          for this offer
+
+                                        properties:
+                                          value:
+                                            type: array
+                                            description: 'null'
+                                            items:
+                                              properties: {}
+                                      FlightSegmentReference:
+                                        type: array
+                                        description: >+
+                                          List of flight segments that are
+                                          applicable for this offer
+
+
+                                          Example- if your O&D is BOM-JFK and has
+                                          3 flight segments BOM-DXB, DXB-LHR, LHR 
+                                          JFK, then FlightSegmentReference will be
+                                          repeated thrice
+
+                                        items:
+                                          required:
+                                            - ref
+                                            - ClassOfService
+                                          properties:
+                                            ref:
+                                              type: string
+                                              description: 'null'
+                                            ClassOfService:
+                                              type: object
+                                              required:
+                                                - MarketingName
+                                              description: >+
+                                                Based on the inventory available with
+                                                the airline.
+
+
+                                                Note- ClassofService will not be
+                                                available for airlines which does not
+                                                have business based on Class of service
+                                                (Eg- LCC carriers)
+
+
+                                                ClassOfService corresponds to adult
+                                                passengers.
+
+                                              properties:
+                                                Code:
+                                                  type: object
+                                                  required:
+                                                    - value
+                                                  description: 'null'
+                                                  properties:
+                                                    SeatsLeft:
+                                                      type: integer
+                                                      description: |+
+                                                        Seat left in the booking class
+
+                                                    value:
+                                                      type: string
+                                                      description: |+
+                                                        Booking/Selling class
+
+                                                MarketingName:
+                                                  type: object
+                                                  required:
+                                                    - CabinDesignator
+                                                  description: >+
+                                                    Marketing name of cabin as specified by
+                                                    the airline.
+
+                                                  properties:
+                                                    CabinDesignator:
+                                                      type: string
+                                                      description: |+
+                                                        Code of the selected cabin
+
+                                                        Example- ECONOMY - 'Y'
+
+                                                        PREMIUM ECONOMY - 'W'
+
+                                                        BUSINESS CLASS - 'C'
+
+                                                        FIRST CLASS - 'F'
+
+                                                    value:
+                                                      type: string
+                                                      description: |+
+                                                        Marketing name of the cabin class
+
+                                                        Example- ECONOMY
+
+                                                        PREMIUM ECONOMY
+
+                                                        BUSINESS CLASS
+
+                                                        FIRST CLASS
+
+                                      OriginDestinationReferences:
+                                        type: array
+                                        description: |+
+                                          Refers to the Origin Destination
+
+                                        items:
+                                          properties: {}
+                            OfferPrice:
+                              type: array
+                              description: >+
+                                Offer price details for the travelers. This is
+                                repeated depending on the different passenger
+                                types as per the shopping request
+
+                              items:
+                                required:
+                                  - OfferItemID
+                                  - FareDetail
+                                  - RequestedDate
+                                properties:
+                                  OfferItemID:
+                                    type: string
+                                    description: 'null'
+                                  FareDetail:
+                                    type: object
+                                    required:
+                                      - FareComponent
+                                    description: >+
+                                      This gives the fare price details for each
+                                      segment or OD.
+
+                                    properties:
+                                      FareComponent:
+                                        type: array
+                                        description: >+
+                                          Refs to Fare rule information is
+                                          available under this object at segment
+                                          level.
+
+                                        items:
+                                          required:
+                                            - refs
+                                            - SegmentReference
+                                          properties:
+                                            refs:
+                                              type: array
+                                              description: >+
+                                                refs to FareList under DataList.
+                                                Multiple refs will be listed comma
+                                                separated.
+
+                                              items:
+                                                properties: {}
+                                            SegmentReference:
+                                              type: object
+                                              required:
+                                                - value
+                                              description: >+
+                                                Unique Key, This represents each segment
+                                                fare components, and will be repeated
+                                                for each segment.(Round trip and multi
+                                                cities).
+
+                                              properties:
+                                                value:
+                                                  type: string
+                                                  description: >+
+                                                    Refers to Flight Segment/OD. List under
+                                                    DataList
+
+                                            FareRules:
+                                              type: object
+                                              required:
+                                                - Penalty
+                                              description: >+
+                                                Fare Rule Unique keys. Gives the
+                                                information regarding any change in
+                                                price, in case of change in flights, can
+                                                be cancellation/reissue. This also
+                                                caters to each segment.
+
+                                              properties:
+                                                CorporateFare:
+                                                  type: object
+                                                  required:
+                                                    - Account
+                                                  description: >+
+                                                    Node will be returned when a deal code
+                                                    is applied for a fare depending on
+                                                    airline response.
+
+                                                  properties:
+                                                    Account:
+                                                      type: object
+                                                      required:
+                                                        - value
+                                                      description: 'null'
+                                                      properties:
+                                                        value:
+                                                          type: string
+                                                          description: 'null'
+                                                Penalty:
+                                                  type: object
+                                                  required:
+                                                    - refs
+                                                  description: |+
+                                                    Penalty information
+
+                                                  properties:
+                                                    refs:
+                                                      type: array
+                                                      description: >+
+                                                        refs to PenaltyList under DataList.
+                                                        PenaltyList contains detailed fare
+                                                        rules. If the offer contains multiple
+                                                        fare rules on change, cancellation,
+                                                        upgrade etc. Multiple refs will be
+                                                        listed comma separated.
+
+                                                      items:
+                                                        properties: {}
+                                  RequestedDate:
+                                    type: object
+                                    required:
+                                      - Associations
+                                      - PriceDetail
+                                    description: >+
+                                      Note- When Child PTC has different age
+                                      groups as in case of ZG, there will be an
+                                      offeritem for each child group.
+
+                                    properties:
+                                      Associations:
+                                        type: array
+                                        description: >+
+                                          This gives the indication of the
+                                          associated traveler and the applicable
+                                          flight.
+
+                                        items:
+                                          required:
+                                            - AssociatedTraveler
+                                            - ApplicableFlight
+                                          properties:
+                                            AssociatedTraveler:
+                                              type: object
+                                              required:
+                                                - TravelerReferences
+                                              description: >+
+                                                This contains the individual traveler
+                                                reference for single
+                                                segment/Origin-destination. (OD).The
+                                                same should be repeated for multiple
+                                                ODs.
+
+                                              properties:
+                                                TravelerReferences:
+                                                  type: array
+                                                  description: >+
+                                                    Reference of the traveler, traveler is
+                                                    indicated as in -
+
+                                                  items:
+                                                    properties: {}
+                                            ApplicableFlight:
+                                              type: object
+                                              required:
+                                                - FlightReferences
+                                                - FlightSegmentReference
+                                              description: >+
+                                                This gives the reference to the flight
+                                                segment, origin-destination and the
+                                                flight references, to which the traveler
+                                                is associated..
+
+                                              properties:
+                                                FlightReferences:
+                                                  type: object
+                                                  required:
+                                                    - value
+                                                  description: >+
+                                                    Gives the available flights in the
+                                                    particular segment OD-1.
+
+                                                  properties:
+                                                    value:
+                                                      type: array
+                                                      description: >+
+                                                        Refers to FlightReferences under
+                                                        DataList for OD-1, The same will be
+                                                        repeated for the following
+                                                        Origin-destinations or segments,
+                                                        considering the number of
+                                                        segments.(multi-city /round-trips)
+
+                                                      items:
+                                                        properties: {}
+                                                FlightSegmentReference:
+                                                  type: array
+                                                  description: 'null'
+                                                  items:
+                                                    properties:
+                                                      ref:
+                                                        type: string
+                                                        description: >+
+                                                          Refers to FlightSegment with respect to
+                                                          particular origin-destination, List
+                                                          under DataList.
+
+                                                      BagDetailAssociation:
+                                                        type: object
+                                                        description: >+
+                                                          This contains the baggage details
+                                                          allowances.
+
+                                                        properties:
+                                                          CarryOnReferences:
+                                                            type: array
+                                                            description: >+
+                                                              Ref to CarryonBaggageAllowance at
+                                                              segment level under DataList. Multiple
+                                                              refs can be expected to be comma
+                                                              separated.
+
+                                                            items:
+                                                              properties: {}
+                                                          CheckedBagReferences:
+                                                            type: array
+                                                            description: >+
+                                                              Ref to CheckedbaggageAllowance ref at
+                                                              segment level under DataList. Multiple
+                                                              refs can be expected to be comma
+                                                              separated.
+
+                                                            items:
+                                                              properties: {}
+                                                OriginDestinationReferences:
+                                                  type: array
+                                                  description: >+
+                                                    Refers to OrginiDestionation of the
+                                                    first flight segment(OD-1)- List under
+                                                    DataList
+
+                                                  items:
+                                                    properties: {}
+                                      PriceDetail:
+                                        type: object
+                                        required:
+                                          - BaseAmount
+                                          - TotalAmount
+                                        description: >+
+                                          This provides the Price per individual -
+                                          total, base and taxes.
+
+                                        properties:
+                                          BaseAmount:
+                                            type: object
+                                            required:
+                                              - value
+                                              - Code
+                                            description: 'null'
+                                            properties:
+                                              value:
+                                                type: number
+                                                description: |2+
+                                                   Data is of Money format, Base price for the itinerary per pax type
+
+                                              Code:
+                                                type: string
+                                                description: |+
+                                                  Currency code
+
+                                          Discount:
+                                            type: array
+                                            description: >+
+                                              Discount for the ancillary and flight
+                                              item
+
+                                            items:
+                                              required:
+                                                - discountOwner
+                                                - DiscountAmount
+                                              properties:
+                                                discountName:
+                                                  type: string
+                                                  description: |+
+                                                    Name of the discount if any.
+
+                                                Description:
+                                                  type: string
+                                                  description: 'null'
+                                                discountCode:
+                                                  type: string
+                                                  description: 'null'
+                                                discountOwner:
+                                                  type: string
+                                                  description: 'null'
+                                                preDiscountedAmount:
+                                                  type: object
+                                                  required:
+                                                    - value
+                                                    - Code
+                                                  description: |+
+                                                    The value of the product before discount
+
+                                                  properties:
+                                                    value:
+                                                      type: number
+                                                      description: ' Data is of Money format, null'
+                                                    Code:
+                                                      type: string
+                                                      description: |+
+                                                        Currency code
+
+                                                Application:
+                                                  type: string
+                                                  description: 'null'
+                                                DiscountAmount:
+                                                  type: object
+                                                  required:
+                                                    - value
+                                                    - Code
+                                                  description: 'null'
+                                                  properties:
+                                                    value:
+                                                      type: number
+                                                      description: ' Data is of Money format, null'
+                                                    Code:
+                                                      type: string
+                                                      description: 'null'
+                                                DiscountPercent:
+                                                  type: string
+                                                  description: >+
+                                                    If the discount is based on percentage,
+                                                    it will be provided here. Default value
+                                                    will be 0 if the discount is not based
+                                                    on percentage.
+
+                                          Taxes:
+                                            type: object
+                                            required:
+                                              - Total
+                                            description: >+
+                                              Total tax for the itinerary per pax
+                                              type. Note - Detailed tax breakdown will
+                                              be available in FlightPrice response.
+
+                                            properties:
+                                              Total:
+                                                type: object
+                                                required:
+                                                  - value
+                                                description: 'null'
+                                                properties:
+                                                  value:
+                                                    type: number
+                                                    description: ' Data is of Money format, null'
+                                                  Code:
+                                                    type: string
+                                                    description: |+
+                                                      Currency Code
+
+                                              Breakdown:
+                                                type: object
+                                                required:
+                                                  - Tax
+                                                description: 'null'
+                                                properties:
+                                                  Tax:
+                                                    type: array
+                                                    description: 'null'
+                                                    items:
+                                                      required:
+                                                        - TaxCode
+                                                        - Amount
+                                                      properties:
+                                                        Description:
+                                                          type: string
+                                                          description: 'null'
+                                                        TaxCode:
+                                                          type: string
+                                                          description: 'null'
+                                                        Amount:
+                                                          type: object
+                                                          required:
+                                                            - value
+                                                            - Code
+                                                          description: 'null'
+                                                          properties:
+                                                            value:
+                                                              type: number
+                                                              description: |2+
+                                                                 Data is of Money format, Breakdown of the total tax
+
+                                                            Code:
+                                                              type: string
+                                                              description: |+
+                                                                Currency Code
+
+                                          Surcharges:
+                                            type: object
+                                            required:
+                                              - Surcharge
+                                            description: 'null'
+                                            properties:
+                                              Surcharge:
+                                                type: array
+                                                description: 'null'
+                                                items:
+                                                  required:
+                                                    - Total
+                                                  properties:
+                                                    Total:
+                                                      type: object
+                                                      required:
+                                                        - value
+                                                        - Code
+                                                      description: 'null'
+                                                      properties:
+                                                        value:
+                                                          type: number
+                                                          description: ' Data is of Money format, null'
+                                                        Code:
+                                                          type: string
+                                                          description: 'null'
+                                                    Breakdown:
+                                                      type: object
+                                                      required:
+                                                        - Fee
+                                                      description: 'null'
+                                                      properties:
+                                                        Fee:
+                                                          type: array
+                                                          description: 'null'
+                                                          items:
+                                                            required:
+                                                              - Amount
+                                                              - FeeOwner
+                                                            properties:
+                                                              Designator:
+                                                                type: string
+                                                                description: 'null'
+                                                              Description:
+                                                                type: string
+                                                                description: 'null'
+                                                              FeePercent:
+                                                                type: integer
+                                                                description: 'null'
+                                                              Amount:
+                                                                type: object
+                                                                required:
+                                                                  - value
+                                                                  - Code
+                                                                description: 'null'
+                                                                properties:
+                                                                  value:
+                                                                    type: number
+                                                                    description: ' Data is of Money format, null'
+                                                                  Code:
+                                                                    type: string
+                                                                    description: 'null'
+                                                              FeeOwner:
+                                                                type: string
+                                                                description: 'null'
+                                          TotalAmount:
+                                            type: object
+                                            required:
+                                              - SimpleCurrencyPrice
+                                            description: >-
+                                              The Total Amount would be equal to
+                                              BaseAmount + Tax + Fee + Surcharge -
+                                              Discount
+
+
+                                              .
+                                            properties:
+                                              SimpleCurrencyPrice:
+                                                type: object
+                                                required:
+                                                  - value
+                                                  - Code
+                                                description: 'null'
+                                                properties:
+                                                  value:
+                                                    type: number
+                                                    description: |2+
+                                                       Data is of Money format, Total price for passengers in the OfferItem.
+
+                                                  Code:
+                                                    type: string
+                                                    description: |+
+                                                      Currency code
+
+                                          Fees:
+                                            type: object
+                                            required:
+                                              - Total
+                                              - Breakdown
+                                            description: 'null'
+                                            properties:
+                                              Total:
+                                                type: object
+                                                required:
+                                                  - value
+                                                  - Code
+                                                description: 'null'
+                                                properties:
+                                                  value:
+                                                    type: number
+                                                    description: ' Data is of Money format, null'
+                                                  Code:
+                                                    type: string
+                                                    description: 'null'
+                                              Breakdown:
+                                                type: object
+                                                required:
+                                                  - Fee
+                                                description: 'null'
+                                                properties:
+                                                  Fee:
+                                                    type: array
+                                                    description: 'null'
+                                                    items:
+                                                      required:
+                                                        - Amount
+                                                        - FeeOwner
+                                                      properties:
+                                                        FeeName:
+                                                          type: string
+                                                          description: 'null'
+                                                        FeePercent:
+                                                          type: string
+                                                          description: 'null'
+                                                        RefundInd:
+                                                          type: boolean
+                                                          description: |+
+                                                            true/false
+
+                                                        Amount:
+                                                          type: object
+                                                          required:
+                                                            - value
+                                                          description: 'null'
+                                                          properties:
+                                                            value:
+                                                              type: number
+                                                              description: ' Data is of Money format, null'
+                                                            Code:
+                                                              type: string
+                                                              description: 'null'
+                                                        FeeCode:
+                                                          type: string
+                                                          description: 'null'
+                                                        FeeOwner:
+                                                          type: string
+                                                          description: 'null'
+                        refs:
+                          type: array
+                          description: 'null'
+                          items:
+                            required:
+                              - Ref
+                            properties:
+                              Ref:
+                                type: string
+                                description: >+
+                                  Ref refers to the PriceMetadata.
+
+
+                                  The value in the augmentation should be passed
+                                  in the FlightPriceRQ.
+
+                        TotalPrice:
+                          type: object
+                          required:
+                            - SimpleCurrencyPrice
+                          description: >+
+                            The total price for the itinerary for all Travelers
+                            and all services which are associated with this
+                            offer
+
+                          properties:
+                            SimpleCurrencyPrice:
+                              type: object
+                              required:
+                                - value
+                                - Code
+                              description: 'null'
+                              properties:
+                                value:
+                                  type: number
+                                  description: ' Data is of Money format, null'
+                                Code:
+                                  type: string
+                                  description: |+
+                                    Currency Code
+
+                        Commission:
+                          type: array
+                          description: >+
+                            Commission at OfferItem level.
+
+
+                            If there are 2 ADTs in an OfferItem, the commission
+                            amount will be the sum of commission for 2 ADTs.
+
+                          items:
+                            required:
+                              - Amount
+                              - Code
+                            properties:
+                              Percentage:
+                                type: string
+                                description: 'null'
+                              Amount:
+                                type: object
+                                required:
+                                  - code
+                                  - value
+                                description: 'null'
+                                properties:
+                                  code:
+                                    type: string
+                                    description: |+
+                                      Currency code
+
+                                  value:
+                                    type: number
+                                    description: ' Data is of Money format, null'
+                              Code:
+                                type: string
+                                description: >+
+                                  This field determines whether the commission
+                                  is configured by airline admin, open-connect
+                                  admin (VDC-AirAd), or directly given by
+                                  airline.
+
+                        TimeLimits:
+                          type: object
+                          required:
+                            - OfferExpiration
+                          description: 'null'
+                          properties:
+                            OfferExpiration:
+                              type: object
+                              required:
+                                - DateTime
+                              description: >+
+                                Note- OfferExpiration will not be available for
+                                airlines which does not have business based on
+                                OfferExpiration (Eg- LCC carriers)
+
+                              properties:
+                                DateTime:
+                                  type: string
+                                  description: >+
+                                    Date & Time within which the offer gets
+                                    expired.
+
+
+                                    Time in GMT
+
+
+                                    YYYY-MM-DDTHH-MM-SS.SSS
+
+                  TotalOfferQuantity:
+                    type: integer
+                    description: >-
+                      Total number of offers in the response.Note - This
+                      information may not be available always.
+        Document:
+          type: object
+          required:
+            - Name
+          description: 'null'
+          properties:
+            ReferenceVersion:
+              type: number
+              description: ' Data is of Decimal format, but json doesn''t support it. So considering it as string, Specify NDC schema message version.'
+            Name:
+              type: string
+              description: IATA Code of the Airline
+        Warnings:
+          type: object
+          required:
+            - Warning
+          description: 'null'
+          properties:
+            Warning:
+              type: array
+              description: 'null'
+              items:
+                required:
+                  - value
+                properties:
+                  value:
+                    type: string
+                    description: >-
+                      The warning from the airline should be displayed as
+                      meaningful messages to the end user platform.
+        Success:
+          type: string
+          description: >-
+            The presence of the empty Success element explicitly indicates that
+            the message succeeded.
+    AirShoppingRQ:
+      type: object
+      required:
+        - Preference
+        - ResponseParameters
+        - Travelers
+        - CoreQuery
+      description: 'null'
+      properties:
+        Party:
+          type: object
+          required:
+            - Sender
+          description: >+
+            This is used to supply the CorporateCode/Deal Code to fetch the
+            private fares for the agency registered with the airline.
+
+          properties:
+            Sender:
+              type: object
+              required:
+                - CorporateSender
+              description: 'null'
+              properties:
+                CorporateSender:
+                  type: object
+                  required:
+                    - CorporateCode
+                  description: 'null'
+                  properties:
+                    CorporateCode:
+                      type: string
+                      description: >+
+                        This field can support sending Dealcode, Dealcode +
+                        Corporate Identifier (CLID) or Corporate Identifier
+                        alone to an airline.
+
+                         Format - 
+
+                         Only Dealcode - Airline Code/Dealcode , eg - SQ/NDC20
+
+                         Dealcode + Corporate Identifier -  Airline code/Dealcode/CLID, eg - SQ/NDC20/ABCD
+
+                         Corporate Identifier alone - Airline code//CLID eg - SQ//ABCD
+
+                         Multiple corporate deal codes with or without CLID can be sent comma separated in format SQ/12345/ABCD,LHG/678910/ABCD,EK/NDC2/ABCD Same format is applicable in the subsequent requests
+
+        Preference:
+          type: object
+          required:
+            - FarePreferences
+          description: |+
+            Fare and cabin preference can be specified here
+
+             This must be passed only if any specific preference needs to be specified. For example, if the search is for a specific cabin class, say, Business Class
+
+          properties:
+            CabinPreferences:
+              type: object
+              required:
+                - CabinType
+              description: >+
+                Specify cabin preference. The below listed are the options
+                supported in the shopping request,
+
+
+                1) No preference specified  the response will provide the lowest
+                available fare (Any)
+
+
+                2) Economy / Premium Economy/ Business Class / First Class  If
+                any specific cabin preference is provided in the request, the
+                response will be specifically for the requested cabin and if no
+                offer is available for the requested cabin, some airlines return
+                the offers for higher cabin as well. The cabin preference can be
+                provided for each OD separately if needed.
+
+              properties:
+                CabinType:
+                  type: array
+                  description: >+
+                    This should be mandatorily specified if CabinPreferences is
+                    specified
+
+                  items:
+                    required:
+                      - Code
+                    properties:
+                      PrefLevel:
+                        type: object
+                        required:
+                          - PrefLevelCode
+                        description: 'null'
+                        properties:
+                          PrefLevelCode:
+                            type: string
+                            description: >+
+                              The possible value is 'Preferred'.
+
+                               Providing the PrefLevelCode as 'Preferred', will strictly filter the shopping results to provide ONLY the cabin that was requested.
+
+                               Mixed cabins and Upsells will be avoided in such cases
+
+                              . This may lead to reduction in the number of
+                              offers returned.
+
+                      OriginDestinationReferences:
+                        type: array
+                        description: >+
+                          This is required for providing different cabin
+                          preferences for each OD in case of round trip or
+                          multi-city search.
+
+                        items:
+                          properties: {}
+                      Code:
+                        type: string
+                        description: |+
+                          The following codes are accepted.
+
+                          ECONOMY  Y
+
+                          PREMIUM ECONOMY  W
+
+                          BUSINESS CLASS  C
+
+                          FIRST CLASS - F
+
+            FarePreferences:
+              type: object
+              required:
+                - Types
+              description: >+
+                Specify fare preference. The below listed are the fare
+                preferences supported in the shopping request,
+
+
+                1) Lowest Fare  This will fetch the lowest available public fare
+                based on the search criteria
+
+
+                2) Flexible Fare  This will fetch the flexible fare options if
+                supported by the airline in the shopping request
+
+
+                3) Private Fare  This option will fetch lowest available private
+                fare based on the private fare deal between the airline and the
+                travel service provider
+
+
+                4) Nego Fare - This will fetch fares for IT, CB, MR, STU, HR,
+                VFR.
+
+
+                If no fare preference is specified then by default lowest fare
+                will be returned
+
+
+                It is recommended to send Lowest Fare and Private Fare as
+                preferences in the shopping request so that the consumer can get
+                the advantage of any negotiated fare with the airlines
+
+              properties:
+                Types:
+                  type: object
+                  required:
+                    - Type
+                  description: 'null'
+                  properties:
+                    Type:
+                      type: array
+                      description: >+
+                        This is mandatory if Preference and FarePreference is
+                        specified. Fare preference can be specified only at the
+                        itinerary level. Also leisure fare can be requested only
+                        at the itinerary level.
+
+                      items:
+                        required:
+                          - Code
+                        properties:
+                          Code:
+                            type: string
+                            description: >-
+                              This enables you to search based on the fares.
+
+
+                              Lowest(PUBL),
+
+
+                              Flexible (FLEX)
+
+
+                              Private(PVT)
+
+
+                              Nego Fare (IT, CB, STU, MR, HR, VFR, LBR, CRU)
+
+
+                              IT - Inclusive Tour -- Tour Operator deferred or
+                              semi - deferred.
+
+
+                              CB - Contract Bulk
+
+
+                              MR - Marine Fare
+
+
+                              STU - Student Fare
+
+
+                              HR - Humanitarian
+
+
+                              VFR - Visit Friends & Relatives
+
+
+                              LBR - Labour Fare
+
+
+                              CRU - Cruise Fare
+        ResponseParameters:
+          type: object
+          required:
+            - SortOrder
+            - ShopResultPreference
+          description: >+
+            This can help filter the search results from the airline to fit to
+            the customer needs
+
+          properties:
+            ResultsLimit:
+              type: object
+              required:
+                - value
+              description: 'null'
+              properties:
+                value:
+                  type: integer
+                  description: >+
+                    Search results limit. If limits are not provided the Verteil
+                    will cap the response with 800 offers.
+
+            SortOrder:
+              type: array
+              description: >+
+                The parameters for sorting are Stop, Price and Departure Time.
+                Three sorting options available are -
+
+
+                Stop, Price, Departure Time.
+
+
+                Departure Time, Stop, Price.
+
+
+                Price, Stop, Departure Time.
+
+              items:
+                required:
+                  - Order
+                  - Parameter
+                properties:
+                  Order:
+                    type: string
+                    description: |+
+                      Order in which sorting is done ,ASCENDING or DESCENDING.
+
+                  Parameter:
+                    type: string
+                    description: |+
+                      Parameters of sorting are STOP, PRICE, DEPARTURE_TIME
+
+            ShopResultPreference:
+              type: string
+              description: >+
+                The three shopping preferences available are OPTIMIZED, FULL,
+                BEST
+
+
+                Optimized- In case of more than one Origin and Destination
+                searches, offers with same fare brands for every flight
+                combination will be provided.
+
+
+                Full- All offers from airlines.
+
+
+                Best- One best offer for every flight combination based on the
+                sorting order.
+
+        Travelers:
+          type: object
+          required:
+            - Traveler
+          description: 'null'
+          properties:
+            Traveler:
+              type: array
+              description: |+
+                This must be repeated for each passenger.
+
+
+
+                 If the shopping request is for 2 ADT, 2 CHD and 2 INF then AnonymousTraveler should be repeated as per the number of passengers ie.6 times
+
+
+
+              items:
+                properties:
+                  AnonymousTraveler:
+                    type: array
+                    description: 'null'
+                    items:
+                      required:
+                        - PTC
+                      properties:
+                        PTC:
+                          type: object
+                          required:
+                            - value
+                          description: 'null'
+                          properties:
+                            value:
+                              type: string
+                              description: >+
+                                PTC - Passenger Type Code
+
+
+                                The following passenger type codes needs to be
+                                passed
+
+
+                                ADT - Adult
+
+
+                                CHD - Child
+
+
+                                INF - Infant
+
+                        Age:
+                          type: object
+                          description: >+
+                            The field is mandatory for certain airlines like ZG,
+                            hence dependent on the airline response.
+
+
+                            This must always be provided for Child passengers
+                            specifically for ZG.
+
+
+                            Though this is an optional element, it is
+                            recommended to provide the passenger's age, as it
+                            will be used to identify if the passenger is a young
+                            adult. Young adult provision is applicable only in
+                            case of British Airways.
+
+
+                            Note- UK Air Passenger Duty (APD) is not applicable
+                            to young adults aged 12 to 15
+
+
+                            years inclusive for travel after 1 March 2016 Value
+                            AirShoppingRQ/Travelers/T M
+
+                          properties:
+                            Value:
+                              type: object
+                              required:
+                                - value
+                              description: 'null'
+                              properties:
+                                value:
+                                  type: integer
+                                  description: |+
+                                    Age of the Child Traveler.
+
+                            BirthDate:
+                              type: object
+                              required:
+                                - value
+                              description: |+
+                                Deprecated
+
+                              properties:
+                                value:
+                                  type: string
+                                  description: |2+
+                                     Data is of Date format, Deprecated
+
+                                    Date of birth in YYYY-MM-DD format.
+
+                                    Date of birth of the passenger.
+
+                  RecognizedTraveler:
+                    type: array
+                    description: This is given in case the Frequent Flier ID (FFID)is used.
+                    items:
+                      required:
+                        - PTC
+                        - Name
+                      properties:
+                        FQTVs:
+                          type: array
+                          description: |+
+                            FrequentTraveler Account ID
+
+
+
+                          items:
+                            required:
+                              - Account
+                              - AirlineID
+                            properties:
+                              Account:
+                                type: object
+                                required:
+                                  - Number
+                                description: 'null'
+                                properties:
+                                  Number:
+                                    type: object
+                                    required:
+                                      - value
+                                    description: 'null'
+                                    properties:
+                                      value:
+                                        type: string
+                                        description: 'null'
+                              AirlineID:
+                                type: object
+                                required:
+                                  - value
+                                description: |+
+                                  IATA two letter code of the airline.
+
+
+
+                                properties:
+                                  value:
+                                    type: string
+                                    description: 'null'
+                              ProgramID:
+                                type: string
+                                description: >+
+                                  Program ID corresponds to a specific reward or
+                                  discount program.
+
+
+                                  The possible values are
+
+                                   1.Business- used in case of ABN for QF or other Business reward programs
+
+                                   2.Discount Pass , used for Abonnement card for AFKL flights
+
+                                   3. Overseas France Pass , used for Abonnement card for AFKL flights.
+
+                        PTC:
+                          type: object
+                          required:
+                            - value
+                          description: ''
+                          properties:
+                            value:
+                              type: string
+                              description: ''
+                        Age:
+                          type: object
+                          description: >+
+                            The field is mandatory for certain airlines like ZG,
+                            hence dependent on the airline response.
+
+
+                            This must always be provided for Child passengers
+                            specifically for ZG.
+
+
+                            Though this is an optional element, it is
+                            recommended to provide the passenger's age, as it
+                            will be used to identify if the passenger is a young
+                            adult. Young adult provision is applicable only in
+                            case of British Airways.
+
+
+                            Note- UK Air Passenger Duty (APD) is not applicable
+                            to young adults aged 12 to 15
+
+
+                            years inclusive for travel after 1 March 2016 Value
+                            AirShoppingRQ/Travelers/T M
+
+                          properties:
+                            Value:
+                              type: object
+                              required:
+                                - value
+                              description: 'null'
+                              properties:
+                                value:
+                                  type: integer
+                                  description: |+
+                                    Age of the Child Traveler.
+
+                            BirthDate:
+                              type: object
+                              required:
+                                - value
+                              description: |+
+                                Deprecated
+
+                              properties:
+                                value:
+                                  type: string
+                                  description: |2+
+                                     Data is of Date format, Deprecated
+
+                                    Date of birth in YYYY-MM-DD format.
+
+                                    Date of birth of the passenger.
+
+                        Name:
+                          type: object
+                          required:
+                            - Given
+                            - Title
+                            - Surname
+                          description: >+
+                            This field is optional only when  ProgramID is
+                            'Business'. It contains the Name of the Frequent
+                            Flier in Title/Given name/Surname. 
+
+                          properties:
+                            Given:
+                              type: array
+                              description: 'null'
+                              items:
+                                required:
+                                  - value
+                                properties:
+                                  value:
+                                    type: string
+                                    description: 'null'
+                            Title:
+                              type: string
+                              description: 'null'
+                            Surname:
+                              type: object
+                              required:
+                                - value
+                              description: 'null'
+                              properties:
+                                value:
+                                  type: string
+                                  description: 'null'
+        EnableGDS:
+          type: boolean
+          description: |+
+            true/false
+
+        Qualifier:
+          type: object
+          required:
+            - ProgramQualifiers
+          description: |+
+            This specifies the PROMOCODE for corporates.
+
+          properties:
+            ProgramQualifiers:
+              type: object
+              required:
+                - ProgramQualifier
+              description: 'null'
+              properties:
+                ProgramQualifier:
+                  type: array
+                  description: 'null'
+                  items:
+                    required:
+                      - DiscountProgramQualifier
+                    properties:
+                      DiscountProgramQualifier:
+                        type: object
+                        required:
+                          - Account
+                          - AssocCode
+                          - Name
+                        description: 'null'
+                        properties:
+                          Account:
+                            type: object
+                            required:
+                              - value
+                            description: 'null'
+                            properties:
+                              value:
+                                type: string
+                                description: |+
+                                  The value of the promocode
+
+                          AssocCode:
+                            type: object
+                            required:
+                              - value
+                            description: 'null'
+                            properties:
+                              value:
+                                type: string
+                                description: >+
+                                  The two letter airline code to which the
+                                  PROMOCODE is applied
+
+                          Name:
+                            type: object
+                            required:
+                              - value
+                            description: 'null'
+                            properties:
+                              value:
+                                type: string
+                                description: |+
+                                  Value for this attribute should be PROMOCODE
+
+            BaggagePricingQualifier:
+              type: object
+              required:
+                - BaggageOption
+              description: |+
+                At present the node is only applicable for BA
+
+              properties:
+                BaggageOption:
+                  type: object
+                  required:
+                    - Code
+                  description: 'null'
+                  properties:
+                    Code:
+                      type: string
+                      description: >+
+                        Value for the code could be 1 or 3. 1='CarryOn' and
+                        3='CheckedBag'
+
+        CoreQuery:
+          type: object
+          required:
+            - OriginDestinations
+          description: 'null'
+          properties:
+            OriginDestinations:
+              type: object
+              description: |+
+                Origin and destination (O&D) details
+
+              properties:
+                SpecificOriginDestination:
+                  type: array
+                  description: >+
+                    Used for fetching more offers for a flight - Used only in
+                    Verteil User Interface 
+
+                  items:
+                    properties:
+                      Flight:
+                        type: array
+                        description: 'null'
+                        items:
+                          required:
+                            - Departure
+                            - Arrival
+                          properties:
+                            Departure:
+                              type: object
+                              required:
+                                - AirportCode
+                                - Date
+                              description: 'null'
+                              properties:
+                                AirportCode:
+                                  type: object
+                                  required:
+                                    - value
+                                  description: 'null'
+                                  properties:
+                                    value:
+                                      type: string
+                                      description: 'null'
+                                Date:
+                                  type: string
+                                  description: ' Data is of Date format, null'
+                            FlightNumber:
+                              type: array
+                              description: >+
+                                This is the code for an airline service
+                                consisting of two character airline designators,
+                                followed by 1-4 digit numbers. This will fetch
+                                the particular flight number specified, both for
+                                departure and arrival.
+
+                              items:
+                                required:
+                                  - value
+                                properties:
+                                  value:
+                                    type: string
+                                    description: 'null'
+                            Arrival:
+                              type: object
+                              required:
+                                - AirportCode
+                              description: 'null'
+                              properties:
+                                AirportCode:
+                                  type: object
+                                  required:
+                                    - value
+                                  description: 'null'
+                                  properties:
+                                    value:
+                                      type: string
+                                      description: 'null'
+                            OriginDestinationKey:
+                              type: string
+                              description: >+
+                                If OriginDestinationKey not provided, then cabin
+                                will be requested based on the order of the the
+                                OriginDestination list.
+
+                OriginDestination:
+                  type: array
+                  description: >+
+                    This field is optional only when SpecificOriginDestination
+                    is in use otherwise this field is mandatory.
+
+                     This must be repeated for each O&D. For a round trip (return) search, this must be repeated twice. For multi cities, this must be repeated depending on the number of city pairs searched. Currently we support only 5 city pairs
+
+                  items:
+                    required:
+                      - Departure
+                      - Arrival
+                      - OriginDestinationKey
+                    properties:
+                      Departure:
+                        type: object
+                        required:
+                          - AirportCode
+                          - Date
+                        description: |+
+                          Departure airport details
+
+                        properties:
+                          AirportCode:
+                            type: object
+                            required:
+                              - value
+                            description: |+
+                              Accepts departure airport code
+
+                            properties:
+                              value:
+                                type: string
+                                description: 'null'
+                          TimeFrom:
+                            type: string
+                            description: |2+
+                               Data is of Time format, Can choose the time frame within which planning to depart, from the particular airport. The format of time needs to be in HH-MM & is given in a 24 hour clock.
+
+                          TimeTo:
+                            type: string
+                            description: |2+
+                               Data is of Time format, Gives the time frame within which planning to depart from the departure airport. The format of time needs to be in HH-MM & is given in a 24 hour clock.
+
+                          Date:
+                            type: string
+                            description: |2+
+                               Data is of Date format, Departure date
+
+                              (YYYY-MM-DD)
+
+                      Arrival:
+                        type: object
+                        required:
+                          - AirportCode
+                        description: |+
+                          Arrival airport details
+
+                        properties:
+                          AirportCode:
+                            type: object
+                            required:
+                              - value
+                            description: |+
+                              Accepts arrival airport code
+
+                            properties:
+                              value:
+                                type: string
+                                description: 'null'
+                          TimeFrom:
+                            type: string
+                            description: >+
+                              Can choose the time frame within which planning to
+                              arrive at the particular airport. The format of
+                              time needs to be in HH-MM & is given in a 24 hour
+                              clock. Note- In the case of round trip and multi
+                              city this will be repeated.
+
+                          TimeTo:
+                            type: string
+                            description: >+
+                              Gives the time frame within which planning to
+                              arrive at the arrival airport. The format of time
+                              needs to be in HH-MM & is given in a 24 hour
+                              clock.
+
+                          Date:
+                            type: string
+                            description: |+
+                              Arrival date
+
+                      OriginDestinationKey:
+                        type: string
+                        description: >+
+                          Unique ID provided by consumer for each Origin and
+                          Destination combination

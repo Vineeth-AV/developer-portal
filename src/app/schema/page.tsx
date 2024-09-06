@@ -9,9 +9,9 @@ export default function SchemaViewer() {
   const searchParams = useSearchParams();
   const [schemaName, setSchemaName] = useState<string | null>(null);
 
-  const width = 1200;
+  const width = window.innerWidth;
   const height = 800;
-  const margin = { top: 30, left: 70, right: 70, bottom: 70 };
+  const margin = { top: 30, left: 70, right: 150, bottom: 70 };
 
   useEffect(() => {
     const schemaParam = searchParams.get('schema');

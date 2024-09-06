@@ -1773,8 +1773,7 @@ export default function OpenAPITree({
 // }
 
 
-
-
+/*
 import React, { useEffect, useState } from 'react';
 import { Group } from '@visx/group';
 import { hierarchy, Tree } from '@visx/hierarchy';
@@ -1783,13 +1782,13 @@ import { pointRadial } from 'd3-shape';
 import useForceUpdate from './useForceUpdate';
 import LinkControls from './LinkControls';
 import getLinkComponent from './getLinkComponent';
-import yaml from 'js-yaml'; // Import js-yaml to parse YAML content
+import yaml from 'js-yaml';
 
 export interface TreeNode {
   name: string;
   isExpanded?: boolean;
   children?: TreeNode[];
-  dataType?: string; // Optional field to store data type
+  dataType?: string;
 }
 
 const defaultMargin = { top: 30, left: 30, right: 30, bottom: 70 };
@@ -1801,20 +1800,85 @@ export type LinkTypesProps = {
   schemaName: string;
 };
 
-
-const transformSchemaToNode = (schemaName: string, definitions: { [key: string]: any }): TreeNode => {
+const transformSchemaToNode = (
+  schemaName: string,
+  definitions: { [key: string]: any }
+): TreeNode => {
   const schema = definitions[schemaName];
   if (!schema) return { name: schemaName, children: [], isExpanded: false };
 
   const properties = schema.properties
-    ? Object.keys(schema.properties).map((prop) => ({
-        name: prop,  // Only the property name, not type
-        dataType: schema.properties[prop].type,  // Store data type separately
-        children: schema.properties[prop].$ref
-          ? [transformSchemaToNode(schema.properties[prop].$ref.split('/').pop()!, definitions)]
-          : [],
-        isExpanded: false,
-      }))
+    ? Object.keys(schema.properties).map((prop) => {
+        const propSchema = schema.properties[prop];
+
+        // If the property has a $ref, resolve the reference recursively
+        if (propSchema.$ref) {
+          const refSchemaName = propSchema.$ref.split('/').pop()!;
+          return {
+            name: prop,
+            dataType: "reference",
+            children: [transformSchemaToNode(refSchemaName, definitions)], // Recursively resolve the $ref
+            isExpanded: false,
+          };
+        }
+
+        // If the property is an object, check for nested properties
+        if (propSchema.type === 'object' && propSchema.properties) {
+          return {
+            name: prop,
+            dataType: propSchema.type,
+            children: Object.keys(propSchema.properties).map((nestedProp) => {
+              const nestedPropSchema = propSchema.properties[nestedProp];
+
+              // Handle nested objects with children or $ref inside
+              if (nestedPropSchema.$ref) {
+                const nestedRefSchemaName = nestedPropSchema.$ref.split('/').pop()!;
+                return {
+                  name: nestedProp,
+                  dataType: "reference",
+                  children: [transformSchemaToNode(nestedRefSchemaName, definitions)],
+                  isExpanded: false,
+                };
+              }
+
+              return {
+                name: nestedProp,
+                dataType: nestedPropSchema.type,
+                children: nestedPropSchema.properties
+                  ? Object.keys(nestedPropSchema.properties).map((subNestedProp) => ({
+                      name: subNestedProp,
+                      dataType: nestedPropSchema.properties[subNestedProp].type,
+                      children: [], // Recursively add subchildren if needed
+                      isExpanded: false,
+                    }))
+                  : [],
+                isExpanded: false,
+              };
+            }),
+            isExpanded: false,
+          };
+        }
+
+        // Handle arrays with items that are references or objects
+        if (propSchema.type === 'array' && propSchema.items) {
+          return {
+            name: prop,
+            dataType: 'array',
+            children: propSchema.items.$ref
+              ? [transformSchemaToNode(propSchema.items.$ref.split('/').pop()!, definitions)] // Recursively resolve array items
+              : [],
+            isExpanded: false,
+          };
+        }
+
+        // Simple field (not an object or array)
+        return {
+          name: prop,
+          dataType: propSchema.type,
+          children: [],
+          isExpanded: false,
+        };
+      })
     : [];
 
   return {
@@ -1824,6 +1888,8 @@ const transformSchemaToNode = (schemaName: string, definitions: { [key: string]:
   };
 };
 
+
+// Convert OpenAPI schema to tree structure
 const transformOpenApiToTree = (data: any, schemaName: string): TreeNode => {
   const definitions = data.components?.schemas || data.definitions;
   if (!definitions) return { name: 'No Definitions', children: [], isExpanded: false };
@@ -1832,8 +1898,18 @@ const transformOpenApiToTree = (data: any, schemaName: string): TreeNode => {
 
   return {
     name: schemaName,
-    children: [schemaNode],
+    children: schemaNode.children,
     isExpanded: true,
+  };
+};
+
+// Function to toggle a node's expansion state immutably
+const toggleNodeExpansion = (node: TreeNode): TreeNode => {
+  return {
+    ...node,
+    isExpanded: !node.isExpanded,
+    // Recursively update children if present
+    children: node.children ? node.children.map((child) => ({ ...child })) : [],
   };
 };
 
@@ -1850,7 +1926,7 @@ export default function OpenAPITree({
   const [layout, setLayout] = useState<string>('cartesian');
   const [orientation, setOrientation] = useState<string>('horizontal');
   const [linkType, setLinkType] = useState<string>('step');
-  const [stepPercent, setStepPercent] = useState<number>(0.1);
+  const [stepPercent, setStepPercent] = useState<number>(0.5);
   const [tooltip, setTooltip] = useState<{ x: number; y: number; content: string } | null>(null);
   const forceUpdate = useForceUpdate();
 
@@ -1863,7 +1939,7 @@ export default function OpenAPITree({
         const transformedData = transformOpenApiToTree(openapi, schemaName);
         setData(transformedData);
       } catch (error) {
-        console.error('Error fetching or parsing JSON file:', error);
+        console.error('Error fetching or parsing YAML file:', error);
         setData({ name: 'Error loading data', children: [] });
       }
     };
@@ -1873,17 +1949,29 @@ export default function OpenAPITree({
   const innerWidth = totalWidth - margin.left - margin.right;
   const innerHeight = totalHeight - margin.top - margin.bottom;
 
+  // Recursively find and toggle node expansion in the tree
   const handleNodeClick = (node: any) => {
-    node.data.isExpanded = !node.data.isExpanded;
-    setData({ ...data }); // Trigger re-render
+    const updateNode = (currentNode: TreeNode): TreeNode => {
+      if (currentNode.name === node.data.name) {
+        return toggleNodeExpansion(currentNode);
+      }
+      return {
+        ...currentNode,
+        children: currentNode.children
+          ? currentNode.children.map((child) => updateNode(child))
+          : [],
+      };
+    };
+
+    const updatedTree = updateNode(data);
+    setData(updatedTree);
     forceUpdate(); // Force a re-render
   };
 
-  const handleNodeClickForToolTip = (node: any,  event: React.MouseEvent<SVGGElement, MouseEvent>) => {
-    // Show tooltip above the clicked node
+  const handleNodeClickForToolTip = (node: any, event: React.MouseEvent<SVGGElement, MouseEvent>) => {
     setTooltip({
       x: event.clientX,
-      y: event.clientY - 40, // Adjust Y position to show above the node
+      y: event.clientY - 40,
       content: node.data.name,
     });
   };
@@ -1916,8 +2004,6 @@ export default function OpenAPITree({
 
   const LinkComponent = getLinkComponent({ layout, linkType, orientation });
 
-  const nodeSpacing = 100;
-
   return totalWidth < 10 ? null : (
     <div>
       <LinkControls
@@ -1935,9 +2021,9 @@ export default function OpenAPITree({
         <rect width={totalWidth} height={totalHeight} rx={14} fill="#ffffff" />
         <Group top={margin.top} left={margin.left}>
           <Tree
-            root={hierarchy(data, (d) => (d.isExpanded ? d.children : null))}
+            root={hierarchy(data, (d) => (d.isExpanded ? d.children : null))} // Recursive expansion
             size={[sizeWidth, sizeHeight]}
-            separation={(a, b) => (a.parent === b.parent ? nodeSpacing : nodeSpacing / 2) / a.depth}
+            separation={(a, b) => (a.parent === b.parent ? 10 : 20)}
           >
             {(tree) => (
               <Group top={origin.y} left={origin.x}>
@@ -1980,36 +2066,26 @@ export default function OpenAPITree({
                         stroke="#000000"
                         strokeWidth={2}
                         onClick={() => handleNodeClick(node)}
-                       
                         style={{ cursor: 'pointer' }}
                       />
-                      <circle cx={-width / 2 - 55} cy={0} r={3} fill="black" />
-                      <circle cx={-width / 2 - 45} cy={0} r={3} fill="black" />
-                      <circle cx={-width / 2 + 45} cy={0} r={3} fill="black" />
-
                       <rect
                         height={height}
                         width={width}
                         y={-height / 2}
                         x={-width / 2}
                         fill="#ffffff"
-                        stroke={node.data.children ? 'black' : 'black'}
+                        stroke={node.data.children ? 'black' : 'gray'}
                         strokeWidth={2}
-                        strokeDasharray={'2,2'}
-                        strokeOpacity={node.data.children ? 1 : 0.6}
                         rx={10}
-                        style={{ cursor: 'pointer' }}
+                        onMouseEnter={(event) => handleNodeClickForToolTip(node, event)}
                         onMouseLeave={hideTooltip}
-                        onMouseEnter={(event) => handleNodeClickForToolTip(node,event)}
                       />
-
                       <text
                         dy=".33em"
                         fontSize={12}
-                        fontFamily="Arial"
                         textAnchor="middle"
                         style={{ pointerEvents: 'none' }}
-                        fill={node.depth === 0 ? '#71248e' : node.children ? 'black' : 'black'}
+                        fill={node.depth === 0 ? '#71248e' : node.children ? 'black' : 'gray'}
                       >
                         {node.data.name}
                       </text>
@@ -2032,6 +2108,638 @@ export default function OpenAPITree({
             padding: '5px',
             borderRadius: '3px',
             pointerEvents: 'none',
+          }}
+        >
+          {tooltip.content}
+        </div>
+      )}
+    </div>
+  );
+}
+
+*/
+
+
+
+// import React, { useEffect, useState } from 'react';
+// import { Group } from '@visx/group';
+// import { hierarchy, Tree } from '@visx/hierarchy';
+// import { LinearGradient } from '@visx/gradient';
+// import { pointRadial } from 'd3-shape';
+// import useForceUpdate from './useForceUpdate';
+// import LinkControls from './LinkControls';
+// import getLinkComponent from './getLinkComponent';
+// import yaml from 'js-yaml';
+
+// export interface TreeNode {
+//   name: string;
+//   isExpanded?: boolean;
+//   children?: TreeNode[];
+//   dataType?: string;
+// }
+
+// const defaultMargin = { top: 30, left: 30, right: 30, bottom: 70 };
+
+// export type LinkTypesProps = {
+//   width: number;
+//   height: number;
+//   margin?: { top: number; right: number; bottom: number; left: number };
+//   schemaName: string;
+// };
+
+// // Convert OpenAPI schema to tree structure
+// const transformOpenApiToTree = (data: any, schemaName: string): TreeNode => {
+//   const definitions = data.components?.schemas || data.definitions;
+//   if (!definitions) return { name: 'No Definitions', children: [], isExpanded: false };
+
+//   const schema = definitions[schemaName];
+//   const transformSchemaToNode = (schema: any): TreeNode => {
+//     if (!schema) return { name: schemaName, children: [], isExpanded: false };
+
+//     const properties = schema.properties
+//       ? Object.keys(schema.properties).map((prop) => {
+//           const propSchema = schema.properties[prop];
+          
+//           if (propSchema.$ref) {
+//             const refSchemaName = propSchema.$ref.split('/').pop()!;
+//             return {
+//               name: prop,
+//               dataType: "reference",
+//               children: [transformSchemaToNode(definitions[refSchemaName])],
+//               isExpanded: false,
+//             };
+//           }
+
+//           if (propSchema.type === 'object' && propSchema.properties) {
+//             return {
+//               name: prop,
+//               dataType: propSchema.type,
+//               children: Object.keys(propSchema.properties).map((nestedProp) => {
+//                 const nestedPropSchema = propSchema.properties[nestedProp];
+//                 if (nestedPropSchema.$ref) {
+//                   const nestedRefSchemaName = nestedPropSchema.$ref.split('/').pop()!;
+//                   return {
+//                     name: nestedProp,
+//                     dataType: "reference",
+//                     children: [transformSchemaToNode(definitions[nestedRefSchemaName])],
+//                     isExpanded: false,
+//                   };
+//                 }
+//                 return {
+//                   name: nestedProp,
+//                   dataType: nestedPropSchema.type,
+//                   children: nestedPropSchema.properties
+//                     ? Object.keys(nestedPropSchema.properties).map((subNestedProp) => ({
+//                         name: subNestedProp,
+//                         dataType: nestedPropSchema.properties[subNestedProp].type,
+//                         children: [],
+//                         isExpanded: false,
+//                       }))
+//                     : [],
+//                   isExpanded: false,
+//                 };
+//               }),
+//               isExpanded: false,
+//             };
+//           }
+
+//           if (propSchema.type === 'array' && propSchema.items) {
+//             return {
+//               name: prop,
+//               dataType: 'array',
+//               children: propSchema.items.$ref
+//                 ? [transformSchemaToNode(definitions[propSchema.items.$ref.split('/').pop()!])]
+//                 : [],
+//               isExpanded: false,
+//             };
+//           }
+
+//           return {
+//             name: prop,
+//             dataType: propSchema.type,
+//             children: [],
+//             isExpanded: false,
+//           };
+//         })
+//       : [];
+
+//     return {
+//       name: schemaName,
+//       children: properties,
+//       isExpanded: true,
+//     };
+//   };
+
+//   return transformSchemaToNode(schema);
+// };
+
+// export default function OpenAPITree({
+//   width: totalWidth,
+//   height: totalHeight,
+//   margin = defaultMargin,
+//   schemaName,
+// }: LinkTypesProps) {
+//   const [data, setData] = useState<TreeNode>({ name: 'Loading...', children: [] });
+//   const [layout, setLayout] = useState<string>('cartesian');
+//   const [orientation, setOrientation] = useState<string>('horizontal');
+//   const [linkType, setLinkType] = useState<string>('step');
+//   const [stepPercent, setStepPercent] = useState<number>(0.5);
+//   const [tooltip, setTooltip] = useState<{ x: number; y: number; content: string } | null>(null);
+//   const forceUpdate = useForceUpdate();
+
+//   useEffect(() => {
+//     const fetchData = async () => {
+//       try {
+//         const response = await fetch('/airshopping.yaml');
+//         const yamlText = await response.text();
+//         const openapi = yaml.load(yamlText);
+//         const transformedData = transformOpenApiToTree(openapi, schemaName);
+//         setData(transformedData);
+//       } catch (error) {
+//         console.error('Error fetching or parsing YAML file:', error);
+//         setData({ name: 'Error loading data', children: [] });
+//       }
+//     };
+//     fetchData();
+//   }, [schemaName]);
+
+//   const innerWidth = totalWidth - margin.left - margin.right;
+//   const innerHeight = totalHeight - margin.top - margin.bottom;
+
+//   const handleNodeClick = (node: any) => {
+//     const updateNode = (currentNode: TreeNode): TreeNode => {
+//       if (currentNode.name === node.data.name) {
+//         return {
+//           ...currentNode,
+//           isExpanded: !currentNode.isExpanded,
+//           children: currentNode.isExpanded ? [] : currentNode.children,
+//         };
+//       }
+//       return {
+//         ...currentNode,
+//         children: currentNode.children
+//           ? currentNode.children.map((child) => updateNode(child))
+//           : [],
+//       };
+//     };
+
+//     const updatedTree = updateNode(data);
+//     setData(updatedTree);
+//     forceUpdate(); // Force a re-render
+//   };
+
+//   const handleNodeClickForToolTip = (node: any, event: React.MouseEvent<SVGGElement, MouseEvent>) => {
+//     setTooltip({
+//       x: event.clientX,
+//       y: event.clientY - 40,
+//       content: node.data.name,
+//     });
+//   };
+
+//   const hideTooltip = () => {
+//     setTooltip(null);
+//   };
+
+//   let origin: { x: number; y: number };
+//   let sizeWidth: number;
+//   let sizeHeight: number;
+
+//   if (layout === 'polar') {
+//     origin = { x: innerWidth / 2, y: innerHeight / 2 };
+//     sizeWidth = 1  ;
+//     sizeHeight = Math.min(innerWidth, innerHeight) / 2;
+//   } else {
+//     origin = { x: 0, y: 0 };
+//     if (orientation === 'vertical') {
+//       sizeWidth = innerWidth;
+//       sizeHeight = innerHeight;
+//     } else {
+//       sizeWidth = innerHeight;
+//       sizeHeight = innerWidth;
+//     }
+//   }
+
+//   const LinkComponent = getLinkComponent({ layout, linkType, orientation });
+
+//   return totalWidth < 10 ? null : (
+//     <div>
+//       <LinkControls
+//         layout={layout}
+//         orientation={orientation}
+//         linkType={linkType}
+//         stepPercent={stepPercent}
+//         setLayout={setLayout}
+//         setOrientation={setOrientation}
+//         setLinkType={setLinkType}
+//         setStepPercent={setStepPercent}
+//       />
+//       <svg width={totalWidth} height={totalHeight}>
+//         <LinearGradient id="links-gradient" from="#fd9b93" to="#fe6e9e" />
+//         <rect width={totalWidth} height={totalHeight} rx={14} fill="#ffffff" />
+//         <Group top={margin.top} left={margin.left}>
+//           <Tree
+//             root={hierarchy(data, (d) => (d.isExpanded ? d.children : null))}
+//             size={[sizeWidth, sizeHeight]}
+//             separation={(a, b) => (a.parent === b.parent ? 1 : 1)}
+//           >
+//             {(tree) => (
+//               <Group top={origin.y} left={origin.x}>
+//                 {tree.links().map((link, i) => (
+//                   <LinkComponent
+//                     key={i}
+//                     data={link}
+//                     percent={stepPercent}
+//                     stroke="rgb(0,0,0)"
+//                     strokeWidth="1"
+//                     fill="none"
+//                   />
+//                 ))}
+
+//                 {tree.descendants().map((node, key) => {
+//                   const width = 100;
+//                   const height = 40;
+
+//                   let top: number;
+//                   let left: number;
+//                   if (layout === 'polar') {
+//                     const [radialX, radialY] = pointRadial(node.x, node.y);
+//                     top = radialY;
+//                     left = radialX;
+//                   } else if (orientation === 'vertical') {
+//                     top = node.y;
+//                     left = node.x;
+//                   } else {
+//                     top = node.x;
+//                     left = node.y;
+//                   }
+
+//                   return (
+//                     <Group top={top} left={left} key={key}>
+//                       <circle
+//                         cx={-width / 2 - 50}
+//                         cy={0}
+//                         r={10}
+//                         fill={node.data.isExpanded ? '#000000' : '#ffffff'}
+//                         stroke="#000000"
+//                         strokeWidth={2}
+//                         onClick={() => handleNodeClick(node)}
+//                         style={{ cursor: 'pointer' }}
+//                       />
+//                       <rect
+//                         height={height}
+//                         width={width}
+//                         y={-height / 2}
+//                         x={-width / 2}
+//                         fill="#ffffff"
+//                         stroke={node.data.children ? 'black' : 'gray'}
+//                         strokeWidth={2}
+//                         rx={10}
+//                         onMouseEnter={(event) => handleNodeClickForToolTip(node, event)}
+//                         onMouseLeave={hideTooltip}
+//                       />
+//                       <text
+//                         dy=".33em"
+//                         fontSize={12}
+//                         textAnchor="middle"
+//                         style={{ pointerEvents: 'none' }}
+//                         fill={node.depth === 0 ? '#71248e' : node.children ? 'black' : 'gray'}
+//                       >
+//                         {node.data.name}
+//                       </text>
+//                     </Group>
+//                   );
+//                 })}
+//               </Group>
+//             )}
+//           </Tree>
+//         </Group>
+//       </svg>
+//       {tooltip && (
+//         <div
+//           style={{
+//             position: 'absolute',
+//             left: tooltip.x,
+//             top: tooltip.y,
+//             background: 'white',
+//             border: '1px solid black',
+//             padding: '5px',
+//             borderRadius: '3px',
+//             pointerEvents: 'none',
+//           }}
+//         >
+//           {tooltip.content}
+//         </div>
+//       )}
+//     </div>
+//   );
+// }
+import React, { useEffect, useState } from 'react';
+import { Group } from '@visx/group';
+import { hierarchy, Tree } from '@visx/hierarchy';
+import { pointRadial } from 'd3-shape';
+import useForceUpdate from './useForceUpdate';
+import LinkControls from './LinkControls';
+import getLinkComponent from './getLinkComponent';
+import yaml from 'js-yaml';
+
+export interface TreeNode {
+  name: string;
+  isExpanded?: boolean;
+  children?: TreeNode[];
+  dataType?: string;
+}
+
+const defaultMargin = { top: 30, left: 30, right: 30, bottom: 70 };
+
+export type LinkTypesProps = {
+  width: number;
+  height: number;
+  margin?: { top: number; right: number; bottom: number; left: number };
+  schemaName: string;
+};
+
+// Convert OpenAPI schema to tree structure
+const transformOpenApiToTree = (data: any, schemaName: string): TreeNode => {
+  const definitions = data.components?.schemas || data.definitions;
+  if (!definitions) return { name: 'No Definitions', children: [], isExpanded: false };
+
+  const schema = definitions[schemaName];
+  const transformSchemaToNode = (schema: any): TreeNode => {
+    if (!schema) return { name: schemaName, children: [], isExpanded: false };
+
+    const properties = schema.properties
+      ? Object.keys(schema.properties).map((prop) => {
+          const propSchema = schema.properties[prop];
+          
+          if (propSchema.$ref) {
+            const refSchemaName = propSchema.$ref.split('/').pop()!;
+            return {
+              name: prop,
+              dataType: "reference",
+              children: [transformSchemaToNode(definitions[refSchemaName])],
+              isExpanded: false,
+            };
+          }
+
+          if (propSchema.type === 'object' && propSchema.properties) {
+            return {
+              name: prop,
+              dataType: propSchema.type,
+              children: Object.keys(propSchema.properties).map((nestedProp) => {
+                const nestedPropSchema = propSchema.properties[nestedProp];
+                if (nestedPropSchema.$ref) {
+                  const nestedRefSchemaName = nestedPropSchema.$ref.split('/').pop()!;
+                  return {
+                    name: nestedProp,
+                    dataType: "reference",
+                    children: [transformSchemaToNode(definitions[nestedRefSchemaName])],
+                    isExpanded: false,
+                  };
+                }
+                return {
+                  name: nestedProp,
+                  dataType: nestedPropSchema.type,
+                  children: nestedPropSchema.properties
+                    ? Object.keys(nestedPropSchema.properties).map((subNestedProp) => ({
+                        name: subNestedProp,
+                        dataType: nestedPropSchema.properties[subNestedProp].type,
+                        children: [],
+                        isExpanded: false,
+                      }))
+                    : [],
+                  isExpanded: false,
+                };
+              }),
+              isExpanded: false,
+            };
+          }
+
+          if (propSchema.type === 'array' && propSchema.items) {
+            return {
+              name: prop,
+              dataType: 'array',
+              children: propSchema.items.$ref
+                ? [transformSchemaToNode(definitions[propSchema.items.$ref.split('/').pop()!])]
+                : [],
+              isExpanded: false,
+            };
+          }
+
+          return {
+            name: prop,
+            dataType: propSchema.type,
+            children: [],
+            isExpanded: false,
+          };
+        })
+      : [];
+
+    return {
+      name: schemaName,
+      children: properties,
+      isExpanded: true,
+    };
+  };
+
+  return transformSchemaToNode(schema);
+};
+
+export default function OpenAPITree({
+  width: totalWidth,
+  height: totalHeight,
+  margin = defaultMargin,
+  schemaName,
+}: LinkTypesProps) {
+  const [data, setData] = useState<TreeNode>({ name: 'Loading...', children: [] });
+  const [layout, setLayout] = useState<string>('cartesian');
+  const [orientation, setOrientation] = useState<string>('horizontal');
+  const [linkType, setLinkType] = useState<string>('step');
+  const [stepPercent, setStepPercent] = useState<number>(0.5);
+  const [tooltip, setTooltip] = useState<{ x: number; y: number; content: string } | null>(null);
+  const forceUpdate = useForceUpdate();
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch('/airshopping.yaml');
+        const yamlText = await response.text();
+        const openapi = yaml.load(yamlText);
+        const transformedData = transformOpenApiToTree(openapi, schemaName);
+        setData(transformedData);
+      } catch (error) {
+        console.error('Error fetching or parsing YAML file:', error);
+        setData({ name: 'Error loading data', children: [] });
+      }
+    };
+    fetchData();
+  }, [schemaName]);
+
+  const innerWidth = totalWidth - margin.left - margin.right;
+  const innerHeight = totalHeight - margin.top - margin.bottom;
+
+  const handleNodeClick = (node: any) => {
+    const updateNode = (currentNode: TreeNode): TreeNode => {
+      if (currentNode.name === node.data.name) {
+        return {
+          ...currentNode,
+          isExpanded: !currentNode.isExpanded,
+          children: currentNode.isExpanded ? [] : currentNode.children,
+        };
+      }
+      return {
+        ...currentNode,
+        children: currentNode.children
+          ? currentNode.children.map((child) => updateNode(child))
+          : [],
+      };
+    };
+
+    const updatedTree = updateNode(data);
+    setData(updatedTree);
+    forceUpdate(); // Force a re-render
+  };
+
+  const handleNodeClickForToolTip = (node: any, event: React.MouseEvent<SVGGElement, MouseEvent>) => {
+    setTooltip({
+      x: event.clientX,
+      y: event.clientY - 40,
+      content: node.data.name,
+    });
+  };
+
+  const hideTooltip = () => {
+    setTooltip(null);
+  };
+
+  let origin: { x: number; y: number };
+  let sizeWidth: number;
+  let sizeHeight: number;
+
+  if (layout === 'polar') {
+    origin = { x: innerWidth / 2, y: innerHeight / 2 };
+    sizeWidth = 1;
+    sizeHeight = Math.min(innerWidth, innerHeight) / 2;
+  } else {
+    origin = { x: 0, y: 0 };
+    if (orientation === 'vertical') {
+      sizeWidth = innerWidth;
+      sizeHeight = innerHeight;
+    } else {
+      sizeWidth = innerHeight;
+      sizeHeight = innerWidth;
+    }
+  }
+
+  const LinkComponent = getLinkComponent({ layout, linkType, orientation });
+
+  return totalWidth < 10 ? null : (
+    <div>
+      <LinkControls
+        layout={layout}
+        orientation={orientation}
+        linkType={linkType}
+        stepPercent={stepPercent}
+        setLayout={setLayout}
+        setOrientation={setOrientation}
+        setLinkType={setLinkType}
+        setStepPercent={setStepPercent}
+      />
+      <svg width={totalWidth} height={totalHeight}>
+        <rect width={totalWidth} height={totalHeight} rx={14} fill="#ffffff" />
+        <Group top={margin.top} left={margin.left}>
+          <Tree
+            root={hierarchy(data, (d) => (d.isExpanded ? d.children : null))}
+            size={[sizeWidth, sizeHeight]}
+            separation={(a, b) => (a.parent === b.parent ? 1 : 1)}
+          >
+            {(tree) => (
+              <Group top={origin.y} left={origin.x}>
+                {tree.links().map((link, i) => (
+                  <LinkComponent
+                    key={i}
+                    data={link}
+                    percent={stepPercent}
+                    stroke="rgb(0,0,0)"
+                    strokeWidth="1"
+                    fill="none"
+                  />
+                ))}
+
+                {tree.descendants().map((node, key) => {
+                  const width = 100;
+                  const height = 30;
+
+                  let top: number;
+                  let left: number;
+                  if (layout === 'polar') {
+                    const [radialX, radialY] = pointRadial(node.x, node.y);
+                    top = radialY;
+                    left = radialX;
+                  } else if (orientation === 'vertical') {
+                    top = node.y;
+                    left = node.x;
+                  } else {
+                    top = node.x;
+                    left = node.y;
+                  }
+
+                  return (
+                    <Group top={top} left={left} key={key}>
+                      <circle
+                        cx={-width / 2 - 50} // Adjust position relative to the node
+                        cy={0}
+                        r={10} // Radius of the circle
+                        fill={node.data.isExpanded ? '#000000' : '#ffffff'} // Fill color depending on expanded state
+                        stroke="#000000" // Stroke color
+                        strokeWidth={2}
+                        onClick={() => handleNodeClick(node)}
+                        style={{ cursor: 'pointer' }}
+                      />
+
+                      <circle cx={-width / 2 - 55} cy={0} r={3} fill="black" />
+                      <circle cx={-width / 2 - 45} cy={0} r={3} fill="black" />
+                      <circle cx={-width / 2 + 45} cy={0} r={3} fill="black" />
+                      <rect
+                        height={height}
+                        width={width}
+                        y={-height / 2}
+                        x={-width / 2}
+                        fill="#ffffff"
+                        stroke="black"
+                        strokeDasharray="4,4"
+                        strokeWidth={1.5}
+                        rx={5}
+                        onMouseEnter={(event) => handleNodeClickForToolTip(node, event)}
+                        onMouseLeave={hideTooltip}
+                        onClick={() => handleNodeClick(node)}
+                      />
+                      <text
+                        dy=".33em"
+                        fontSize={12}
+                        fontFamily="Arial"
+                        textAnchor="middle"
+                        style={{ pointerEvents: 'none' }}
+                      >
+                        {node.data.name}
+                      </text>
+                    </Group>
+                  );
+                })}
+              </Group>
+            )}
+          </Tree>
+        </Group>
+      </svg>
+      {tooltip && (
+        <div
+          style={{
+            position: 'absolute',
+            top: tooltip.y,
+            left: tooltip.x,
+            backgroundColor: '#fff',
+            padding: '5px',
+            border: '1px solid #ccc',
+            borderRadius: '4px',
           }}
         >
           {tooltip.content}
