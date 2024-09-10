@@ -2433,14 +2433,1051 @@ export default function OpenAPITree({
 //     </div>
 //   );
 // }
+
+// import React, { useEffect, useState } from 'react';
+// import { Group } from '@visx/group';
+// import { hierarchy, Tree } from '@visx/hierarchy';
+// import { LinearGradient } from '@visx/gradient';
+// import yaml from 'js-yaml';
+// import useForceUpdate from './useForceUpdate';
+// import LinkControls from './LinkControls';
+// import getLinkComponent from './getLinkComponent';
+// import { pointRadial } from 'd3-shape';
+// import styles from './openapitree.module.css'; // Correct path to CSS module
+// import SwaggerParser from "@apidevtools/swagger-parser";
+
+// export interface TreeNode {
+//   name: string;
+//   isExpanded?: boolean;
+//   children?: TreeNode[];
+//   dataType?: string;
+// }
+
+// const defaultMargin = { top: 30, left: 30, right: 30, bottom: 70 };
+
+// export type LinkTypesProps = {
+//   width: number;
+//   height: number;
+//   margin?: { top: number; right: number; bottom: number; left: number };
+//   schemaName: string;
+// };
+
+// const transformOpenApiToTree = (data: any, schemaName: string): TreeNode => {
+//   const definitions = data.components?.schemas || data.definitions;
+
+//   if (!definitions) {
+//     return { name: 'No Definitions', children: [], isExpanded: false };
+//   }
+
+//   const schema = definitions[schemaName];
+
+//   const getSchemaNameFromRef = (ref: string): string => ref.split('/').pop()!;
+
+//   const transformSchemaToNode = (schema: any): TreeNode => {
+//     if (!schema) {
+//       return { name: schemaName, children: [], isExpanded: false };
+//     }
+
+//     const transformProperties = (properties: any): TreeNode[] => {
+//       return Object.keys(properties).map((prop) => {
+//         const propSchema = properties[prop];
+//         let children: TreeNode[] = [];
+
+//         if (propSchema.$ref) {
+//           const refSchemaName = getSchemaNameFromRef(propSchema.$ref);
+//           children = [transformSchemaToNode(definitions[refSchemaName])];
+//         } else if (propSchema.type === 'object' && propSchema.properties) {
+//           children = transformProperties(propSchema.properties);
+//         } else if (propSchema.type === 'array' && propSchema.items) {
+//           children = propSchema.items.$ref
+//             ? [transformSchemaToNode(definitions[getSchemaNameFromRef(propSchema.items.$ref)])]
+//             : [];
+//         }
+
+//         return {
+//           name: prop,
+//           dataType: propSchema.$ref ? "reference" : propSchema.type,
+//           children,
+//           isExpanded: false,
+//         };
+//       });
+//     };
+
+//     return {
+//       name: schemaName,
+//       children: schema.properties ? transformProperties(schema.properties) : [],
+//       isExpanded: true,
+//     };
+//   };
+
+//   return transformSchemaToNode(schema);
+// };
+
+// export default function OpenAPITree({
+//   width: totalWidth,
+//   height: totalHeight,
+//   margin = defaultMargin,
+//   schemaName,
+// }: LinkTypesProps) {
+//   const [data, setData] = useState<TreeNode>({ name: 'Loading...', children: [] });
+//   const [layout, setLayout] = useState<string>('cartesian');
+//   const [orientation, setOrientation] = useState<string>('horizontal');
+//   const [linkType, setLinkType] = useState<string>('step');
+//   const [stepPercent, setStepPercent] = useState<number>(0.5);
+//   const forceUpdate = useForceUpdate();
+
+//   // Scale the size to shorten the link length
+//   const linkScaleFactor = 0.3;
+
+//   useEffect(() => {
+//     const fetchData = async () => {
+//       try {
+//         const response = await fetch('/airshopping.yaml');
+//         const yamlText = await response.text();
+//         const json = yaml.load(yamlText) as string;
+    
+//         // Use SwaggerParser to validate and parse the JSON
+      
+//         let openapi = await SwaggerParser.validate(json);
+        
+      
+//         const transformedData = transformOpenApiToTree(openapi, schemaName);
+//         setData(transformedData);
+//       } catch (error) {
+//         console.error('Error fetching or parsing YAML file:', error);
+//         setData({ name: 'Error loading data', children: [] });
+//       }
+//     };
+//     fetchData();
+//   }, [schemaName]);
+
+//   const innerWidth = totalWidth - margin.left - margin.right;
+//   const innerHeight = totalHeight - margin.top - margin.bottom;
+
+//   const handleNodeClick = (node: any) => {
+//   const updateNode = (currentNode: TreeNode): TreeNode => {
+//     // If the clicked node is found, toggle its expanded state.
+//     if (currentNode.name === node.data.name) {
+//       return {
+//         ...currentNode,
+//         isExpanded: !currentNode.isExpanded,
+//       };
+//     }
+
+//     // Otherwise, traverse the children of the current node to find the clicked node.
+//     return {
+//       ...currentNode,
+//       children: currentNode.children
+//         ? currentNode.children.map((child) => updateNode(child))
+//         : [],
+//     };
+//   };
+
+//   const updatedTree = updateNode(data);
+//   setData(updatedTree);
+//   forceUpdate(); // Force a re-render
+// };
+
+
+//   let origin: { x: number; y: number };
+//   let sizeWidth: number;
+//   let sizeHeight: number;
+
+//   if (layout === 'polar') {
+//     origin = { x: innerWidth / 2, y: innerHeight / 2 };
+//     sizeWidth = 2 * Math.PI;
+//     sizeHeight = Math.min(innerWidth, innerHeight) / 2;
+//   } else {
+//     origin = { x: 0, y: 0 };
+//     if (orientation === 'vertical') {
+//       sizeWidth = innerWidth;
+//       sizeHeight = innerHeight;
+//     } else {
+//       sizeWidth = innerHeight;
+//       sizeHeight = innerWidth;
+//     }
+//   }
+
+//   // Apply scaling to reduce link length
+//   const scaledSizeWidth = innerWidth * linkScaleFactor;
+//   const scaledSizeHeight = innerHeight * linkScaleFactor;
+
+//   const LinkComponent = getLinkComponent({ layout, linkType, orientation });
+
+//   return totalWidth < 10 ? null : (
+//     <div  className={styles.container}>
+//       <LinkControls
+//         layout={layout}
+//         orientation={orientation}
+//         linkType={linkType}
+//         stepPercent={stepPercent}
+//         setLayout={setLayout}
+//         setOrientation={setOrientation}
+//         setLinkType={setLinkType}
+//         setStepPercent={setStepPercent}
+//       />
+//       <svg width={totalWidth} height={totalHeight}>
+//         <LinearGradient id="links-gradient" from="#fd9b93" to="#fe6e9e" />
+//         <rect width={totalWidth} height={totalHeight} rx={14} fill="#ffffff" />
+//         <Group top={margin.top} left={margin.left}>
+//           <Tree
+//             root={hierarchy(data, (d) => (d.isExpanded ? d.children : null))}
+//             size={[scaledSizeWidth, innerHeight]} // Apply scaling here
+//             separation={(a, b) => (a.parent === b.parent ? 10 : 20)}
+//           >
+//             {(tree) => (
+//               <Group top={origin.y} left={origin.x}>
+//                 {tree.links().map((link, i) => (
+//                   <LinkComponent
+//                     key={i}
+//                     data={link}
+//                     percent={stepPercent}
+//                     stroke="rgb(0,0,0)"
+//                     strokeWidth="1"
+//                     fill="none"
+//                   />
+//                 ))}
+
+//                 {tree.descendants().map((node, key) => {
+//                   const width = 100;
+//                   const height = 40;
+
+//                   let top: number;
+//                   let left: number;
+//                   if (layout === 'polar') {
+//                     const [radialX, radialY] = pointRadial(node.x, node.y);
+//                     top = radialY;
+//                     left = radialX;
+//                   } else if (orientation === 'vertical') {
+//                     top = node.y;
+//                     left = node.x;
+//                   } else {
+//                     top = node.x;
+//                     left = node.y;
+//                   }
+
+//                   return (
+//                     <Group top={top} left={left} key={key}>
+//                       <circle
+//                         cx={-width / 2 - 50}
+//                         cy={0}
+//                         r={10}
+//                         fill={node.data.isExpanded ? '#000000' : '#ffffff'}
+//                         stroke="#000000"
+//                         strokeWidth={2}
+//                         onClick={() => handleNodeClick(node)}
+//                         style={{ cursor: 'pointer' }}
+//                       />
+//                       <rect
+//                         height={height}
+//                         width={width}
+//                         y={-height / 2}
+//                         x={-width / 2}
+//                         fill="#ffffff"
+//                         stroke={node.data.children ? 'black' : 'gray'}
+//                         strokeWidth={2}
+//                         rx={10}
+//                       />
+//                       <text
+//                         dy=".33em"
+//                         fontSize={12}
+//                         fontFamily="Arial"
+//                         textAnchor="middle"
+//                         style={{ pointerEvents: 'none' }}
+//                         fill="black"
+//                       >
+//                         {node.data.name}
+//                       </text>
+//                     </Group>
+//                   );
+//                 })}
+//               </Group>
+//             )}
+//           </Tree>
+//         </Group>
+//       </svg>
+//     </div>
+//   );
+// }
+
+
+// import React, { useEffect, useState } from 'react';
+// import { Group } from '@visx/group';
+// import { hierarchy, Tree } from '@visx/hierarchy';
+// import { LinearGradient } from '@visx/gradient';
+// import yaml from 'js-yaml';
+// import useForceUpdate from './useForceUpdate';
+// import LinkControls from './LinkControls';
+// import getLinkComponent from './getLinkComponent';
+// import styles from './openapitree.module.css';
+// import SwaggerParser from "@apidevtools/swagger-parser";
+
+// export interface TreeNode {
+//   name: string;
+//   isExpanded?: boolean;
+//   children?: TreeNode[];
+//   dataType?: string;
+// }
+
+// const defaultMargin = { top: 30, left: 30, right: 30, bottom: 70 };
+
+// export type LinkTypesProps = {
+//   width: number;
+//   height: number;
+//   margin?: { top: number; right: number; bottom: number; left: number };
+//   schemaName: string;
+// };
+
+// const transformOpenApiToTree = (data: any, schemaName: string): TreeNode => {
+//   const definitions = data.components?.schemas || data.definitions;
+
+//   if (!definitions) {
+//     return { name: 'No Definitions', children: [], isExpanded: false };
+//   }
+
+//   const schema = definitions[schemaName];
+
+//   const getSchemaNameFromRef = (ref: string): string => ref.split('/').pop()!;
+
+//   const transformSchemaToNode = (schema: any): TreeNode => {
+//     if (!schema) {
+//       return { name: schemaName, children: [], isExpanded: false };
+//     }
+
+//     const transformProperties = (properties: any): TreeNode[] => {
+//       return Object.keys(properties).map((prop) => {
+//         const propSchema = properties[prop];
+//         let children: TreeNode[] = [];
+
+//         if (propSchema.$ref) {
+//           const refSchemaName = getSchemaNameFromRef(propSchema.$ref);
+//           children = [transformSchemaToNode(definitions[refSchemaName])];
+//         } else if (propSchema.type === 'object' && propSchema.properties) {
+//           children = transformProperties(propSchema.properties);
+//         } else if (propSchema.type === 'array' && propSchema.items) {
+//           children = propSchema.items.$ref
+//             ? [transformSchemaToNode(definitions[getSchemaNameFromRef(propSchema.items.$ref)])]
+//             : [];
+//         }
+
+//         return {
+//           name: prop,
+//           dataType: propSchema.$ref ? "reference" : propSchema.type,
+//           children,
+//           isExpanded: false,
+//         };
+//       });
+//     };
+
+//     return {
+//       name: schemaName,
+//       children: schema.properties ? transformProperties(schema.properties) : [],
+//       isExpanded: true,
+//     };
+//   };
+
+//   return transformSchemaToNode(schema);
+// };
+
+// export default function OpenAPITree({
+//   width: totalWidth,
+//   height: totalHeight,
+//   margin = defaultMargin,
+//   schemaName,
+// }: LinkTypesProps) {
+//   const [data, setData] = useState<TreeNode>({ name: 'Loading...', children: [] });
+//   const [layout, setLayout] = useState<string>('cartesian');
+//   const [orientation, setOrientation] = useState<string>('horizontal'); // Horizontal orientation
+//   const [linkType, setLinkType] = useState<string>('step'); // Changed link type to step for better alignment
+//   const [stepPercent, setStepPercent] = useState<number>(0.5);
+//   const forceUpdate = useForceUpdate();
+
+//   useEffect(() => {
+//     const fetchData = async () => {
+//       try {
+//         const response = await fetch('/airshopping.yaml');
+//         const yamlText = await response.text();
+//         const json = yaml.load(yamlText) as string;
+
+//         let openapi = await SwaggerParser.validate(json);
+//         const transformedData = transformOpenApiToTree(openapi, schemaName);
+//         setData(transformedData);
+//       } catch (error) {
+//         console.error('Error fetching or parsing YAML file:', error);
+//         setData({ name: 'Error loading data', children: [] });
+//       }
+//     };
+//     fetchData();
+//   }, [schemaName]);
+
+//   const innerWidth = totalWidth - margin.left - margin.right;
+//   const innerHeight = totalHeight - margin.top - margin.bottom;
+
+//   const handleNodeClick = (node: any) => {
+//     const updateNode = (currentNode: TreeNode): TreeNode => {
+//       if (currentNode.name === node.data.name) {
+//         return {
+//           ...currentNode,
+//           isExpanded: !currentNode.isExpanded,
+//         };
+//       }
+//       return {
+//         ...currentNode,
+//         children: currentNode.children
+//           ? currentNode.children.map((child) => updateNode(child))
+//           : [],
+//       };
+//     };
+
+//     const updatedTree = updateNode(data);
+//     setData(updatedTree);
+//     forceUpdate();
+//   };
+
+//   // Updated origin to place the main node at the top left
+//   // Update size to give more horizontal space and less vertical space
+//   const size = [innerWidth, innerHeight]; // Updated to support horizontal layout
+
+
+//   let origin: { x: number; y: number };
+//   let sizeWidth: number;
+//   let sizeHeight: number;
+
+//   if (layout === 'polar') {
+//     origin = { x: innerWidth / 2, y: innerHeight / 2 };
+//     sizeWidth = 2 * Math.PI;
+//     sizeHeight = Math.min(innerWidth, innerHeight) / 2;
+//   } else {
+//     origin = { x: 0, y: 0 };
+//     if (orientation === 'vertical') {
+//       sizeWidth = innerWidth;
+//       sizeHeight = innerHeight;
+//     } else {
+//       sizeWidth = innerHeight;
+//       sizeHeight = innerWidth;
+//     }
+//   }
+//   const LinkComponent = getLinkComponent({ layout, linkType, orientation });
+
+//   return totalWidth < 10 ? null : (
+//     <div className={styles.container}>
+//       <LinkControls
+//         layout={layout}
+//         orientation={orientation}
+//         linkType={linkType}
+//         stepPercent={stepPercent}
+//         setLayout={setLayout}
+//         setOrientation={setOrientation}
+//         setLinkType={setLinkType}
+//         setStepPercent={setStepPercent}
+//       />
+//       <svg width={totalWidth} height={totalHeight}
+//       >
+//         <LinearGradient id="links-gradient" from="#fd9b93" to="#fe6e9e" />
+//         <rect width={totalWidth} height={window.innerHeight} rx={10} fill="#987435" />
+//         <Group top={margin.top} left={margin.left}>
+//           <Tree
+//             root={hierarchy(data, (d) => (d.isExpanded ? d.children : null))}
+//             size={[innerWidth, innerHeight]}
+//             separation={(a, b) => (a.parent === b.parent ? 0.1 : 0.1)} // Adjusted separation
+//           >
+//             {(tree) => (
+//               <Group top={origin.y} left={origin.x}>
+//                 {tree.links().map((link, i) => (
+//                   <LinkComponent
+//                     key={i}
+//                     data={link}
+//                     percent={stepPercent}
+//                     stroke="rgb(0,0,0)"
+//                     strokeWidth="1"
+//                     fill="none"
+//                   />
+//                 ))}
+//                 {tree.descendants().map((node, key) => {
+//                   const nodeWidth = 100;
+//                   const nodeHeight = 40;
+//                   const top = node.x;
+//                   const left = node.y;
+
+//                   return (
+//                     <Group top={top} left={left} key={key}>
+//                       <circle
+//                         cx={-nodeWidth / 2 - 10}
+//                         cy={0}
+//                         r={10}
+//                         fill={node.data.isExpanded ? '#000000' : '#ffffff'}
+//                         stroke="#000000"
+//                         strokeWidth={2}
+//                         onClick={() => handleNodeClick(node)}
+//                         style={{ cursor: 'pointer' }}
+//                       />
+//                       <rect
+//                         height={nodeHeight}
+//                         width={nodeWidth}
+//                         y={-nodeHeight / 2}
+//                         x={-nodeWidth / 2}
+//                         fill="#ffffff"
+//                         stroke={node.data.children ? 'black' : 'gray'}
+//                         strokeWidth={2}
+//                         rx={10}
+//                       />
+//                       <text
+//                         dy=".33em"
+//                         fontSize={12}
+//                         fontFamily="Arial"
+//                         textAnchor="middle"
+//                         style={{ pointerEvents: 'none' }}
+//                         fill="black"
+//                       >
+//                         {node.data.name}
+//                       </text>
+//                     </Group>
+//                   );
+//                 })}
+//               </Group>
+//             )}
+//           </Tree>
+//         </Group>
+//       </svg>
+//     </div>
+//   );
+// }
+ /*
+//TODO: important
+import React, { useMemo, useState, useEffect, useCallback } from 'react';
+import { Group } from '@visx/group';
+import { Tree, hierarchy } from '@visx/hierarchy';
+import { HierarchyPointNode } from '@visx/hierarchy/lib/types';
+import { LinkHorizontal } from '@visx/shape';
+import { LinearGradient } from '@visx/gradient';
+import yaml from 'js-yaml';
+import SwaggerParser from '@apidevtools/swagger-parser';
+
+const peach = '#fd9b93';
+const pink = '#fe6e9e';
+const blue = '#03c0dc';
+const green = '#26deb0';
+const plum = '#71248e';
+const lightpurple = '#374469';
+const white = '#ffffff';
+export const background = '#272b4d';
+
+interface TreeNode {
+  name: string;
+  children?: TreeNode[];
+}
+
+type HierarchyNode = HierarchyPointNode<TreeNode>;
+
+const defaultMargin = { top: 20, left: 20, right: 20, bottom: 20 };
+
+export type TreeProps = {
+  width: number;
+  height: number;
+  margin?: { top: number; right: number; bottom: number; left: number };
+  schemaName: string; // Schema name to fetch from OpenAPI YAML
+};
+
+// Node component
+function Node({ node, toggleNode }: { node: HierarchyNode; toggleNode: (node: HierarchyNode) => void }) {
+  const width = 40;
+  const height = 20;
+  const centerX = -width / 2;
+  const centerY = -height / 2;
+  const isRoot = node.depth === 0;
+  const isParent = !!node.children;
+
+  const handleClick = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent event bubbling
+    toggleNode(node);
+  };
+
+  if (isRoot) {
+    return (
+      <Group top={node.x} left={node.y}>
+        <circle r={12} fill="url('#lg')" />
+        <text
+          dy=".33em"
+          fontSize={9}
+          fontFamily="Arial"
+          textAnchor="middle"
+          style={{ pointerEvents: 'none' }}
+          fill={plum}
+        >
+          {node.data.name}
+        </text>
+      </Group>
+    );
+  } else if (isParent) {
+    return (
+      <Group top={node.x} left={node.y}>
+        <rect
+          height={height}
+          width={width}
+          y={centerY}
+          x={centerX}
+          fill={background}
+          stroke={blue}
+          strokeWidth={1}
+          onClick={handleClick} // Ensure handleClick is set on the parent node
+        />
+        <text
+          dy=".33em"
+          fontSize={9}
+          fontFamily="Arial"
+          textAnchor="middle"
+          style={{ pointerEvents: 'none' }}
+          fill={white}
+        >
+          {node.data.name}
+        </text>
+      </Group>
+    );
+  }
+
+  return (
+    <Group top={node.x} left={node.y}>
+      <rect
+        height={height}
+        width={width}
+        y={centerY}
+        x={centerX}
+        fill={background}
+        stroke={green}
+        strokeWidth={1}
+        strokeDasharray="2,2"
+        strokeOpacity={0.6}
+        rx={10}
+        onClick={handleClick}
+      />
+      <text
+        dy=".33em"
+        fontSize={9}
+        fontFamily="Arial"
+        textAnchor="middle"
+        fill={green}
+        style={{ pointerEvents: 'none' }}
+      >
+        {node.data.name}
+      </text>
+    </Group>
+  );
+}
+
+// Convert OpenAPI schema to tree data
+const transformOpenApiToTree = (data: any, schemaName: string): TreeNode => {
+  const definitions = data.components?.schemas || data.definitions;
+
+  if (!definitions) {
+    return { name: 'No Definitions', children: [] };
+  }
+
+  const schema = definitions[schemaName];
+
+  const getSchemaNameFromRef = (ref: string): string => ref.split('/').pop()!;
+
+  const transformSchemaToNode = (schema: any): TreeNode => {
+    if (!schema) {
+      return { name: schemaName, children: [] };
+    }
+
+    const transformProperties = (properties: any): TreeNode[] => {
+      return Object.keys(properties).map((prop) => {
+        const propSchema = properties[prop];
+        let children: TreeNode[] = [];
+
+        if (propSchema.$ref) {
+          const refSchemaName = getSchemaNameFromRef(propSchema.$ref);
+          children = [transformSchemaToNode(definitions[refSchemaName])];
+        } else if (propSchema.type === 'object' && propSchema.properties) {
+          children = transformProperties(propSchema.properties);
+        } else if (propSchema.type === 'array' && propSchema.items) {
+          children = propSchema.items.$ref
+            ? [transformSchemaToNode(definitions[getSchemaNameFromRef(propSchema.items.$ref)])]
+            : [];
+        }
+
+        return {
+          name: prop,
+          children,
+        };
+      });
+    };
+
+    return {
+      name: schemaName,
+      children: schema.properties ? transformProperties(schema.properties) : [],
+    };
+  };
+
+  return transformSchemaToNode(schema);
+};
+
+export default function OpenAPITree({ width, height, margin = defaultMargin, schemaName }: TreeProps) {
+  const [data, setData] = useState<TreeNode | null>(null);
+  const [expandedNodes, setExpandedNodes] = useState<Record<string, boolean>>({});
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch('/airshopping.yaml');
+        const yamlText = await response.text();
+        const json = yaml.load(yamlText) as string;
+
+        let openapi = await SwaggerParser.validate(json);
+        const transformedData = transformOpenApiToTree(openapi, schemaName);
+        setData(transformedData);
+      } catch (error) {
+        console.error('Error fetching or parsing YAML file:', error);
+        setData({ name: 'Error loading data', children: [] });
+      }
+    };
+
+    fetchData();
+  }, [schemaName]);
+
+  const toggleNode = useCallback((node: HierarchyNode) => {
+    setExpandedNodes((prev) => ({
+      ...prev,
+      [node.data.name]: !prev[node.data.name],
+    }));
+  }, []);
+
+  const yMax = height - margin.top - margin.bottom;
+  const xMax = width - margin.left - margin.right;
+
+  const treeData = useMemo(() => {
+    if (!data) return null;
+
+    const filterData = (node: TreeNode): TreeNode | null => {
+      if (!expandedNodes[node.name] && node.children) {
+        return { ...node, children: undefined };
+      }
+
+      return {
+        ...node,
+        children: node.children?.map((child) => filterData(child)).filter(Boolean) as TreeNode[],
+      };
+    };
+
+    return hierarchy(filterData(data)!);
+  }, [data, expandedNodes]);
+
+  return width < 10 || !treeData ? null : (
+    <svg width={width} height={height}>
+      <LinearGradient id="lg" from={peach} to={pink} />
+      <rect width={width} height={height} rx={14} fill={background} />
+      <Tree<TreeNode> root={treeData} size={[yMax, xMax]} nodeSize={[100, 40]} separation={(a, b) => (a.parent === b.parent ? 1 : 0.5)}>
+        {(tree) => (
+          <Group top={margin.top} left={margin.left}>
+            {tree.links().map((link, i) => (
+              <LinkHorizontal
+                key={`link-${i}`}
+                data={link}
+                stroke={lightpurple}
+                strokeWidth="1"
+                fill="none"
+              />
+            ))}
+            {tree.descendants().map((node, i) => (
+              <Node key={`node-${i}`} node={node} toggleNode={toggleNode} />
+            ))}
+          </Group>
+        )}
+      </Tree>
+    </svg>
+  );
+}
+
+
+*/
+/*
+import React, { useMemo, useState, useEffect, useCallback } from 'react';
+import { Group } from '@visx/group';
+import { Tree, hierarchy } from '@visx/hierarchy';
+import { HierarchyPointNode } from '@visx/hierarchy/lib/types';
+import { LinkHorizontal } from '@visx/shape';
+import { LinearGradient } from '@visx/gradient';
+import yaml from 'js-yaml';
+import SwaggerParser from '@apidevtools/swagger-parser';
+import path from 'utils/treepath'
+
+const peach = '#fd9b93';
+const pink = '#fe6e9e';
+const blue = '#03c0dc';
+const green = '#26deb0';
+const plum = '#71248e';
+const lightpurple = '#374469';
+const white = '#ffffff';
+export const background = '#272b4d';
+
+interface TreeNode {
+  name: string;
+  children?: TreeNode[];
+}
+
+type HierarchyNode = HierarchyPointNode<TreeNode>;
+
+const defaultMargin = { top: 20, left: 20, right: 20, bottom: 20 };
+
+export type TreeProps = {
+  width: number;
+  height: number;
+  margin?: { top: number; right: number; bottom: number; left: number };
+  schemaName: string; // Schema name to fetch from OpenAPI YAML
+};
+
+const CustomLink = ({ link }: { link: any }) => {
+  const { source, target } = link;
+  const path = `M${source.y},${source.x} 
+                V${target.x} 
+                H${target.y}`;
+
+  return (
+    <path
+      d={path}
+      fill="none"
+      stroke={lightpurple}
+      strokeWidth={1}
+    />
+  );
+};
+
+// Node component
+function Node({ node, toggleNode }: { node: HierarchyNode; toggleNode: (node: HierarchyNode) => void }) {
+  const width = 40;
+  const height = 20;
+  const centerX = -width / 2;
+  const centerY = -height / 2;
+  const isRoot = node.depth === 0;
+  const isParent = !!node.children;
+
+  const handleClick = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent event bubbling
+    toggleNode(node);
+  };
+
+  if (isRoot) {
+    return (
+      <Group top={node.x} left={node.y}>
+        <circle r={12} fill="url('#lg')" />
+        <text
+          dy=".33em"
+          fontSize={9}
+          fontFamily="Arial"
+          textAnchor="middle"
+          style={{ pointerEvents: 'none' }}
+          fill={plum}
+        >
+          {node.data.name}
+        </text>
+      </Group>
+    );
+  } else if (isParent) {
+    return (
+      <Group top={node.x} left={node.y}>
+        <rect
+          height={height}
+          width={width}
+          y={centerY}
+          x={centerX}
+          fill={background}
+          stroke={blue}
+          strokeWidth={1}
+          onClick={handleClick} // Ensure handleClick is set on the parent node
+        />
+        <text
+          dy=".33em"
+          fontSize={9}
+          fontFamily="Arial"
+          textAnchor="middle"
+          style={{ pointerEvents: 'none' }}
+          fill={white}
+        >
+          {node.data.name}
+        </text>
+      </Group>
+    );
+  }
+
+  return (
+    <Group top={node.x} left={node.y}>
+      <rect
+        height={height}
+        width={width}
+        y={centerY}
+        x={centerX}
+        fill={background}
+        stroke={green}
+        strokeWidth={1}
+        strokeDasharray="2,2"
+        strokeOpacity={0.6}
+        rx={10}
+        onClick={handleClick}
+      />
+      <text
+        dy=".33em"
+        fontSize={9}
+        fontFamily="Arial"
+        textAnchor="middle"
+        fill={green}
+        style={{ pointerEvents: 'none' }}
+      >
+        {node.data.name}
+      </text>
+    </Group>
+  );
+}
+
+// Convert OpenAPI schema to tree data
+const transformOpenApiToTree = (data: any, schemaName: string): TreeNode => {
+  const definitions = data.components?.schemas || data.definitions;
+
+  if (!definitions) {
+    return { name: 'No Definitions', children: [] };
+  }
+
+  const schema = definitions[schemaName];
+
+  const getSchemaNameFromRef = (ref: string): string => ref.split('/').pop()!;
+
+  const transformSchemaToNode = (schema: any): TreeNode => {
+    if (!schema) {
+      return { name: schemaName, children: [] };
+    }
+
+    const transformProperties = (properties: any): TreeNode[] => {
+      return Object.keys(properties).map((prop) => {
+        const propSchema = properties[prop];
+        let children: TreeNode[] = [];
+
+        if (propSchema.$ref) {
+          const refSchemaName = getSchemaNameFromRef(propSchema.$ref);
+          children = [transformSchemaToNode(definitions[refSchemaName])];
+        } else if (propSchema.type === 'object' && propSchema.properties) {
+          children = transformProperties(propSchema.properties);
+        } else if (propSchema.type === 'array' && propSchema.items) {
+          children = propSchema.items.$ref
+            ? [transformSchemaToNode(definitions[getSchemaNameFromRef(propSchema.items.$ref)])]
+            : [];
+        }
+
+        return {
+          name: prop,
+          children,
+        };
+      });
+    };
+
+    return {
+      name: schemaName,
+      children: schema.properties ? transformProperties(schema.properties) : [],
+    };
+  };
+
+  return transformSchemaToNode(schema);
+};
+
+export default function OpenAPITree({ width, height, margin = defaultMargin, schemaName }: TreeProps) {
+  const [data, setData] = useState<TreeNode | null>(null);
+  const [expandedNodes, setExpandedNodes] = useState<Record<string, boolean>>({});
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch('/airshopping.yaml');
+        const yamlText = await response.text();
+        const json = yaml.load(yamlText) as string;
+
+        let openapi = await SwaggerParser.validate(json);
+        const transformedData = transformOpenApiToTree(openapi, schemaName);
+        setData(transformedData);
+
+        // Initialize all nodes to be expanded by default
+        const initializeExpandedNodes = (node: TreeNode, expanded: Record<string, boolean> = {}): Record<string, boolean> => {
+          expanded[node.name] = true;
+          if (node.children) {
+            node.children.forEach((child) => initializeExpandedNodes(child, expanded));
+          }
+          return expanded;
+        };
+
+        const initialExpanded = initializeExpandedNodes(transformedData);
+        setExpandedNodes(initialExpanded);
+      } catch (error) {
+        console.error('Error fetching or parsing YAML file:', error);
+        setData({ name: 'Error loading data', children: [] });
+      }
+    };
+
+    fetchData();
+  }, [schemaName]);
+
+  const toggleNode = useCallback((node: HierarchyNode) => {
+    setExpandedNodes((prev) => ({
+      ...prev,
+      [node.data.name]: !prev[node.data.name],
+    }));
+  }, []);
+
+  const yMax = height - margin.top - margin.bottom;
+  const xMax = width - margin.left - margin.right;
+
+  const treeData = useMemo(() => {
+    if (!data) return null;
+
+    const filterData = (node: TreeNode): TreeNode | null => {
+      if (!expandedNodes[node.name] && node.children) {
+        return { ...node, children: undefined };
+      }
+
+      return {
+        ...node,
+        children: node.children?.map((child) => filterData(child)).filter(Boolean) as TreeNode[],
+      };
+    };
+
+    return hierarchy(filterData(data)!);
+  }, [data, expandedNodes]);
+
+  return width < 10 || !treeData ? null : (
+    <svg width={width} height={height}>
+      <LinearGradient id="lg" from={peach} to={pink} />
+      <rect width={width} height={height} rx={14} fill={background} />
+      <Tree<TreeNode>
+  root={treeData}
+  size={[yMax, xMax]} // Layout to ensure the tree expands downward and right
+  nodeSize={[50, 150]} // Adjust for right-hand alignment and spacing
+  separation={(a, b) => (a.parent === b.parent ? 1 : 0.5)}
+>
+  {(tree) => (
+    <Group top={margin.top} left={margin.left}>
+      { }
+      {tree.links().map((link, i) => (
+        <CustomLink key={`link-${i}`} link={link} />
+      ))}
+      { }
+      {tree.descendants().map((node, i) => (
+        <Node key={`node-${i}`} node={node} toggleNode={toggleNode} />
+      ))}
+    </Group>
+  )}
+</Tree>
+    </svg>
+  );
+}
+*/
+
 import React, { useEffect, useState } from 'react';
 import { Group } from '@visx/group';
 import { hierarchy, Tree } from '@visx/hierarchy';
-import { pointRadial } from 'd3-shape';
+import { LinearGradient } from '@visx/gradient';
+import yaml from 'js-yaml';
 import useForceUpdate from './useForceUpdate';
 import LinkControls from './LinkControls';
 import getLinkComponent from './getLinkComponent';
-import yaml from 'js-yaml';
+import styles from './openapitree.module.css';
+import SwaggerParser from "@apidevtools/swagger-parser";
 
 export interface TreeNode {
   name: string;
@@ -2458,85 +3495,50 @@ export type LinkTypesProps = {
   schemaName: string;
 };
 
-// Convert OpenAPI schema to tree structure
 const transformOpenApiToTree = (data: any, schemaName: string): TreeNode => {
   const definitions = data.components?.schemas || data.definitions;
-  if (!definitions) return { name: 'No Definitions', children: [], isExpanded: false };
+
+  if (!definitions) {
+    return { name: 'No Definitions', children: [], isExpanded: false };
+  }
 
   const schema = definitions[schemaName];
+
+  const getSchemaNameFromRef = (ref: string): string => ref.split('/').pop()!;
+
   const transformSchemaToNode = (schema: any): TreeNode => {
-    if (!schema) return { name: schemaName, children: [], isExpanded: false };
+    if (!schema) {
+      return { name: schemaName, children: [], isExpanded: false };
+    }
 
-    const properties = schema.properties
-      ? Object.keys(schema.properties).map((prop) => {
-          const propSchema = schema.properties[prop];
-          
-          if (propSchema.$ref) {
-            const refSchemaName = propSchema.$ref.split('/').pop()!;
-            return {
-              name: prop,
-              dataType: "reference",
-              children: [transformSchemaToNode(definitions[refSchemaName])],
-              isExpanded: false,
-            };
-          }
+    const transformProperties = (properties: any): TreeNode[] => {
+      return Object.keys(properties).map((prop) => {
+        const propSchema = properties[prop];
+        let children: TreeNode[] = [];
 
-          if (propSchema.type === 'object' && propSchema.properties) {
-            return {
-              name: prop,
-              dataType: propSchema.type,
-              children: Object.keys(propSchema.properties).map((nestedProp) => {
-                const nestedPropSchema = propSchema.properties[nestedProp];
-                if (nestedPropSchema.$ref) {
-                  const nestedRefSchemaName = nestedPropSchema.$ref.split('/').pop()!;
-                  return {
-                    name: nestedProp,
-                    dataType: "reference",
-                    children: [transformSchemaToNode(definitions[nestedRefSchemaName])],
-                    isExpanded: false,
-                  };
-                }
-                return {
-                  name: nestedProp,
-                  dataType: nestedPropSchema.type,
-                  children: nestedPropSchema.properties
-                    ? Object.keys(nestedPropSchema.properties).map((subNestedProp) => ({
-                        name: subNestedProp,
-                        dataType: nestedPropSchema.properties[subNestedProp].type,
-                        children: [],
-                        isExpanded: false,
-                      }))
-                    : [],
-                  isExpanded: false,
-                };
-              }),
-              isExpanded: false,
-            };
-          }
+        if (propSchema.$ref) {
+          const refSchemaName = getSchemaNameFromRef(propSchema.$ref);
+          children = [transformSchemaToNode(definitions[refSchemaName])];
+        } else if (propSchema.type === 'object' && propSchema.properties) {
+          children = transformProperties(propSchema.properties);
+        } else if (propSchema.type === 'array' && propSchema.items) {
+          children = propSchema.items.$ref
+            ? [transformSchemaToNode(definitions[getSchemaNameFromRef(propSchema.items.$ref)])]
+            : [];
+        }
 
-          if (propSchema.type === 'array' && propSchema.items) {
-            return {
-              name: prop,
-              dataType: 'array',
-              children: propSchema.items.$ref
-                ? [transformSchemaToNode(definitions[propSchema.items.$ref.split('/').pop()!])]
-                : [],
-              isExpanded: false,
-            };
-          }
-
-          return {
-            name: prop,
-            dataType: propSchema.type,
-            children: [],
-            isExpanded: false,
-          };
-        })
-      : [];
+        return {
+          name: prop,
+          dataType: propSchema.$ref ? "reference" : propSchema.type,
+          children,
+          isExpanded: false,
+        };
+      });
+    };
 
     return {
       name: schemaName,
-      children: properties,
+      children: schema.properties ? transformProperties(schema.properties) : [],
       isExpanded: true,
     };
   };
@@ -2552,10 +3554,9 @@ export default function OpenAPITree({
 }: LinkTypesProps) {
   const [data, setData] = useState<TreeNode>({ name: 'Loading...', children: [] });
   const [layout, setLayout] = useState<string>('cartesian');
-  const [orientation, setOrientation] = useState<string>('horizontal');
-  const [linkType, setLinkType] = useState<string>('step');
+  const [orientation, setOrientation] = useState<string>('horizontal'); // Horizontal orientation
+  const [linkType, setLinkType] = useState<string>('step'); // Changed link type to step for better alignment
   const [stepPercent, setStepPercent] = useState<number>(0.5);
-  const [tooltip, setTooltip] = useState<{ x: number; y: number; content: string } | null>(null);
   const forceUpdate = useForceUpdate();
 
   useEffect(() => {
@@ -2563,7 +3564,9 @@ export default function OpenAPITree({
       try {
         const response = await fetch('/airshopping.yaml');
         const yamlText = await response.text();
-        const openapi = yaml.load(yamlText);
+        const json = yaml.load(yamlText) as string;
+
+        let openapi = await SwaggerParser.validate(json);
         const transformedData = transformOpenApiToTree(openapi, schemaName);
         setData(transformedData);
       } catch (error) {
@@ -2583,7 +3586,6 @@ export default function OpenAPITree({
         return {
           ...currentNode,
           isExpanded: !currentNode.isExpanded,
-          children: currentNode.isExpanded ? [] : currentNode.children,
         };
       }
       return {
@@ -2596,20 +3598,12 @@ export default function OpenAPITree({
 
     const updatedTree = updateNode(data);
     setData(updatedTree);
-    forceUpdate(); // Force a re-render
+    forceUpdate();
   };
 
-  const handleNodeClickForToolTip = (node: any, event: React.MouseEvent<SVGGElement, MouseEvent>) => {
-    setTooltip({
-      x: event.clientX,
-      y: event.clientY - 40,
-      content: node.data.name,
-    });
-  };
-
-  const hideTooltip = () => {
-    setTooltip(null);
-  };
+  // Updated origin to place the main node at the top left
+  // Update size to give more horizontal space and less vertical space
+  const size = [innerWidth, innerHeight]; // Updated to support horizontal layout
 
   let origin: { x: number; y: number };
   let sizeWidth: number;
@@ -2617,7 +3611,7 @@ export default function OpenAPITree({
 
   if (layout === 'polar') {
     origin = { x: innerWidth / 2, y: innerHeight / 2 };
-    sizeWidth = 1;
+    sizeWidth = 2 * Math.PI;
     sizeHeight = Math.min(innerWidth, innerHeight) / 2;
   } else {
     origin = { x: 0, y: 0 };
@@ -2629,11 +3623,10 @@ export default function OpenAPITree({
       sizeHeight = innerWidth;
     }
   }
-
   const LinkComponent = getLinkComponent({ layout, linkType, orientation });
 
   return totalWidth < 10 ? null : (
-    <div>
+    <div className={styles.container}>
       <LinkControls
         layout={layout}
         orientation={orientation}
@@ -2645,12 +3638,13 @@ export default function OpenAPITree({
         setStepPercent={setStepPercent}
       />
       <svg width={totalWidth} height={totalHeight}>
-        <rect width={totalWidth} height={totalHeight} rx={14} fill="#ffffff" />
+        <LinearGradient id="links-gradient" from="#fd9b93" to="#fe6e9e" />
+        <rect width={totalWidth} height={window.innerHeight} rx={10} fill="#987435" />
         <Group top={margin.top} left={margin.left}>
           <Tree
             root={hierarchy(data, (d) => (d.isExpanded ? d.children : null))}
-            size={[sizeWidth, sizeHeight]}
-            separation={(a, b) => (a.parent === b.parent ? 1 : 1)}
+            size={[innerWidth, innerHeight]}
+            separation={(a, b) => (a.parent === b.parent ? 0.2 : 0.2)} // Adjusted separation to reduce node distance
           >
             {(tree) => (
               <Group top={origin.y} left={origin.x}>
@@ -2664,54 +3658,33 @@ export default function OpenAPITree({
                     fill="none"
                   />
                 ))}
-
                 {tree.descendants().map((node, key) => {
-                  const width = 100;
-                  const height = 30;
-
-                  let top: number;
-                  let left: number;
-                  if (layout === 'polar') {
-                    const [radialX, radialY] = pointRadial(node.x, node.y);
-                    top = radialY;
-                    left = radialX;
-                  } else if (orientation === 'vertical') {
-                    top = node.y;
-                    left = node.x;
-                  } else {
-                    top = node.x;
-                    left = node.y;
-                  }
+                  const nodeWidth = 100;
+                  const nodeHeight = 40;
+                  const top = node.x;
+                  const left = node.y;
 
                   return (
                     <Group top={top} left={left} key={key}>
                       <circle
-                        cx={-width / 2 - 50} // Adjust position relative to the node
+                        cx={-nodeWidth / 2 - 10}
                         cy={0}
-                        r={10} // Radius of the circle
-                        fill={node.data.isExpanded ? '#000000' : '#ffffff'} // Fill color depending on expanded state
-                        stroke="#000000" // Stroke color
+                        r={10}
+                        fill={node.data.isExpanded ? '#000000' : '#ffffff'}
+                        stroke="#000000"
                         strokeWidth={2}
                         onClick={() => handleNodeClick(node)}
                         style={{ cursor: 'pointer' }}
                       />
-
-                      <circle cx={-width / 2 - 55} cy={0} r={3} fill="black" />
-                      <circle cx={-width / 2 - 45} cy={0} r={3} fill="black" />
-                      <circle cx={-width / 2 + 45} cy={0} r={3} fill="black" />
                       <rect
-                        height={height}
-                        width={width}
-                        y={-height / 2}
-                        x={-width / 2}
+                        height={nodeHeight}
+                        width={nodeWidth}
+                        y={-nodeHeight / 2}
+                        x={-nodeWidth / 2}
                         fill="#ffffff"
-                        stroke="black"
-                        strokeDasharray="4,4"
-                        strokeWidth={1.5}
-                        rx={5}
-                        onMouseEnter={(event) => handleNodeClickForToolTip(node, event)}
-                        onMouseLeave={hideTooltip}
-                        onClick={() => handleNodeClick(node)}
+                        stroke={node.data.children ? 'black' : 'gray'}
+                        strokeWidth={2}
+                        rx={10}
                       />
                       <text
                         dy=".33em"
@@ -2719,6 +3692,7 @@ export default function OpenAPITree({
                         fontFamily="Arial"
                         textAnchor="middle"
                         style={{ pointerEvents: 'none' }}
+                        fill="black"
                       >
                         {node.data.name}
                       </text>
@@ -2730,21 +3704,6 @@ export default function OpenAPITree({
           </Tree>
         </Group>
       </svg>
-      {tooltip && (
-        <div
-          style={{
-            position: 'absolute',
-            top: tooltip.y,
-            left: tooltip.x,
-            backgroundColor: '#fff',
-            padding: '5px',
-            border: '1px solid #ccc',
-            borderRadius: '4px',
-          }}
-        >
-          {tooltip.content}
-        </div>
-      )}
     </div>
   );
 }

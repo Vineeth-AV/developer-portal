@@ -1,0 +1,332 @@
+.nav.navbar {
+	position: fixed;
+	top: 0px;
+	width: 100%;
+}
+
+.nav[aria-label='breadcrumb'] {
+	position: fixed;
+	top: 100px;
+	width: 100%;
+	background-color: white;
+}
+
+form#xpath-form {
+	position: fixed;
+	width: 100%;
+	top: 146px;
+	background-color: white;
+}
+
+div.container {
+	max-width: 100%;
+	padding-left: 0px;
+	padding-right: 0px;
+}
+
+input#xpath-input {
+	width: calc(100% - 145px);
+	height: 23px;
+	font-family: 'Source Code Pro', monospace;
+}
+
+label#xpath-text {
+	font-weight: bold;
+	font-size: 22px;
+	padding-left:  10px;
+	padding-right: 10px;
+	margin-left: 4px;
+}
+
+object#svg-object {
+	user-select: none;
+}
+
+span#copy-link-btn:hover {
+	cursor: pointer;
+	opacity: 80%;
+}
+
+.side-bar1 {
+	position: fixed;
+	top: 210px;
+	height: calc(100% - 175px - 35px - 300px);
+	overflow: auto;
+	width: 270px;
+	padding: 5px 8px 5px 8px;
+	background-color: var(--gray-200);
+	border-bottom: 3px solid black;
+	z-index: 90;
+}
+
+.side-bar1 p {
+	font-size: 14px;
+}
+
+.element_name {
+	font-weight: bold;
+	font-family: 'Source Code Pro', monospace;
+}
+
+.first_type {
+	font-family: 'Source Code Pro', monospace;
+}
+
+.final_type {
+	margin-top: -5px;
+	font-family: 'Source Code Pro', monospace;
+}
+
+.facets {
+	padding-top: 5px;
+	font-family: 'Source Code Pro', monospace;
+	font-size: 14px;
+}
+
+.facets ul {
+	padding-left: 10px;
+}
+
+div.facet-name {
+	font-weight: bold;
+}
+
+div.facet-value {
+	padding-bottom: 5px;
+}
+
+.key {
+	padding-top: 5px;
+	font-family: 'Source Code Pro', monospace;
+	font-size: 14px;
+}
+
+.key ul {
+	padding-left: 10px;
+}
+
+.key a {
+	cursor: pointer;
+	font-size: 13px;
+}
+
+.keyref {
+	padding-top: 5px;
+	font-family: 'Source Code Pro', monospace;
+	font-size: 14px;
+}
+
+.keyref ul {
+	padding-left: 10px;
+}
+
+.keyref a {
+	cursor: pointer;
+	font-size: 13px;
+}
+
+.enum_tooltip {
+  border-bottom: 1px dotted black;
+}
+
+.enum_tooltip .enum_tooltiptext {
+  visibility: hidden;
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  padding: 3px 8px 3px 8px;
+  position: absolute;
+  margin-top: 25px;
+  left: 10px;
+  width: 250px;
+}
+
+.enum_tooltip:hover .enum_tooltiptext {
+  visibility: visible;
+}
+
+.side-bar2 {
+	position: fixed;
+	bottom: 0px;
+	height: 300px;
+	width: 270px;
+	padding: 5px 8px 5px 8px;
+	background-color: var(--gray-200);
+	z-index: 90;
+}
+
+.side-bar2 p {
+	font-size: 14px;
+}
+
+.annotation-title {
+	margin-bottom: 0px;
+	font-weight: bold;
+}
+
+.annotation {
+	max-height: 275px;
+	padding-bottom: 10px;
+	overflow: auto;
+}
+
+.side-bar3 {
+	position: fixed;
+	top: 175px;
+	height: 35px;
+	width: 270px;
+	padding: 5px 8px 5px 8px;
+	background-color: var(--gray-200);
+	z-index: 90;
+	font-size: 14px;
+	border-bottom: 3px solid black;
+}
+
+.side-bar3 ul {
+	margin-left: 0.7em;
+}
+
+li.warning {
+	color: red;
+}
+
+li.warning a {
+	color: red;
+	font-weight: bold;
+}
+
+.svg-container {
+	margin-top: 175px;
+	margin-left: 270px;
+}
+
+.collapse {
+	display: inline-block;
+	width: 47%;
+	cursor: pointer;
+	font-size: 16px;
+	font-weight: bold;
+	text-align: center;
+	margin-bottom: 5px;
+	margin-left: 3px;
+	padding: 4px 0px 1px 0px;
+	border: 1px solid black;
+	transition: 0.2s;
+}
+
+.collapse:hover {
+	background-color: black;
+	color: white;
+	transition: 0.2s;
+}
+
+.expand {
+	display: inline-block;
+	width: 47%;
+	cursor: pointer;
+	font-size: 16px;
+	font-weight: bold;
+	text-align: center;
+	margin-bottom: 5px;
+	padding: 4px 0px 1px 0px;
+	border: 1px solid black;
+	transition: 0.2s;
+}
+
+.expand:hover {
+	background-color: black;
+	color: white;
+	transition: 0.2s;
+}
+
+.instructions-btn {
+	position: fixed;
+	top: 148px;
+	right: 10px;
+	display: inline-block;
+	cursor: pointer;
+	font-size: 16px;
+	font-weight: bold;
+	text-align: center;
+	padding: 4px 4px 2px 4px;
+	transition: 0.2s;
+}
+
+.instructions-btn:hover {
+	background-color: black;
+	color: white;
+	transition: 0.2s;
+}
+
+.loading {
+	position: fixed;
+	top: 175px;
+	left: 270px;
+	height: 100%;
+	width: 100%;
+	background-color: white;
+	opacity: 85%;
+	z-index: 120;
+}
+
+.loading p {
+	margin: 20px 0px 0px 20px;
+	width: 180px;
+	text-align: center;
+	padding: 10px 5px 5px 5px;
+	background-color: black;
+	color: white;
+	font-size: 28px;
+}
+
+.slow-loading {
+	display: none;
+	position: fixed;
+	top: 250px;
+	left: 270px;
+	opacity: 85%;
+	z-index: 125;
+}
+
+.slow-loading p {
+	margin: 20px 0px 0px 20px;
+	width: 400px;
+	text-align: center;
+	padding: 10px 5px 5px 5px;
+	background-color: black;
+	color: white;
+	opacity: 100%;
+	font-size: 16px;
+}
+
+.instructions {
+	display: none;
+	position: fixed;
+	top: 175px;
+	left: 270px;
+	height: 100%;
+	width: 100%;
+	background-color: white;
+	opacity: 90%;
+	z-index: 110;
+}
+
+.instructions-x {
+	margin: 10px 0px 0px 10px;
+	padding: 10px 0px 0px 0px;
+	width: 60px;
+	text-align: center;
+	font-size: 36px;
+	transition: 0.2s;
+}
+
+.instructions-x:hover {
+	background-color: black;
+	color: white;
+	cursor: pointer;
+	transition: 0.2s;
+}
+
+.instructions ul {
+	padding: 10px 0px 0px 20px;
+}

@@ -8,6 +8,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@apidevtools/swagger-parser": "^10.1.0",
     "@docsearch/react": "^3.6.1",
     "@emotion/react": "^11.13.3",
     "@emotion/styled": "^11.13.0",
@@ -27,13 +28,16 @@
     "@visx/gradient": "^3.3.0",
     "@visx/group": "^3.3.0",
     "@visx/hierarchy": "^3.3.0",
+    "@visx/network": "^3.3.0",
     "@visx/point": "^3.3.0",
     "@visx/shape": "^3.5.0",
+    "@visx/zoom": "^3.3.0",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "cookies-next": "^4.2.1",
     "copy-to-clipboard": "^3.3.3",
     "d3": "^7.9.0",
+    "d3-shape": "^3.2.0",
     "flowbite": "^2.4.1",
     "flowbite-react": "^0.10.1",
     "framer-motion": "^11.3.7",
@@ -49,6 +53,7 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "reading-time": "^1.5.0",
+    "swagger-parser": "^10.0.3",
     "tailwind-merge": "^2.4.0",
     "tailwindcss-animate": "^1.0.7",
     "yaml": "^2.5.1"
