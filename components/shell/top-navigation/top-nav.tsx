@@ -8,7 +8,7 @@ import { MobileMenu } from './mobile-menu';
 import { MobileSideNav } from '@/components/shell/side-navigation/mobile-side-nav';
 import { ThemeToggle } from '@/components/theme-toggle';
 import logoIcon from 'public/verteil-logo.svg';
-import { TopNavigationItems } from './top-nav-items';
+import { TopHeaderItems, TopNavigationItems } from './top-nav-items';
  import { SearchButton } from '@/components/shell/search-button';
 
 export const TopNav = () => (
@@ -26,7 +26,11 @@ export const TopNav = () => (
         <div className="flex h-[3.75rem] w-full grow  items-center justify-between text-sm">
           <Logo />
           <div className="hidden items-center lg:flex">
+          <ul className="flex flex-row items-center justify-start space-x-4 lg:ml-8 w-full">
+           <TopHeaderItems />
+           </ul>
             <SearchButton className="w-full min-w-[300px]" />
+            
             <div className="mx-6 flex h-[10px] items-center border-l border-lightBorder pl-4 dark:border-darkBorder"
               >
               <ThemeToggle />
@@ -53,14 +57,10 @@ const Logo = () => (
     <div className="mb-3 ml-[0.3rem] mr-0 mt-5 flex items-center justify-start gap-1 pb-4 lg:ml-[0.0rem]">
       <Image
         src={logoIcon}
-        height={20}
-        alt="Vertel Logo"
+         alt="Vertel Logo"
         className="mt-2"
         priority={true}
       />
-      <div className="ml-0 pt-[0px] text-xl font-bold text-black dark:text-white">
-        Docs
-      </div>
     </div>
   </Link>
 );
