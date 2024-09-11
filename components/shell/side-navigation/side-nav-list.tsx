@@ -283,7 +283,7 @@ export const SideNavList = ({
         {showDivider && <Divider margin="mb-4 mt-4 mr-[12px]" />}
         <div
           className={clsx(
-            "flex items-center justify-between my-[1px] text-sm",
+            "flex items-center justify-between my-[2px] text-sm pb-2",
             isMainSection ? (isOverview ? "text-black" : "font-bold dark:text-white") : "font-normal dark:text-white"
           )}
           onClick={(e) => {
@@ -345,7 +345,8 @@ const ListItem = (
         <Link
           href={link.path}
           className={clsx(
-            `py-[6px] pl-0 pr-3 text-sm no-underline ${leftPadding} dark:text-[#C4C7C5]`,
+            `py-[6px] pl-0 pr-3 text-sm no-underline ${leftPadding} dark:text-[#394147];
+]`,
             isCurrentPage
               ? 'border-l-[1.5px] border-primary pl-1 font-medium text-primary dark:border-white/80 dark:text-white'
               : 'hover:text-zinc-900 dark:hover:text-white'
