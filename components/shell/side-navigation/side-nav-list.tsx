@@ -345,13 +345,18 @@ const ListItem = (
         <Link
           href={link.path}
           className={clsx(
-            `py-[6px] pl-0 pr-3 text-sm no-underline ${leftPadding} dark:text-[#394147];
-]`,
+            `py-[6px] pl-0 pr-3 text-sm no-underline ${leftPadding} dark:text-[#394147]`,
             isCurrentPage
-              ? 'border-l-[1.5px] border-primary pl-1 font-medium text-primary dark:border-white/80 dark:text-white'
-              : 'hover:text-zinc-900 dark:hover:text-white'
+              ? 'font-medium text-primary dark:text-white'
+              : 'hover:text-zinc-900 dark:hover:text-white',
+            'focus:outline-none focus:ring-0', // Remove default focus styling
+            'text-inherit' // Ensure text color inheritance from parent
           )}
           onClick={onClick}
+          style={{
+            color: isCurrentPage ? '#0082CD' : 'inherit', // Set color dynamically
+            border: 'none', // Remove any border styling
+          }}
         >
           {link.title}
         </Link>
@@ -367,4 +372,5 @@ const ListItem = (
     );
   }
 };
+
 
