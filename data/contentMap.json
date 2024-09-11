@@ -1,24 +1,32 @@
 {
   "getting_started": [
-   
+    {
+      "title": "Overview",
+      "links":[]
+    },
     {
       "title": "Fundamentals",
       "links": [
         {
-          "title": "Rate Limiting",
-          "path": "/getting-started/fundamentals/rate-limiting/"
-        },
-        {
-          "title": "Authentication",
-          "path": "/getting-started/fundamentals/authentication/"
-        },
-        {
-          "title": "Versioning and Compatibility",
-          "path": "/getting-started/fundamentals/versioning-and-compatibility/"
-        },
-        {
-          "title": "Errors",
-          "path": "/getting-started/fundamentals/errors/"
+          "title": "Core NDC Concepts",
+          "links": [
+            {
+              "title": "Offer & OfferItem",
+              "path": "/getting-started/fundamentals/core-ndc-concepts/offer-and-offer-items/"
+            },
+            {
+              "title": "Fare Components",
+              "path": "/getting-started/fundamentals/core-ndc-concepts/fare-component/"
+            },
+            {
+              "title": "Service",
+              "path": "/getting-started/fundamentals/core-ndc-concepts/service/"
+            },
+            {
+              "title": "Order and Order Items",
+              "path": "/getting-started/fundamentals/core-ndc-concepts/order-and-order-items/"
+            }
+          ]
         },
         {
           "title": "Design",
@@ -46,26 +54,22 @@
           ]
         },
         {
-          "title": "Core NDC Concepts",
-          "links": [
-            {
-              "title": "Offer & OfferItem",
-              "path": "/getting-started/fundamentals/core-ndc-concepts/offer-and-offer-items/"
-            },
-            {
-              "title": "Fare Components",
-              "path": "/getting-started/fundamentals/core-ndc-concepts/fare-component/"
-            },
-            {
-              "title": "Service",
-              "path": "/getting-started/fundamentals/core-ndc-concepts/service/"
-            },
-            {
-              "title": "Order and Order Items",
-              "path": "/getting-started/fundamentals/core-ndc-concepts/order-and-order-items/"
-            }
-          ]
+          "title": "Authentication",
+          "path": "/getting-started/fundamentals/authentication/"
+        },
+        {
+          "title": "Rate Limiting",
+          "path": "/getting-started/fundamentals/rate-limiting/"
+        },
+        {
+          "title": "Errors",
+          "path": "/getting-started/fundamentals/errors/"
+        },
+        {
+          "title": "Versioning and Compatibility",
+          "path": "/getting-started/fundamentals/versioning-and-compatibility/"
         }
+        
       ]
     },
     {
