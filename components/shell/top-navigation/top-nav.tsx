@@ -27,7 +27,8 @@ export const TopNav = () => (
           <Logo />
           <div className="hidden items-center lg:flex">
             <SearchButton className="w-full min-w-[300px]" />
-            <div className="mx-6 flex h-[10px] items-center border-l border-lightBorder pl-4 dark:border-darkBorder">
+            <div className="mx-6 flex h-[10px] items-center border-l border-lightBorder pl-4 dark:border-darkBorder"
+              >
               <ThemeToggle />
                
             </div>
