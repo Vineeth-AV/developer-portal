@@ -23,12 +23,14 @@ export const TopNav = () => (
       className="flex w-full flex-col items-center justify-center"
     >
       <div className="w-full max-w-[100rem] ">
-        <div className="flex h-[3.75rem] w-full grow  items-start justify-between text-sm">
+        <div className="flex h-[3.75rem] pb-5 w-full grow  items-start justify-between text-sm">
           <Logo />
-          <div className="hidden items-center lg:flex">
-            <ul className="flex flex-row items-start justify-start space-x-4 lg:ml-8 w-full">
+          
+
+            <ul className="absolute left-72 flex flex-row items-start justify-start space-x-4 lg:ml-8 w-full">
               <TopHeaderItems />
             </ul>
+            <div className="hidden pt-4 items-center lg:flex justify-between">
             <SearchButton className="w-full min-w-[300px]" />
 
             <div className="mx-6 flex h-[10px] items-center border-l border-lightBorder pl-4 dark:border-darkBorder"
@@ -54,7 +56,7 @@ export const TopNav = () => (
 
 const Logo = () => (
   <Link href="/">
-    <div className="mb-3 ml-[0.3rem] mr-0 mt-5 flex items-center justify-start gap-1 pb-4 lg:ml-[0.0rem]">
+    <div className="mb-0 ml-[0.3rem] mr-0 mt-3 flex items-center justify-start gap-1 pb-4 lg:ml-[0.0rem]">
       <Image
         src={logoIcon}
         alt="Vertel Logo"
