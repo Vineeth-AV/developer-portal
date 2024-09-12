@@ -9,7 +9,7 @@ import { MobileSideNav } from '@/components/shell/side-navigation/mobile-side-na
 import { ThemeToggle } from '@/components/theme-toggle';
 import logoIcon from 'public/verteil-logo.svg';
 import { TopHeaderItems, TopNavigationItems } from './top-nav-items';
- import { SearchButton } from '@/components/shell/search-button';
+import { SearchButton } from '@/components/shell/search-button';
 
 export const TopNav = () => (
   <div
@@ -23,18 +23,18 @@ export const TopNav = () => (
       className="flex w-full flex-col items-center justify-center"
     >
       <div className="w-full max-w-[100rem] ">
-        <div className="flex h-[3.75rem] w-full grow  items-center justify-between text-sm">
+        <div className="flex h-[3.75rem] w-full grow  items-start justify-between text-sm">
           <Logo />
           <div className="hidden items-center lg:flex">
-          <ul className="flex flex-row items-center justify-start space-x-4 lg:ml-8 w-full">
-           <TopHeaderItems />
-           </ul>
+            <ul className="flex flex-row items-start justify-start space-x-4 lg:ml-8 w-full">
+              <TopHeaderItems />
+            </ul>
             <SearchButton className="w-full min-w-[300px]" />
-            
+
             <div className="mx-6 flex h-[10px] items-center border-l border-lightBorder pl-4 dark:border-darkBorder"
-              >
+            >
               <ThemeToggle />
-               
+
             </div>
           </div>
           <MobileMenu />
@@ -57,7 +57,7 @@ const Logo = () => (
     <div className="mb-3 ml-[0.3rem] mr-0 mt-5 flex items-center justify-start gap-1 pb-4 lg:ml-[0.0rem]">
       <Image
         src={logoIcon}
-         alt="Vertel Logo"
+        alt="Vertel Logo"
         className="mt-2"
         priority={true}
       />

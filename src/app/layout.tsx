@@ -3,12 +3,17 @@ import { AppWrapper, PathProvider } from 'context/state';
 import './globals.css';
 import { ThemeProvider } from '@/components/theme-provider';
 import { Footer, TopNav } from 'components';
+import { Mulish } from 'next/font/google';
 import { Inter } from 'next/font/google';
 import clsx from 'clsx';
 import { Metadata } from 'next';
 import Script from 'next/script';
 
-const inter = Inter({ subsets: ['latin', 'latin-ext'] });
+const inter = Mulish({
+  subsets: ['latin'], // You can add more subsets if needed
+  weight: ['400', '800'], // Choose the font weights you need
+  variable: '--font-mulish', // Define a custom CSS variable for the font
+});
 const baseUrl = 'http://localhost';
 
 // Metadata and structured data for the site.

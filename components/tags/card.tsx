@@ -15,7 +15,7 @@ export const Card = ({ title, description, href, level = 3 }: CardProps) => {
       showArrow={false}
     >
       <div
-        className="m-0 font-semibold text-primary dark:text-white"
+        className="m-0 font-normal text-primary dark:text-white"
         role="heading"
         aria-level={level}
       >

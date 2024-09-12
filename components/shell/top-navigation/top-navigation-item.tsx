@@ -165,9 +165,9 @@ const TopNavigationItem = ({ name, href, icon: Icon, subMenu, openInNewWindow }:
   const path = usePathname();
   const prefetch = href.startsWith('http') ? false : undefined;
   const baseClassName =
-    'py-4 px-0 overflow-hidden font-semibold whitespace-nowrap font-medium dark:text-[rgba(255,255,255,0.6)] hover:text-zinc-900 dark:hover:text-white';
+    'py-4 px-0 pb-4 overflow-hidden font-[normal 600] whitespace-nowrap font-normal dark:text-[rgba(255,255,255,0.6)] hover:text-zinc-900 dark:hover:text-white';
   const activeClassName =
-    'text-primary underline decoration-1 underline-offset-[0rem] opacity-100 dark:text-white hover:!text-primary dark:hover:!text-white';
+    'text-primary underline decoration-2 underline-offset-[.3rem] opacity-100 dark:text-white hover:!text-primary dark:hover:!text-white';
   const isActive = isActivePath(path, href);
   const linkClassName = clsx(baseClassName, isActive && activeClassName);
 
