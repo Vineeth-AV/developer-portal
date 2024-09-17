@@ -169,11 +169,11 @@ const TopNavigationItem = ({ name, href, iconSrc, subMenu, openInNewWindow, show
 
   // Base classes for the link
   const baseClassName =
-    'py-4 px-0 pb-4 overflow-hidden font-[normal 600] whitespace-nowrap font-normal dark:text-[rgba(255,255,255,0.6)] hover:text-zinc-900 dark:hover:text-white';
+    'py-4 pb-4 overflow-hidden font-[normal 600] whitespace-nowrap font-normal dark:text-[rgba(255,255,255,0.6)] hover:text-zinc-900 dark:hover:text-white';
 
   // Only apply underline if the item is not in the noUnderlineItems list
   const activeClassName = !noUnderlineItems.includes(name)
-    ? 'underline decoration-2 underline-offset-[.3rem] opacity-100 text-primary dark:text-white hover:!text-primary dark:hover:!text-white'
+    ? 'underline decoration-2 underline-offset-[.7rem] opacity-100 text-primary dark:text-white hover:!text-primary dark:hover:!text-white'
     : 'text-primary dark:text-white hover:!text-primary dark:hover:!text-white'; // No underline for specified items
 
   const linkClassName = clsx(baseClassName, isActive && activeClassName);

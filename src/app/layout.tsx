@@ -96,16 +96,16 @@ const navigationSchema = {
   '@context': 'http://schema.org',
   '@type': 'ItemList',
   itemListElement: [
+    // {
+    //   '@type': 'SiteNavigationElement',
+    //   position: 1,
+    //   name: 'Home',
+    //   description: 'Welcome to the Verteil Docs.',
+    //   url: new URL('/', baseUrl).href
+    // },
     {
       '@type': 'SiteNavigationElement',
       position: 1,
-      name: 'Home',
-      description: 'Welcome to the Verteil Docs.',
-      url: new URL('/', baseUrl).href
-    },
-    {
-      '@type': 'SiteNavigationElement',
-      position: 2,
       name: 'Getting Started',
       description: 'Quickly get up and running with Verteil.',
       url: new URL('/getting-started', baseUrl).href

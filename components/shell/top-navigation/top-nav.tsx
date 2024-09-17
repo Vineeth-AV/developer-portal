@@ -41,7 +41,7 @@ export const TopNav = () => (
           </div>
           <MobileMenu />
         </div>
-        <div className="flex w-full grow items-start   justify-between text-sm lg:h-[2.65rem]">
+        <div className="flex w-full grow items-start   justify-between text-sm lg:h-[3.25rem]">
           <nav className="my-1 hidden items-center lg:flex">
             <ul className="flex space-x-4 lg:ml-[0 rem]">
               <TopNavigationItems />
@@ -55,7 +55,7 @@ export const TopNav = () => (
 );
 
 const Logo = () => (
-  <Link href="/">
+  <Link href="/getting-started">
     <div className="mb-0 ml-[0.3rem] mr-0 mt-3 flex items-center justify-start gap-1 pb-4 lg:ml-[0.0rem]">
       <Image
         src={logoIcon}
