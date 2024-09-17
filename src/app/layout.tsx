@@ -82,7 +82,7 @@ const organizationSchema = {
   url: '',
   logo: '',
   sameAs: [
-   
+
   ],
   brand: {
     '@type': 'Brand',
@@ -124,14 +124,17 @@ export default function RootLayout(props: any) {
           disableTransitionOnChange
         >
           <PathProvider path="/">
-               <div className="flex min-h-screen flex-col">
-                <TopNav />
-                <main className={clsx(inter.className)} id="main">
-                  {props.children}
-                </main>
-                <Footer />
+            <div className="flex min-h-screen flex-col">
+              <TopNav />
+              <main className={clsx(inter.className)} id="main">
+                {props.children}
+              </main>
+
+              <div className="pl-72">
+              <Footer  />
               </div>
-            </PathProvider>
+            </div>
+          </PathProvider>
         </ThemeProvider>
         <Script
           id="navigation-structured-data"

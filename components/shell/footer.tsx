@@ -20,17 +20,17 @@ const footerMenuItems = [
 ];
 
 export const Footer = () => (
-  <footer className="-mb-2 mt-auto border-t border-lightBorder py-6 dark:border-darkBorder dark:bg-dark">
-    <div className="mx-auto w-full max-w-[100rem] px-4">
+  <footer className="-mb-2 mt-auto border-t border-lightBorder py-6 bg-[#F8FBFD]  dark:border-darkBorder dark:bg-dark">
+    <div className="mx-auto  max-w-[100rem] px-4">
       <div className="flex w-full flex-col md:flex-row md:items-center md:justify-between  md:px-10">
-        <span className="text-sm text-gray-500 dark:text-gray-400 sm:text-center">
+        <span className="text-sm text-gray-500 dark:text-gray-400 sm:text-center underline">
           © {new Date().getFullYear()} Verteil India Pvt Ltd
         </span>
         <ul className="mt-3 flex flex-wrap items-center space-x-6 text-sm font-medium sm:mt-0">
           {footerMenuItems.map((item, index) => (
             <li key={index}>
               <Link href={item.href} {...linkAttributes}>
-                {item.text}
+                <span className="underline">{item.text}</span>
               </Link>
             </li>
           ))}

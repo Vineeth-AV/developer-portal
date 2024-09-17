@@ -14,7 +14,7 @@ import { SearchButton } from '@/components/shell/search-button';
 export const TopNav = () => (
   <div
     className={clsx(
-      'fixed top-0 z-10 flex w-full flex-col justify-center border-b border-lightBorder bg-[#FCFCFC]',
+      'fixed top-0 z-10 flex w-full flex-col justify-center border-b border-lightBorder bg-[#F8FBFD]',
       'dark:border-darkBorder/60 dark:bg-dark'
     )}
   >

@@ -84,10 +84,10 @@ export default async function Page({ params }: PageProps) {
   }
 
   return (
-    <div className="mt-[6rem] flex grow flex-row justify-center">
+    <div className="mt-[6rem] h-screen flex flex-row justify-center">
       <div className="flex max-w-[100rem] grow flex-row justify-center">
         <SideNav path={path} />
-        <div className="grow">
+        <div className="grow h-full overflow-y-auto">
           <div id="skip-nav" />
           {Markdoc.renderers.react(content, React, {
             components

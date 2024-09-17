@@ -14,11 +14,11 @@ possible.
 
 {% card
    title="Rate Limiting"
-   description="Rate Limiting."
+   description="Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s"
    href="/getting-started/fundamentals/rate-limiting" /%}
 {% card
    title="Authentication"
-   description="How to authenticate."
+   description="Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s"
    href="/getting-started/fundamentals/authentication" /%}
 
 {% /grid %}
