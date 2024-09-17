@@ -135,7 +135,7 @@ export default function RootLayout(props: any) {
               <div className="pl-72">
                 <Footer />
               </div>
-              <div className="fixed bottom-6 right-3">
+              <div className="fixed bottom-3 right-3">
                 <BackToTop />
               </div>
             </div>
