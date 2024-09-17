@@ -87,13 +87,13 @@ export default async function Page({ params }: PageProps) {
     <div className="mt-[6rem] h-screen flex flex-row justify-center">
       <div className="flex max-w-[100rem] grow flex-row justify-center">
         <SideNav path={path} />
-        <div className="grow h-full overflow-y-auto">
+        <div className="grow h-full overflow-y-auto" role="main" tabIndex={-1} aria-labelledby="skip-nav">
           <div id="skip-nav" />
           {Markdoc.renderers.react(content, React, {
-            components
+            components,
           })}
         </div>
       </div>
     </div>
-  );
+  );  
 }

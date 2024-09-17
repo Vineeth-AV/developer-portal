@@ -262,11 +262,11 @@ export const SideNavList = ({
 }: SideNavListProps): React.ReactElement => {
   const [expandedItems, setExpandedItems] = useState<Record<string, boolean>>({});
 
-  // Toggles the expansion state of a category
+  // Toggles the expansion state of a category, ensuring other expanded items stay open
   const handleToggle = useCallback((title: string) => {
     setExpandedItems((prev) => ({
       ...prev,
-      [title]: !prev[title],
+      [title]: !prev[title], // Toggle only the clicked category
     }));
   }, []);
 
@@ -288,7 +288,7 @@ export const SideNavList = ({
           )}
           onClick={(e) => {
             if (isExpandable && e.currentTarget === e.target) {
-              handleToggle(category.title);
+              handleToggle(category.title); // Toggle only this category
             }
           }}
           style={{ cursor: isExpandable ? 'pointer' : 'default' }}
@@ -352,7 +352,10 @@ const ListItem = (
             'focus:outline-none focus:ring-0', // Remove default focus styling
             'text-inherit' // Ensure text color inheritance from parent
           )}
-          onClick={onClick}
+          onClick={(e) => {
+            e.stopPropagation(); // Prevent the parent category from toggling its expanded state
+            onClick(e);
+          }}
           style={{
             color: isCurrentPage ? '#0082CD' : 'inherit', // Set color dynamically
             border: 'none', // Remove any border styling
@@ -372,5 +375,4 @@ const ListItem = (
     );
   }
 };
-
-
+ 

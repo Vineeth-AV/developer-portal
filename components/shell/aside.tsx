@@ -7,6 +7,7 @@ import clsx from 'clsx';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMinus } from '@fortawesome/free-solid-svg-icons';
 import { faMessage, faPenToSquare } from '@fortawesome/free-regular-svg-icons';
+import GitHubIcon from '@mui/icons-material/GitHub';
 
 import { baseUrls } from 'data';
 import { BackToTop } from './back-to-top';
@@ -36,14 +37,14 @@ export const Aside = ({
   return (
     <aside
       className={clsx(
-        'sticky top-[6.4rem] mr-10 hidden h-[calc(100vh-4rem)] w-[275px] shrink-0 dark:bg-dark xl:flex',
+        'sticky top-[0rem] mr-10 hidden h-[calc(100vh-4rem)] w-[275px] shrink-0 dark:bg-dark xl:flex',
         items.length > 1 ? '' : ''
       )}
     >
-      <nav className="h-full px-8 pb-6 pt-11">
+      <nav className="h-full px-8 pb-0 pt-11">
         {items.length > 1 && (
           <>
-            <h2 className="mb-4 flex flex-row items-center text-xs font-semibold uppercase  dark:text-white">
+            <h2 className="mb-1 flex flex-row items-center text-xs font-semibold uppercase  dark:text-white">
               On this page
             </h2>
             <ul className="m-0 max-h-[50vh] overflow-y-auto p-0">
@@ -58,30 +59,33 @@ export const Aside = ({
             <Divider />
           </>
         )}
-        <h2 className="mb-4 flex flex-row items-center text-xs font-semibold uppercase   dark:text-white">
-          Actions
-        </h2>
-        <ul
-          className="m-0 p-0 pl-[2px]"
-          style={{ color: 'var(--primary-color)' }}
-        >
-          <ActionItem href={editPageUrl(path)}>
-            <FontAwesomeIcon
-              icon={faPenToSquare}
-              className="mr-[6px] size-[14px] text-primary"
-            />
-            Edit this page
-          </ActionItem>
-          <ActionItem href="">
-            <FontAwesomeIcon
-              icon={faMessage}
-              className="mr-[6px] size-[14px] text-primary"
-            />
-            GitHub Discussions
-          </ActionItem>
-        </ul>
-        <Divider />
-        <BackToTop />
+        <div style={{ border: '1px solid #CBD3E1', padding: '0px', borderRadius: '4px', background: '#F6FAFD' }}>
+          <ul
+            className="m-0 p-0 pl-[6px] max-h-[50vh]"
+            style={{ color: 'var(--primary-color)' }}
+          >
+            <ActionItem href={editPageUrl(path)} >
+              <FontAwesomeIcon
+                icon={faPenToSquare}
+                width={14}
+                height={14}
+                className="mr-[2px] text-[11px]"
+              />
+              <span className="text-xs">Edit this page</span>
+            </ActionItem>
+            <Divider />
+            <ActionItem href="" >
+              <GitHubIcon
+               width={14}
+                height={14}
+                className="mr-[2px] text-[11px]"
+              />
+              <span className="text-xs">GitHub Discussions</span>
+            </ActionItem>
+          </ul>
+        </div>
+
+        {/* <BackToTop /> */}
       </nav>
     </aside>
   );
@@ -141,9 +145,9 @@ type ActionItemProps = {
 
 const ActionItem = ({ href, children }: ActionItemProps) => {
   return (
-    <li className="m-0 my-5 text-sm">
+    <li className="m-0 my-0 text-sm">
       <Link href={href} className=" dark:text-[rgba(255,255,255,0.8)]">
-        <div className="flex items-center gap-[0.5em]">{children}</div>
+        <div className="flex items-center gap-[0.2em]">{children}</div>
       </Link>
     </li>
   );
@@ -159,7 +163,7 @@ const ListItem = ({ item, activeId }: ListItemProps) => {
   const leftPadding = item.level >= 3 ? '-ml-1' : '';
 
   return (
-    <li key={item.id} className={clsx('mb-4 pr-4 text-sm', leftPadding)}>
+    <li key={item.id} className={clsx('mb-1 pr-4 text-sm', leftPadding)}>
       <Link
         href={href}
         className={clsx(
@@ -170,7 +174,7 @@ const ListItem = ({ item, activeId }: ListItemProps) => {
         {item.level > 2 && (
           <FontAwesomeIcon
             icon={faMinus}
-            className="mx-2 mt-[2px] h-4 w-2 shrink-0"
+            className="mx-2 mt-[-px] h-4 w-2 shrink-0"
           />
         )}
         {item.title}

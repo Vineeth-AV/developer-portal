@@ -41,7 +41,7 @@ export const TopNav = () => (
           </div>
           <MobileMenu />
         </div>
-        <div className="flex w-full grow items-start   justify-between text-sm lg:h-[3.25rem]">
+        <div className="flex w-full grow items-start justify-between text-[14px] font-semibold leading-[17.57px] lg:h-[3.25rem]">
           <nav className="my-1 hidden items-center lg:flex">
             <ul className="flex space-x-4 lg:ml-[0 rem]">
               <TopNavigationItems />

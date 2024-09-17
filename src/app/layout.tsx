@@ -8,6 +8,7 @@ import { Inter } from 'next/font/google';
 import clsx from 'clsx';
 import { Metadata } from 'next';
 import Script from 'next/script';
+import { BackToTop } from '@/components/shell/back-to-top';
 
 const inter = Mulish({
   subsets: ['latin'], // You can add more subsets if needed
@@ -130,8 +131,12 @@ export default function RootLayout(props: any) {
                 {props.children}
               </main>
 
+              
               <div className="pl-72">
-              <Footer  />
+                <Footer />
+              </div>
+              <div className="fixed bottom-6 right-3">
+                <BackToTop />
               </div>
             </div>
           </PathProvider>
