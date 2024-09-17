@@ -1,6 +1,5 @@
 'use client';
 
-import { HomeIcon, LucideLayoutDashboard, ShieldIcon } from 'lucide-react'; // Example icons from Lucide
 import TopNavigationItem from './top-navigation-item';
 
 export const TopNavigationItems = () => {
@@ -36,23 +35,31 @@ export const TopNavigationItems = () => {
 };
 
 export const TopHeaderItems = () => {
-  return [
-      {
-        name: 'Home',
-        href: '/',
-        iconClass: HomeIcon,  // Add an icon class
-      },
-      {
-        name: 'Dashboard',
-        href: '/',
-        iconClass: LucideLayoutDashboard,
-      },
-      {
-        name: 'Upcoming features',
-        href: '/',
-        iconClass: ShieldIcon,
-      },
-    ].map((item) => (
-    <TopNavigationItem key={item.href} name={item.name} href={item.href} icon = {item.iconClass} />
+  const items = [
+    {
+      name: 'Home',
+      href: '/getting-started',
+      iconSrc: '/icons/home.svg',
+    },
+    {
+      name: 'Dashboard',
+      href: '/dashboard',
+      iconSrc: '/icons/dashboard.svg',
+    },
+    {
+      name: 'Upcoming Features',
+      href: '/features',
+      iconSrc: '/icons/upcoming_features.svg',
+    },
+  ];
+
+  return items.map((item, index) => (
+    <TopNavigationItem
+      key={item.href}
+      name={item.name}
+      href={item.href}
+      iconSrc={item.iconSrc}
+      showPipe={index !== items.length - 1} // Show pipe except for the last item
+    />
   ));
 };

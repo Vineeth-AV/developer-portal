@@ -146,44 +146,63 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import clsx from 'clsx';
 import { usePathname } from 'next/navigation';
-import { ForwardRefExoticComponent, SVGProps } from 'react'; // Import correct types
 
-type IconType = ForwardRefExoticComponent<SVGProps<SVGSVGElement> & { title?: string }>;
-
-// Updated Props to accept icon as a component
 type TopNavigationItemProps = {
   name: string;
   href: string;
-  icon?: IconType; // Accept icon as a ForwardRefExoticComponent
-  subMenu?: { name: string; href: string }[]; // Optional submenu items
-  openInNewWindow?: boolean; // Optionally open in new window
+  iconSrc?: string;
+  subMenu?: { name: string; href: string }[];
+  openInNewWindow?: boolean;
+  showPipe?: boolean;
 };
 
-const TopNavigationItem = ({ name, href, icon: Icon, subMenu, openInNewWindow }: TopNavigationItemProps) => {
+const TopNavigationItem = ({ name, href, iconSrc, subMenu, openInNewWindow, showPipe }: TopNavigationItemProps) => {
   const path = usePathname();
   const prefetch = href.startsWith('http') ? false : undefined;
+  const isActive = isActivePath(path, href);
+
+  // Define items that should not have underline
+  const noUnderlineItems = ['Home', 'Dashboard', 'Upcoming Features'];
+
+  // Base classes for the link
   const baseClassName =
     'py-4 px-0 pb-4 overflow-hidden font-[normal 600] whitespace-nowrap font-normal dark:text-[rgba(255,255,255,0.6)] hover:text-zinc-900 dark:hover:text-white';
-  const activeClassName =
-    'text-primary underline decoration-2 underline-offset-[.3rem] opacity-100 dark:text-white hover:!text-primary dark:hover:!text-white';
-  const isActive = isActivePath(path, href);
+
+  // Only apply underline if the item is not in the noUnderlineItems list
+  const activeClassName = !noUnderlineItems.includes(name)
+    ? 'underline decoration-2 underline-offset-[.3rem] opacity-100 text-primary dark:text-white hover:!text-primary dark:hover:!text-white'
+    : 'text-primary dark:text-white hover:!text-primary dark:hover:!text-white'; // No underline for specified items
+
   const linkClassName = clsx(baseClassName, isActive && activeClassName);
 
+  // Icon color class (fill #0B73B0 when active)
+  const iconClassName = clsx('mr-2', isActive ? 'fill-[#0B73B0] dark:fill-white' : 'fill-current');
+
   return (
-    <li key={href} className="relative group">
-      {/* Add flex and items-center to the Link for horizontal alignment */}
+    <li key={href} className="relative group flex items-center">
       <Link
         href={href}
         className={`${linkClassName} flex items-center`}
         prefetch={prefetch}
-        target={openInNewWindow ? "_blank" : undefined} // Open in new window if specified
-        rel={openInNewWindow ? "noopener noreferrer" : undefined} // Ensure security if opening in new window
+        target={openInNewWindow ? "_blank" : undefined}
+        rel={openInNewWindow ? "noopener noreferrer" : undefined}
       >
-        {Icon && <Icon className="mr-2 w-5 h-5" />} {/* Icon with margin to the right */}
+        {iconSrc && (
+          <Image
+            src={iconSrc}
+            alt={`${name} icon`}
+            width={16}
+            height={16}
+            className={iconClassName} // Apply dynamic class to change icon color
+          />
+        )}
         <span>{name}</span>
       </Link>
+      {showPipe && <span className="mx-2 text-gray-500">|</span>} {/* Pipe Separator */}
+      
       {subMenu && (
         <ul className="absolute left-0 mt-2 flex space-x-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300">
           {subMenu.map((item) => (
@@ -204,5 +223,3 @@ function isActivePath(path: string, href: string): boolean {
 }
 
 export default TopNavigationItem;
-
-
