@@ -53,7 +53,7 @@ export const Aside = ({
   return (
     <aside
       className={clsx(
-        'fixed -right-14 top-[6rem] mr-0 hidden h-[calc(100vh-4rem)] w-[275px] shrink-0 dark:bg-dark xl:flex',
+        'fixed -right-14 top-[6rem] mr-0 hidden h-[calc(100vh-4rem)] w-[275px] shrink-0  xl:flex',
         items.length > 1 ? '' : ''
       )}
     >
