@@ -70,6 +70,7 @@ const TopNavigationItem = ({
             alt={`${name} icon`}
             width={16}
             height={16}
+            className="mr-2" 
           />
         )}
 
