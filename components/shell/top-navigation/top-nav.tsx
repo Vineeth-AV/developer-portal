@@ -10,6 +10,7 @@ import { ThemeToggle } from '@/components/theme-toggle';
 import logoIcon from 'public/verteil-logo.svg';
 import { TopHeaderItems, TopNavigationItems } from './top-nav-items';
 import { SearchButton } from '@/components/shell/search-button';
+import Profile from '../profile/profile';
 
 export const TopNav = () => (
   <div
@@ -33,8 +34,10 @@ export const TopNav = () => (
           <div className="hidden pt-4 items-center lg:flex justify-between">
             <SearchButton className="w-full min-w-[300px]" />
 
+           
             <div className="mx-6 flex h-[10px] items-center border-l border-lightBorder pl-4 dark:border-darkBorder"
             >
+               <Profile />
               <ThemeToggle />
 
             </div>
