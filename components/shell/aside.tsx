@@ -35,6 +35,21 @@ export const Aside = ({
   );
   const activeId = useActiveId(items.map((item) => item.id));
 
+  const [isDarkMode, setIsDarkMode] = useState(false);
+  useEffect(() => {
+    const htmlElement = document.documentElement;
+    setIsDarkMode(htmlElement.classList.contains('dark'));
+
+    // Optionally, listen for changes to the dark mode class
+    const observer = new MutationObserver(() => {
+      setIsDarkMode(htmlElement.classList.contains('dark'));
+    });
+
+    observer.observe(htmlElement, { attributes: true, attributeFilter: ['class'] });
+
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <aside
       className={clsx(
@@ -45,7 +60,7 @@ export const Aside = ({
       <nav className="h-full px-6 pb-0 pt-6"> {/* Reduced top padding */}
         {items.length > 1 && (
           <>
-            <h2 className="mb-1 flex flex-row items-center text-xs font-semibold uppercase dark:text-white">
+            <h2 className="mb-1 flex flex-row items-center text-xs font-semibold uppercase  dark:bg-dark dark:text-white">
               On this page
             </h2>
             <ul className="m-0 max-h-[50vh] overflow-y-auto p-0">
@@ -63,11 +78,11 @@ export const Aside = ({
         {/* Reduced the height and padding of this container */}
         <div
           style={{
-            border: '1px solid #CBD3E1',
+            border:  isDarkMode ? "1px solid dark:bg-darkBorder" : "1px solid  #CBD3E1",
             height: 70, // Reduced height
             padding: '0px',
             borderRadius: '4px',
-            background: '#F6FAFD'
+            background: isDarkMode ? '#00000000' : '#F6FAFD',
           }}
         >
           <ul
@@ -76,21 +91,21 @@ export const Aside = ({
           >
             <ActionItem href={editPageUrl(path)}>
               <Image
-                src="/icons/edit.svg" // Path to the share icon
+                src={isDarkMode ? "/icons/edit_dark.svg" : "/icons/edit.svg"} // Path to the share icon
                 alt="Profile icon"
                 width={32}
                 height={32}
-                className="relative ml-2 flex items-center justify-center overflow-hidden border-none size-[0.8rem]" />
+                className="relative ml-2 flex items-center justify-center overflow-hidden dark:hover:text-white border-none size-[0.8rem]" />
               <span className="text-xs font-nomral text-[11px]">Edit this page</span>
             </ActionItem>
             <Divider margin='my-2' />
             <ActionItem href="">
             <Image
-                src="/icons/github.svg" // Path to the share icon
+                src= {isDarkMode ? "/icons/github_dark.svg" : "/icons/github.svg"} // Path to the share icon
                 alt="Profile icon"
                 width={32}
                 height={32}
-                className="relative ml-2 flex items-center justify-center overflow-hidden border-none size-[0.8rem]" />
+                className="relative ml-2 flex items-center justify-center overflow-hidden border-none dark:hover:text-white size-[0.8rem]" />
               <span className="text-xs font-nomral text-[11px] mr-4 ">GitHub Discussions</span>
             </ActionItem>
           </ul>
