@@ -1,96 +1,13 @@
-// 'use client';
-
-// import * as React from 'react';
-// import { Moon, Sun } from 'lucide-react';
-// import { useTheme } from 'next-themes';
-// import clsx from 'clsx';
-
-// import { Button } from '@/components/ui/button';
-// import {
-//   DropdownMenu,
-//   DropdownMenuContent,
-//   DropdownMenuItem,
-//   DropdownMenuTrigger
-// } from '@/components/ui/dropdown-menu';
-// import { Theme } from '@/types';
-
-// export function ThemeToggle() {
-//   const { theme, setTheme } = useTheme();
-//   const currentTheme = theme as Theme;
-//   const [isHovered, setIsHovered] = React.useState(false);
-
-//   return (
-//     <DropdownMenu>
-//       <DropdownMenuTrigger asChild>
-//         <Button
-//           variant="outline"
-//           size="icon"
-//           className="relative border-none hover:bg-zinc-100 focus-visible:border-0 focus-visible:!outline-none focus-visible:ring-transparent dark:!outline-none dark:hover:bg-darkAccent dark:focus-visible:!border-0 dark:focus-visible:!ring-0"
-//           onMouseEnter={() => setIsHovered(true)}
-//           onMouseLeave={() => setIsHovered(false)}
-//         >
-//           <Sun 
-//             className={clsx(
-//               "size-[1.2rem] transition-transform duration-300",
-//               isHovered ? "rotate-[-90deg] scale-0" : "rotate-0 scale-100"
-//             )}
-//           />
-//           <Moon 
-//             className={clsx(
-//               "absolute size-[1.2rem] transition-transform duration-300",
-//               isHovered ? "rotate-0 scale-100" : "rotate-90 scale-0"
-//             )}
-//           />
-//           <span className="sr-only">Toggle theme</span>
-//         </Button>
-//       </DropdownMenuTrigger>
-//       <DropdownMenuContent
-//         className="!border-lightBorder !bg-white dark:!border-darkBorder dark:!bg-dark dark:!text-white"
-//         align="end"
-//       >
-//         <DropdownMenuItem
-//           className={clsx(
-//             'hover:bg-zinc-100 dark:hover:bg-darkAccent',
-//             currentTheme == Theme.Light && 'font-bold'
-//           )}
-//           onClick={() => setTheme('light')}
-//         >
-//           Light
-//         </DropdownMenuItem>
-//         <DropdownMenuItem
-//           className={clsx(
-//             'hover:bg-zinc-100 dark:hover:bg-darkAccent',
-//             currentTheme == Theme.Dark && 'font-bold'
-//           )}
-//           onClick={() => setTheme('dark')}
-//         >
-//           Dark
-//         </DropdownMenuItem>
-//         <DropdownMenuItem
-//           className={clsx(
-//             'hover:bg-zinc-100 dark:hover:bg-darkAccent',
-//             currentTheme == Theme.System && 'font-bold'
-//           )}
-//           onClick={() => setTheme('system')}
-//         >
-//           System
-//         </DropdownMenuItem>
-//       </DropdownMenuContent>
-//     </DropdownMenu>
-//   );
-// }
-
 'use client'
 
 import * as React from 'react';
-import { Moon, Sun } from 'lucide-react';
+import { Moon } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import clsx from 'clsx';
-import dynamic from 'next/dynamic';
+import Image from 'next/image'; // For optimized image loading in Next.js
 
 import { Button } from '@/components/ui/button';
 import { Theme } from '@/types';
-
 
 export function ThemeToggle() {
   const { theme, setTheme } = useTheme();
@@ -111,7 +28,7 @@ export function ThemeToggle() {
       <Button
         variant="outline"
         size="icon"
-        className="relative flex items-center justify-center overflow-hidden border-none w-10 h-10"
+        className="relative flex items-center justify-center overflow-hidden border-none w-8 h-8 rounded-full border border-gray-400" // Added rounded-full and border styles
         onClick={handleClick}
       >
         {/* Icon for theme toggle */}
@@ -119,27 +36,35 @@ export function ThemeToggle() {
           currentTheme === 'light' ? (
             <Moon
               className={clsx(
-                "absolute size-[1.2rem] transition-all duration-500 ease-in-out transform"
+                "absolute size-[1.7rem] transition-all duration-500 ease-in-out transform rounded-full border border-gray-400" 
               )}
             />
           ) : (
-            <Sun
+            <Image
+              src="/icons/light_mode.svg" // Path to your custom icon
+              alt="Light Mode Icon"
               className={clsx(
-                "absolute size-[1.2rem] transition-all duration-500 ease-in-out transform"
+                "absolute size-[1.7rem] transition-all duration-500 ease-in-out transform rounded-full border border-gray-400"
               )}
+              width={28}
+              height={28}
             />
           )
         ) : (
           currentTheme === 'light' ? (
-            <Sun
+            <Image
+              src="/icons/light_mode.svg" // Path to your custom icon
+              alt="Light Mode Icon"
               className={clsx(
-                "absolute size-[1.2rem] transition-all duration-500 ease-in-out transform"
+                "absolute size-[1.7rem] transition-all duration-500 ease-in-out transform rounded-full border border-gray-400"
               )}
+              width={28}
+              height={28}
             />
           ) : (
             <Moon
               className={clsx(
-                "absolute size-[1.2rem] transition-all duration-500 ease-in-out transform"
+                "absolute size-[1.7rem] transition-all duration-500 ease-in-out transform rounded-full border border-gray-400"
               )}
             />
           )
