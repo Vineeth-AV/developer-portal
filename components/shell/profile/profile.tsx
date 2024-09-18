@@ -39,7 +39,7 @@ const Profile = () => {
                     width={32}
                     height={32}
                     onClick={toggleDropdown}
-                    className="relative flex items-center justify-center overflow-hidden border-none w-14 h-14" />
+                    className="relative flex items-center justify-center overflow-hidden border-none size-[2.3rem]" />
 
             </div>
 

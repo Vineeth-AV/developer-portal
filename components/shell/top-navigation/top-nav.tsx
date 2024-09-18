@@ -33,13 +33,13 @@ export const TopNav = () => (
           </ul>
           <div className="hidden pt-4 items-center lg:flex justify-between">
             <SearchButton className="w-full min-w-[300px]" />
+            <span className="mx-4 text-gray-500">|</span>
+            <div className="mx-0 flex h-[10px] items-center border-l border-lightBorder pr-2 dark:border-darkBorder">
+              <Profile />
+            </div>
 
-           
-            <div className="mx-6 flex h-[10px] items-center border-l border-lightBorder pl-4 dark:border-darkBorder"
-            >
-               <Profile />
+            <div className="mx-0 flex h-[10px] items-center border-l border-lightBorder dark:border-darkBorder">
               <ThemeToggle />
-
             </div>
           </div>
           <MobileMenu />
