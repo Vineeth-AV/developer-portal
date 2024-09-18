@@ -28,7 +28,7 @@ export const BackToTop = () => {
       >
          <Image
             src={'../icons/backtotop.svg'}
-            alt={`${name} icon`}
+            alt={`backtotop icon`}
             width={80}
             height={80}
            />

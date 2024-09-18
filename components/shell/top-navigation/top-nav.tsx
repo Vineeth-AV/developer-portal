@@ -25,12 +25,12 @@ export const TopNav = () => (
       <div className="w-full max-w-[100rem] ">
         <div className="flex h-[3.75rem] pb-5 w-full grow  items-start justify-between text-sm">
           <Logo />
-          
 
-            <ul className="absolute left-72 flex flex-row text-[13px] items-start justify-start space-x-4 lg:ml-8 w-full">
-              <TopHeaderItems />
-            </ul>
-            <div className="hidden pt-4 items-center lg:flex justify-between">
+
+          <ul className="absolute left-72 flex flex-row text-[13px] items-start justify-start space-x-4 lg:ml-8 w-full">
+            <TopHeaderItems />
+          </ul>
+          <div className="hidden pt-4 items-center lg:flex justify-between">
             <SearchButton className="w-full min-w-[300px]" />
 
             <div className="mx-6 flex h-[10px] items-center border-l border-lightBorder pl-4 dark:border-darkBorder"
@@ -42,12 +42,22 @@ export const TopNav = () => (
           <MobileMenu />
         </div>
         <div className="flex w-full grow items-start justify-between text-[14px] font-semibold leading-[17.57px] lg:h-[3.25rem]">
-          <nav className="my-1 hidden items-center lg:flex">
-            <ul className="flex space-x-4 lg:ml-[0 rem]">
-              <TopNavigationItems />
+          {/* Left-aligned navigation items */}
+          <nav className="my-1 hidden lg:flex">
+            <ul className="flex space-x-4">
+              <TopNavigationItems align="left" />
+            </ul>
+          </nav>
+
+          {/* Right-aligned support item */}
+          <nav className="my-1 hidden lg:flex">
+            <ul className="flex">
+              <TopNavigationItems align="right" />
             </ul>
           </nav>
         </div>
+
+
       </div>
     </div>
     <MobileSideNav />

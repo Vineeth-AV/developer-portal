@@ -143,8 +143,6 @@
 // }
 
 // export default TopNavigationItem;
-'use client';
-
 import Link from 'next/link';
 import Image from 'next/image';
 import clsx from 'clsx';
@@ -157,9 +155,10 @@ type TopNavigationItemProps = {
   subMenu?: { name: string; href: string }[];
   openInNewWindow?: boolean;
   showPipe?: boolean;
+  isSupportItem?: boolean; // Add flag to identify the "Support" item
 };
 
-const TopNavigationItem = ({ name, href, iconSrc, subMenu, openInNewWindow, showPipe }: TopNavigationItemProps) => {
+const TopNavigationItem = ({ name, href, iconSrc, subMenu, openInNewWindow, showPipe, isSupportItem }: TopNavigationItemProps) => {
   const path = usePathname();
   const prefetch = href.startsWith('http') ? false : undefined;
   const isActive = isActivePath(path, href);
@@ -176,21 +175,32 @@ const TopNavigationItem = ({ name, href, iconSrc, subMenu, openInNewWindow, show
     ? 'underline decoration-2 underline-offset-[.7rem] opacity-100 text-primary dark:text-white hover:!text-primary dark:hover:!text-white'
     : 'text-primary dark:text-white hover:!text-primary dark:hover:!text-white'; // No underline for specified items
 
-  const linkClassName = clsx(baseClassName, isActive && activeClassName);
-
   // Icon color class (fill #0B73B0 when active)
   const iconClassName = clsx('mr-2', isActive ? 'fill-[#0B73B0] dark:fill-white' : 'fill-current');
+
+  // If the item is the "Support" item, use blue color and add a share icon
+  const supportClassName = isSupportItem ? 'text-[#0B73B0] hover:text-[#0B73B0]' : '';
 
   return (
     <li key={href} className="relative group flex items-center">
       <Link
         href={href}
-        className={`${linkClassName} flex items-center`}
+        className={`${clsx(baseClassName, isActive && activeClassName, supportClassName)} flex items-center`}
         prefetch={prefetch}
         target={openInNewWindow ? "_blank" : undefined}
         rel={openInNewWindow ? "noopener noreferrer" : undefined}
       >
-        {iconSrc && (
+        {/* Add the share icon for the "Support" menu */}
+        {isSupportItem && (
+          <Image
+            src="/icons/support.svg" // Path to the share icon
+            alt="Share icon"
+            width={12}
+            height={12}
+            className="mr-2" // Space between the icon and text
+          />
+        )}
+        {iconSrc && !isSupportItem && (
           <Image
             src={iconSrc}
             alt={`${name} icon`}
@@ -223,3 +233,4 @@ function isActivePath(path: string, href: string): boolean {
 }
 
 export default TopNavigationItem;
+
