@@ -27,7 +27,7 @@ export const BackToTop = () => {
         onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
       >
          <Image
-            src={'../icons/backtotop.svg'}
+            src={'/icons/backtotop.svg'}
             alt={`backtotop icon`}
             width={80}
             height={80}

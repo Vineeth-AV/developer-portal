@@ -83,16 +83,20 @@ export const TopHeaderItems = () => {
       name: 'Home',
       href: '/getting-started',
       iconSrc: '/icons/home.svg',
+      iconActiveSrc : '/icons/home_active.svg'
+
     },
     {
       name: 'Dashboard',
       href: '/dashboard',
       iconSrc: '/icons/dashboard.svg',
+      iconActiveSrc : '/icons/dashboard_active.svg'
     },
     {
       name: 'Upcoming Features',
       href: '/features',
-      iconSrc: '/icons/upcoming_features.svg',
+      iconSrc: '/icons/upcoming_feature.svg',
+      iconActiveSrc : '/icons/upcoming_feature_active.svg'
     },
   ];
 
@@ -102,6 +106,7 @@ export const TopHeaderItems = () => {
       name={item.name}
       href={item.href}
       iconSrc={item.iconSrc}
+      iconActiveSrc={item.iconActiveSrc}
       showPipe={index !== items.length - 1} // Show pipe except for the last item
     />
   ));
