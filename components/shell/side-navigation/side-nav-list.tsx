@@ -1,5 +1,3 @@
-
-
 'use client';
 import Link from 'next/link';
 import clsx from 'clsx';
@@ -117,7 +115,7 @@ const ListItem = (
             `py-[6px] pl-3 pr-3 text-sm no-underline ${leftPadding} dark:text-[#394147]`,
             isCurrentPage
               ? 'font-medium text-primary dark:text-white'
-              : 'hover:text-zinc-900 dark:hover:text-white',
+              : '', // Remove hover color classes here
             'focus:outline-none focus:ring-0', // Remove default focus styling
             'text-inherit' // Ensure text color inheritance from parent
           )}
@@ -128,9 +126,18 @@ const ListItem = (
           style={{
             color: isCurrentPage ? '#0082CD' : 'inherit', // Set color dynamically
             border: 'none', // Remove any border styling
+            transition: 'color 0.3s ease', // Smooth transition for hover
           }}
         >
-          {link.title}
+          <span
+            style={{
+              color: isCurrentPage ? '#0082CD' : 'inherit',
+            }}
+            onMouseOver={(e) => (e.currentTarget.style.color = '#071219')}
+            onMouseOut={(e) => (e.currentTarget.style.color = isCurrentPage ? '#0082CD' : 'inherit')}
+          >
+            {link.title}
+          </span>
         </Link>
       </li>
     );
