@@ -28,6 +28,11 @@ export const TopNavigationItems = ({ align }: TopNavigationItemsProps) => {
         { name: 'v2', href: '/schemalist' },
       ],
     },
+    {
+      name: 'Airline Nuances',
+      href: '/get',
+      openInNewWindow: false,
+    }
   ];
 
   const supportItem = {

@@ -8,6 +8,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMinus } from '@fortawesome/free-solid-svg-icons';
 import { faMessage, faPenToSquare } from '@fortawesome/free-regular-svg-icons';
 import GitHubIcon from '@mui/icons-material/GitHub';
+import Image from 'next/image';
 
 import { baseUrls } from 'data';
 import { BackToTop } from './back-to-top';
@@ -37,14 +38,14 @@ export const Aside = ({
   return (
     <aside
       className={clsx(
-        'fixed right-0 top-[5rem] mr-0 hidden h-[calc(100vh-4rem)] w-[275px] shrink-0 dark:bg-dark xl:flex',
+        'fixed right-0 top-[6rem] mr-0 hidden h-[calc(100vh-4rem)] w-[275px] shrink-0 dark:bg-dark xl:flex',
         items.length > 1 ? '' : ''
       )}
     >
-      <nav className="h-full px-8 pb-0 pt-11">
+      <nav className="h-full px-6 pb-0 pt-6"> {/* Reduced top padding */}
         {items.length > 1 && (
           <>
-            <h2 className="mb-1 flex flex-row items-center text-xs font-semibold uppercase  dark:text-white">
+            <h2 className="mb-1 flex flex-row items-center text-xs font-semibold uppercase dark:text-white">
               On this page
             </h2>
             <ul className="m-0 max-h-[50vh] overflow-y-auto p-0">
@@ -56,38 +57,47 @@ export const Aside = ({
                 />
               ))}
             </ul>
-            <Divider />
+
           </>
         )}
-        <div style={{ border: '1px solid #CBD3E1', padding: '0px', borderRadius: '4px', background: '#F6FAFD' }}>
+        {/* Reduced the height and padding of this container */}
+        <div
+          style={{
+            border: '1px solid #CBD3E1',
+            height: 70, // Reduced height
+            padding: '0px',
+            borderRadius: '4px',
+            background: '#F6FAFD'
+          }}
+        >
           <ul
-            className="m-0 p-0 pl-[6px] max-h-[50vh]"
+            className="mb-5 mt-2 w-full justify-center items-center max-h-[50vh]"
             style={{ color: 'var(--primary-color)' }}
           >
-            <ActionItem href={editPageUrl(path)} >
-              <FontAwesomeIcon
-                icon={faPenToSquare}
-                width={14}
-                height={14}
-                className="mr-[2px] text-[11px]"
-              />
-              <span className="text-xs">Edit this page</span>
+            <ActionItem href={editPageUrl(path)}>
+              <Image
+                src="/icons/edit.svg" // Path to the share icon
+                alt="Profile icon"
+                width={32}
+                height={32}
+                className="relative ml-2 flex items-center justify-center overflow-hidden border-none size-[0.8rem]" />
+              <span className="text-xs font-nomral text-[11px]">Edit this page</span>
             </ActionItem>
-            <Divider />
-            <ActionItem href="" >
-              <GitHubIcon
-               width={14}
-                height={14}
-                className="mr-[2px] text-[11px]"
-              />
-              <span className="text-xs">GitHub Discussions</span>
+            <Divider margin='my-2' />
+            <ActionItem href="">
+            <Image
+                src="/icons/github.svg" // Path to the share icon
+                alt="Profile icon"
+                width={32}
+                height={32}
+                className="relative ml-2 flex items-center justify-center overflow-hidden border-none size-[0.8rem]" />
+              <span className="text-xs font-nomral text-[11px] mr-4 ">GitHub Discussions</span>
             </ActionItem>
           </ul>
         </div>
-
-        {/* <BackToTop /> */}
       </nav>
     </aside>
+
   );
 };
 
