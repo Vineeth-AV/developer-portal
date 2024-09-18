@@ -14,8 +14,8 @@ export const SideNav = ({ path }: { path: string }) => {
   ));
 
   return (
-    <div className="sticky top-[6.4rem] hidden lg:flex h-screen flex-col items-end border-r border-lightBorder pb-[6.4rem] pt-4 dark:border-darkBorder/60 bg-[#FFFFFF] dark:bg-dark">
-      <div className="flex size-full min-w-[300px] max-w-[300px] flex-col justify-start   pl-1">
+    <div className="fixed top-[7rem] left-0 h-screen w-[280px] flex-col items-end border-r border-lightBorder pb-[6.4rem] pt-4 dark:border-darkBorder/60 bg-[#FFFFFF] dark:bg-dark z-50">
+      <div className="flex size-full min-w-[280px] max-w-[280px] flex-col justify-start pl-1">
         <div className="sticky top-0 space-y-5 bg-white pr-6 dark:bg-dark">
           <div className="pointer-events-none absolute inset-x-0 -bottom-9 h-9 w-full bg-gradient-to-t from-transparent to-white dark:to-dark" />
         </div>
@@ -25,5 +25,6 @@ export const SideNav = ({ path }: { path: string }) => {
         </nav>
       </div>
     </div>
+
   );
 };

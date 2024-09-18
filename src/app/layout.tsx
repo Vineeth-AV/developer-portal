@@ -132,7 +132,7 @@ export default function RootLayout(props: any) {
               </main>
 
               
-              <div className="pl-72">
+              <div className="pl-[15.5rem]">
                 <Footer />
               </div>
               <div className="fixed bottom-3 right-3">
