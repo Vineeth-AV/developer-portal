@@ -5,11 +5,13 @@ import {
   isCategory,
   isLink,
   GETTING_STARTED_BASE_URL,
-  SideBarLink
+  SideBarLink,
+  AIRLINE_NUANCES
 } from '../types';
 
 export const baseUrls = [
-  GETTING_STARTED_BASE_URL
+  GETTING_STARTED_BASE_URL,
+  AIRLINE_NUANCES
 ];
 
 export const flattenSideBarData = (
@@ -60,6 +62,8 @@ export const currentNavItem = (baseUrl: string) => {
   switch (baseUrl) {
     case GETTING_STARTED_BASE_URL:
       return 'Getting Started';
+    case AIRLINE_NUANCES:
+      return 'Airline Naunces';
     default:
       return '';
   }
@@ -69,6 +73,8 @@ export const sideBarData = (baseUrl: string): SideBarSourceType[] => {
   switch (baseUrl) {
     case GETTING_STARTED_BASE_URL:
       return contentMap['getting_started'];
+      case AIRLINE_NUANCES:
+        return contentMap['airline-nuances'];
     default:
       return [];
   }

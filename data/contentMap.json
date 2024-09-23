@@ -95,6 +95,12 @@
         }
       ]
     }  
-  ]
+  ],
+   "airline-nuances" : [
+    {
+      "title": "Overview",
+      "path": "/airline-nuances/"
+    }
+   ]
 }
 

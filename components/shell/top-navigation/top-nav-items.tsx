@@ -30,7 +30,7 @@ export const TopNavigationItems = ({ align }: TopNavigationItemsProps) => {
     },
     {
       name: 'Airline Nuances',
-      href: '/get',
+      href: '/airline-nuances',
       openInNewWindow: false,
     }
   ];

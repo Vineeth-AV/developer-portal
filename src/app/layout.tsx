@@ -110,6 +110,13 @@ const navigationSchema = {
       name: 'Getting Started',
       description: 'Quickly get up and running with Verteil.',
       url: new URL('/getting-started', baseUrl).href
+    },
+    {
+      '@type': 'SiteNavigationElement',
+      position: 4,
+      name: 'Airline Naunces',
+      description: 'Airline Naunces',
+      url: new URL('/airline-nuances', baseUrl).href
     }
   ]
 };

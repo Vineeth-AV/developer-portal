@@ -1,5 +1,6 @@
 
 export const GETTING_STARTED_BASE_URL = '/getting-started';
+export const AIRLINE_NUANCES = '/airline-nuances';
 
 export interface SideBarLink {
   title: string;
