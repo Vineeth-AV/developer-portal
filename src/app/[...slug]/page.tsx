@@ -46,7 +46,8 @@ export async function generateMetadata({
 export async function generateStaticParams() {
   const baseUrls = [
     'getting-started',
-    'airline-nuances'
+    'airline-nuances',
+    'upcoming-features'
    ];
 
   const paths: { params: { slug: string[] } }[] = [];

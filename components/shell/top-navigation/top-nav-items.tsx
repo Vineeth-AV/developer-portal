@@ -94,7 +94,7 @@ export const TopHeaderItems = () => {
     },
     {
       name: 'Upcoming Features',
-      href: '/features',
+      href: '/upcoming-features',
       iconSrc: '/icons/upcoming_feature.svg',
       iconActiveSrc : '/icons/upcoming_feature_active.svg'
     },

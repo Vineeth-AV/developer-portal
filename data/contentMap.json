@@ -101,6 +101,12 @@
       "title": "Overview",
       "path": "/airline-nuances/"
     }
+   ],
+   "upcoming-features" : [
+    {
+      "title": "Features",
+      "path": "/upcoming-features/"
+    }
    ]
 }
 
