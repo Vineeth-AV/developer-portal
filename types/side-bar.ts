@@ -6,12 +6,13 @@ export const UPCOMING_FEATURES = '/upcoming-features';
 export interface SideBarLink {
   title: string;
   path: string;
+  bold?: boolean; // Optional bold property
 }
 
 export interface SideBarCategory {
   title: string;
   links: (SideBarLink | SideBarDivider)[];
-}
+ }
 
 export interface SideBarDivider {
   title: string;

@@ -6,6 +6,7 @@
     },
     {
       "title": "Fundamentals",
+      "bold" : true,
       "links": [
         {
           "title": "Core NDC Concepts",
@@ -73,6 +74,7 @@
     },
     {
       "title": "Scenarios",
+      "bold" : true,
       "links": [
         {
           "title": "Shopping",
@@ -168,22 +170,27 @@
     },
     {
       "title": "Tools and Libraries",
+      "bold" : true,
       "path" : "/getting-started/tools-and-libraries"
     },
     {
       "title": "Changelog",
+      "bold" : true,
       "path" : "/getting-started/changelog"
     },
     {
       "title": "Schema Viewer",
+      "bold" : true,
       "path" : "/schemalist"
     },
     {
       "title": "REST Air API Reference",
+      "bold" : true,
       "path" : "/getting-started/rest-air-api-reference"
     },
     {
       "title": "REST Open Data API Reference",
+      "bold" : true,
       "path" : "/getting-started/rest-open-data-api-reference"
     }
   ],
