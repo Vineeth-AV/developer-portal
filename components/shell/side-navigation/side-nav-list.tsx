@@ -37,7 +37,7 @@ export const SideNavList = ({
   const handleToggle = useCallback((title: string) => {
     setLocalExpandedItems((prev) => ({
       ...prev,
-      [title]: !prev[title],
+      [title]: !prev[title], // Toggle current category only
     }));
   }, []);
 
@@ -101,7 +101,7 @@ const ListItem = (
   path: string,
   link: SideBarLink | SideBarDivider,
   level: number,
-  onClick: React.MouseEventHandler<HTMLAnchorElement> = () => { },
+  onClick: React.MouseEventHandler<HTMLAnchorElement> = () => {},
   expandedItems: Record<string, boolean>,
   handleChildToggle: (id: string) => void
 ): React.ReactElement => {
@@ -121,8 +121,8 @@ const ListItem = (
             'text-inherit'
           )}
           onClick={(e) => {
-            handleChildToggle(link.title)
             e.stopPropagation(); // Prevent parent category from toggling its expanded state
+            handleChildToggle(link.title); // Toggle child item if necessary
             onClick(e); // Call any additional click handler logic if necessary
           }}
           style={{
@@ -153,3 +153,4 @@ const ListItem = (
     );
   }
 };
+
