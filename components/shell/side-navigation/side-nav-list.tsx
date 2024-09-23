@@ -26,7 +26,7 @@ type SideNavListProps = {
 export const SideNavList = ({
   data,
   path,
-  onClick = () => { },
+  onClick = () => {},
   level = 0,
   expandedItems = {}, // Default to empty object if not provided
   onChildToggle = () => {}, // Default to no-op function if not provided
@@ -43,15 +43,14 @@ export const SideNavList = ({
 
   // Toggle the expansion state of a child item
   const handleChildToggle = useCallback((id: string) => {
-    // onChildToggle(id); // Use the parent-provided toggle handler
+    onChildToggle(id); // Use the parent-provided toggle handler
   }, [onChildToggle]);
 
   if (isCategory(data)) {
     const category = data;
     const isExpandable = level >= 1 && category.links && category.links.length > 0;
-    const isMainSection = level === 0;
-    const showDivider = isMainSection && category.title !== 'Overview';
-    const isOverview = category.title === 'Overview';
+    const isMainSection = level === 0; // Top level is considered main
+    const showDivider = isMainSection && category.title !== 'Overview'; // Divider before new main section
 
     return (
       <li key={`${category.title}-${level}`} className="list-none">
@@ -59,7 +58,7 @@ export const SideNavList = ({
         <div
           className={clsx(
             "flex items-center justify-between text-sm pl-3 mt-[6px]",
-            isMainSection ? (isOverview ? "text-black" : "font-bold text-[14px] leading-4 dark:text-white") : "font-normal dark:text-white"
+            isMainSection ? 'font-bold text-[14px] leading-4 dark:text-white' : 'font-normal dark:text-white'
           )}
           onClick={() => isExpandable && handleToggle(category.title)}
           style={{ cursor: isExpandable ? 'pointer' : 'default' }}
@@ -115,7 +114,7 @@ const ListItem = (
         <Link
           href={link.path}
           className={clsx(
-            `py-[6px] pl-3 pr-3 text-sm no-underline ${leftPadding} dark:text-[#394147]`,
+            `py-[6px] pl-3 pr-3 text-sm no-underline ${leftPadding} dark:hover:text-white dark:text-[#394147]`,
             isCurrentPage ? 'font-medium text-primary dark:text-white' : '',
             'focus:outline-none focus:ring-0',
             'text-inherit'
@@ -153,4 +152,3 @@ const ListItem = (
     );
   }
 };
-

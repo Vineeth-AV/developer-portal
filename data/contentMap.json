@@ -69,44 +69,134 @@
           "title": "Versioning and Compatibility",
           "path": "/getting-started/fundamentals/versioning-and-compatibility/"
         }
-        
       ]
     },
     {
       "title": "Scenarios",
-      "links":[
+      "links": [
         {
           "title": "Shopping",
           "links": [
-            {
-              "title": "Aggregated vs Specific airline search",
-              "path": "/getting-started/Scenarios/Shopping/aggregated-vs-specific-airline-search/"
-            },
             {
               "title": "Oneway vs Return vs Multicity search",
               "path": "/getting-started/Scenarios/Shopping/oneway-vs-return-vs-multicity-search/"
             },
             {
+              "title": "Aggregated vs Specific airline search",
+              "path": "/getting-started/Scenarios/Shopping/aggregated-vs-specific-airline-search/"
+            },
+            {
               "title": "Departure and/or arrival time preferences",
               "path": "/getting-started/Scenarios/Shopping/departure-arrival-time-preferences/"
+            },
+            {
+              "title": "Connection preferences",
+              "path": "/getting-started/Scenarios/Shopping/connection-preferences/"
+            },
+            {
+              "title": "Private and special fares",
+              "path": "/getting-started/Scenarios/Shopping/private-special-fares/"
+            },
+            {
+              "title": "Deal codes",
+              "path": "/getting-started/Scenarios/Shopping/deal-codes/"
+            },
+            {
+              "title": "Corporate accounts and deals",
+              "path": "/getting-started/Scenarios/Shopping/corporate-accounts-and-deals/"
+            },
+            {
+              "title": "Seats",
+              "path": "/getting-started/Scenarios/Shopping/seats/"
+            },
+            {
+              "title": "Anciliary",
+              "path": "/getting-started/Scenarios/Shopping/anciliary/"
+            },
+            {
+              "title": "Personalised search",
+              "path": "/getting-started/Scenarios/Shopping/personalised-search/"
             }
-            
+          ]
+        },
+        {
+          "title": "Order Management",
+          "links": [
+            {
+              "title": "Instant ticketing",
+              "path": "/getting-started/Scenarios/order-management/instant-ticketing/"
+            },
+            {
+              "title": "Order retrieve",
+              "path": "/getting-started/Scenarios/order-management/order-retrieve/"
+            },
+            {
+              "title": "Pay later and deferred ticketing",
+              "path": "/getting-started/Scenarios/order-management/pay-late-and-deferred-ticketing/"
+            },
+            {
+              "title": "Modify itinerary",
+              "path": "/getting-started/Scenarios/order-management/modify-itinerary/"
+            },
+            {
+              "title": "Cancel unpaid order",
+              "path": "/getting-started/Scenarios/order-management/cancel-unpaid-order/"
+            },
+            {
+              "title": "Cancel paid order",
+              "path": "/getting-started/Scenarios/order-management/cancel-paid-order/"
+            },
+            {
+              "title": "Add/modify pax contact details, frequent flyer number, passport, SSR, OSI",
+              "path": "/getting-started/Scenarios/order-management/add-modify-pax-contact-details/"
+            },
+            {
+              "title": "Add/modify seats",
+              "path": "/getting-started/Scenarios/order-management/add-modify-seats/"
+            },
+            {
+              "title": "Add/modify ancillaries",
+              "path": "/getting-started/Scenarios/order-management/add-modify-ancillaries/"
+            },
+            {
+              "title": "Accept involutary change notifications",
+              "path": "/getting-started/Scenarios/order-management/accept-involutary-change/"
+            }
           ]
         }
       ]
-    }  
+    },
+    {
+      "title": "Tools and Libraries",
+      "path" : "/getting-started/tools-and-libraries"
+    },
+    {
+      "title": "Changelog",
+      "path" : "/getting-started/changelog"
+    },
+    {
+      "title": "Schema Viewer",
+      "path" : "/schemalist"
+    },
+    {
+      "title": "REST Air API Reference",
+      "path" : "/getting-started/rest-air-api-reference"
+    },
+    {
+      "title": "REST Open Data API Reference",
+      "path" : "/getting-started/rest-open-data-api-reference"
+    }
   ],
-   "airline-nuances" : [
+  "airline-nuances": [
     {
       "title": "Overview",
       "path": "/airline-nuances/"
     }
-   ],
-   "upcoming-features" : [
+  ],
+  "upcoming-features": [
     {
       "title": "Features",
       "path": "/upcoming-features/"
     }
-   ]
+  ]
 }
-
