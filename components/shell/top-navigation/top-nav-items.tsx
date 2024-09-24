@@ -2,6 +2,7 @@
 
 import React from 'react';
 import TopNavigationItem from './top-navigation-item';
+import clsx from 'clsx';
 
 type TopNavigationItemsProps = {
   align: 'left' | 'right';
@@ -24,8 +25,7 @@ export const TopNavigationItems = ({ align }: TopNavigationItemsProps) => {
       href: '#',
       openInNewWindow: false,
       subMenu: [
-        { name: 'v1', href: '/schemalist' },
-        { name: 'v2', href: '/schemalist' },
+        { name: 'v1', href: '/schemalist' }
       ],
     },
     {
@@ -46,12 +46,14 @@ export const TopNavigationItems = ({ align }: TopNavigationItemsProps) => {
       <>
         {leftItems.map((item) => (
           <li key={item.href}>
+            <ul>
             <TopNavigationItem
               name={item.name}
               href={item.href}
               subMenu={item.subMenu}
               openInNewWindow={item.openInNewWindow}
             />
+            </ul>
           </li>
         ))}
       </>
@@ -61,12 +63,14 @@ export const TopNavigationItems = ({ align }: TopNavigationItemsProps) => {
   if (align === 'right') {
     return (
       <li key={supportItem.href}>
+        <ul>
         <TopNavigationItem
           name={supportItem.name}
           href={supportItem.href}
           openInNewWindow={supportItem.openInNewWindow}
           isSupportItem // Pass the flag for "Support" styling
         />
+        </ul>
       </li>
     );
   }

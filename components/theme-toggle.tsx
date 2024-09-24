@@ -1,23 +1,38 @@
-'use client'
+'use client';
 
 import * as React from 'react';
 import { Moon } from 'lucide-react';
 import { useTheme } from 'next-themes';
-import clsx from 'clsx';
-import Image from 'next/image'; // For optimized image loading in Next.js
-
-import { Button } from '@/components/ui/button';
-import { Theme } from '@/types';
+import Image from 'next/image';
+import { useEffect, useState } from 'react';
 
 export function ThemeToggle() {
   const { theme, setTheme } = useTheme();
-  const currentTheme = theme as Theme;
-  const [isHovered, setIsHovered] = React.useState(false);
+  const [mounted, setMounted] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
 
-  // Handle click to toggle theme
+  // Ensure the component is mounted before interacting with `theme`
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const handleClick = () => {
-    setTheme(currentTheme === 'dark' ? 'light' : 'dark');
+    if (mounted) {
+      setTheme(theme === 'dark' ? 'light' : 'dark');
+    }
   };
+
+  // Ensure no rendering of dynamic content until after mount
+  if (!mounted) return null;
+
+  const isLightTheme = theme === 'light';
+  const icon = isHovered
+    ? isLightTheme
+      ? <Moon className="size-[1.7rem]" />
+      : <Image src="/icons/light_mode.svg" alt="Light Mode Icon" width={28} height={28} />
+    : isLightTheme
+      ? <Image src="/icons/light_mode.svg" alt="Light Mode Icon" width={28} height={28} />
+      : <Moon className="size-[1.7rem]" />;
 
   return (
     <div
@@ -25,52 +40,14 @@ export function ThemeToggle() {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <Button
-        variant="outline"
-        size="icon"
-        className="relative flex items-center justify-center overflow-hidden border-none w-8 h-8 rounded-full border border-gray-400" // Added rounded-full and border styles
+      <button
+        className="relative flex items-center justify-center w-8 h-8 overflow-hidden rounded-full border border-gray-400"
         onClick={handleClick}
+        aria-label={`Switch to ${isLightTheme ? 'dark' : 'light'} mode`}
       >
-        {/* Icon for theme toggle */}
-        {isHovered ? (
-          currentTheme === 'light' ? (
-            <Moon
-              className={clsx(
-                "absolute size-[1.7rem] transition-all duration-500 ease-in-out transform rounded-full border border-gray-400" 
-              )}
-            />
-          ) : (
-            <Image
-              src="/icons/light_mode.svg" // Path to your custom icon
-              alt="Light Mode Icon"
-              className={clsx(
-                "absolute size-[1.7rem] transition-all duration-500 ease-in-out transform rounded-full border border-gray-400"
-              )}
-              width={28}
-              height={28}
-            />
-          )
-        ) : (
-          currentTheme === 'light' ? (
-            <Image
-              src="/icons/light_mode.svg" // Path to your custom icon
-              alt="Light Mode Icon"
-              className={clsx(
-                "absolute size-[1.7rem] transition-all duration-500 ease-in-out transform rounded-full border border-gray-400"
-              )}
-              width={28}
-              height={28}
-            />
-          ) : (
-            <Moon
-              className={clsx(
-                "absolute size-[1.7rem] transition-all duration-500 ease-in-out transform rounded-full border border-gray-400"
-              )}
-            />
-          )
-        )}
+        {icon}
         <span className="sr-only">Toggle theme</span>
-      </Button>
+      </button>
     </div>
   );
 }
