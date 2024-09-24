@@ -11,7 +11,3 @@ curl "https://api.verteil.com/v4/orders/NDC/BA/ABCDEF" \
   mQbp%2BIHDtAhTBbyNJon%2BA72K4%3DeIaigY0QBrv6Rp8KZQQLOTpo9ubw5Jt?WRE8avbi"
 ```
 You can generate the Bearer Token by passing your API Key and Secret through the `POST oauth2/token` endpoint.
-
-
-------------
-

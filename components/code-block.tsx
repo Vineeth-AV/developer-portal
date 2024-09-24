@@ -2,7 +2,7 @@
 
 import { useState, useEffect, Key } from 'react';
 import { faFileLines, faTerminal } from '@fortawesome/free-solid-svg-icons';
-import { Fira_Mono } from 'next/font/google';
+import { Mulish } from 'next/font/google';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useTheme } from 'next-themes';
 import clsx from 'clsx';
@@ -13,7 +13,12 @@ import { atomOneDark, atomOneLight } from 'react-syntax-highlighter/dist/esm/sty
 import { CopyButton } from './copy-button';
 import { Theme } from 'types';
 
-const firaMono = Fira_Mono({ weight: '400', subsets: ['latin', 'latin-ext'] });
+const firaMono =  Mulish({
+  subsets: ['latin'], // You can add more subsets if needed
+  weight: ['400', '800'], // Choose the font weights you need
+  variable: '--font-mulish', // Define a custom CSS variable for the font
+});
+
 
 const MermaidDiagram = dynamic(() => import('@/components/tags/mermaid'), {
   ssr: false
@@ -94,14 +99,14 @@ export const CodeBlock = ({
         language={language ?? ''}
         style={themeStyle}
         showLineNumbers={lineNumbers}
-        className={clsx(firaMono.className, 'my-2 pl-[10px]')}
+        className={clsx(firaMono.className, 'my-2 pl-[10px] text-[16px]')}
       >
         {children.trim()}
       </SyntaxHighlighter>
       {!showTitle && (
         <div
           className={clsx(
-            'absolute right-0 top-2 mr-4 rounded border border-[rgb(46,46,46)] bg-[rgb(6,22,38)] opacity-0',
+            'absolute right-0 top-2 mr-4 rounded border border-[rgb(253,248,248)] bg-[rgb(6,22,38)] opacity-0',
             'transition-opacity duration-500 group-hover:opacity-100'
           )}
         >
