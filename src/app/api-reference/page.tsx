@@ -34,11 +34,11 @@ const ApiReference = () => {
 
   useEffect(() => {
     // Set the URL for your OpenAPI JSON document
-    setSpecUrl('/data.json'); // Ensure this path is correct for your public folder
+    setSpecUrl('/airshopping.yaml'); // Ensure this path is correct for your public folder
   }, []);
 
   return (
-    <div style={{ height: '200vh' }}>
+    <div style={{marginTop: '100px', height: '200vh' }}>
       {specUrl ? (
         <API apiDescriptionUrl={specUrl} router="hash" />
       ) : (

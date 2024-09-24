@@ -1,11 +1,12 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { Suspense, useEffect, useState } from 'react';
 import OpenAPITree from '@/components/OpenAPITree';
 import { useSearchParams } from 'next/navigation';
 import styles from './schema.module.css'; // Correct path to CSS module
 
-export default function SchemaViewer() {
+// SchemaComponent handles the actual logic for fetching schema
+function SchemaComponent() {
   const searchParams = useSearchParams();
   const [schemaName, setSchemaName] = useState<string | null>(null);
 
@@ -40,5 +41,13 @@ export default function SchemaViewer() {
         <p>Loading schema...</p>
       )}
     </div>
+  );
+}
+
+export default function SchemaViewer() {
+  return (
+    <Suspense fallback={<div>Loading schema...</div>}>
+      <SchemaComponent />
+    </Suspense>
   );
 }

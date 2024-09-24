@@ -101,7 +101,7 @@ const ListItem = (
   link: SideBarLink | SideBarDivider,
   level: number,
   onClick: React.MouseEventHandler<HTMLAnchorElement> = () => {},
-  expandedItems: Record<string, boolean>,
+  _expandedItems: Record<string, boolean>,
   handleChildToggle: (id: string) => void
 ): React.ReactElement => {
   const leftPadding = 'ml-0';
