@@ -13,5 +13,6 @@ export * from './tags/card';
 export * from './tags/grid';
  export * from './tags/title';
 
+export * from './code-block';
 export * from './divider';
  
