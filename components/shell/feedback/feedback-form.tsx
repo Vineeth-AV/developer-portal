@@ -16,11 +16,6 @@ export const negativeFeedbackOptions: FeedbackOption[] = [
     title: 'Inaccurate',
     description: 'The information is incorrect or out of date.',
     id: 1
-  },
-  {
-    title: 'Other',
-    description: 'Something else.',
-    id: 2
   }
 ];
 
@@ -29,25 +24,20 @@ export const positiveFeedbackOptions: FeedbackOption[] = [
     title: 'Accurate',
     description: 'The information is correct and up to date.',
     id: 1
-  },
-  {
-    title: 'Other',
-    description: 'Something else.',
-    id: 2
   }
 ];
 
 // Send feedback to the server
 const sendFeedback = async (feedback: FeedbackData) => {
   try {
-    const response = await fetch('/api/feedback', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(feedback)
-    });
-    return response.status === 200;
+    var link = "mailto:vineeth.av@verteil.com"
+               + "?cc=vineeth.av@verteil.com"
+               + "&subject=" + encodeURIComponent(feedback.title)
+               + "&body=" + encodeURIComponent("Feeback: "+ feedback.additionalFeedback!! +"\n\n" +"Email:  "+ feedback.email+"\n\n");
+      ;
+      
+      window.location.href = link;
+    
   } catch (e) {
     console.error(e);
     return false;
@@ -196,7 +186,7 @@ export const FeedbackForm = ({ title, options }: Props) => {
               path,
               
               title: removeTrailingDocs(pageTitle)
-            });
+            } );
           }}
         >
           Submit
