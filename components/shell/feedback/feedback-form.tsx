@@ -8,24 +8,9 @@ import { FeedbackData, FeedbackOption } from 'types';
 
 type Props = {
   title: string;
-  options: FeedbackOption[];
 };
 
-export const negativeFeedbackOptions: FeedbackOption[] = [
-  {
-    title: 'Inaccurate',
-    description: 'The information is incorrect or out of date.',
-    id: 1
-  }
-];
 
-export const positiveFeedbackOptions: FeedbackOption[] = [
-  {
-    title: 'Accurate',
-    description: 'The information is correct and up to date.',
-    id: 1
-  }
-];
 
 // Send feedback to the server
 const sendFeedback = async (feedback: FeedbackData) => {
@@ -44,7 +29,7 @@ const sendFeedback = async (feedback: FeedbackData) => {
   }
 };
 
-export const FeedbackForm = ({ title, options }: Props) => {
+export const FeedbackForm = ({ title }: Props) => {
 
   const path = usePath();
   const pageTitle = window.document.title;
@@ -70,97 +55,29 @@ export const FeedbackForm = ({ title, options }: Props) => {
       <h3 className="my-0">{title}</h3>
       <form className="w-full p-3 pl-0 text-sm text-gray-700 dark:text-gray-200">
         <ul className="list-none pl-0">
-          {options.map((option) => (
-            <li key={option.title} className="pl-0">
-              <div className="flex shrink rounded py-1">
-                <input
-                  id={'helper-radio' + option.title.replace(' ', '')}
-                  name="helper-radio"
-                  type="radio"
-                  value=""
-                  aria-controls={'feedback-fields-' + option.id}
-                  tabIndex={0}
-                  className={clsx(
-                    'mt-1 size-3 rounded-full border-gray-300 bg-gray-100 text-primary',
-                    'dark:border-gray-500 dark:bg-gray-600 dark:ring-offset-gray-700 dark:focus:ring-primary dark:focus:ring-offset-gray-700',
-                    'focus:ring-2 focus:ring-primary'
-                  )}
-                  onClick={() => {
-                    setSelected(option.id);
-                  }}
-                />
 
-                <div
-                  id={'feedback-fields-' + option.id}
-                  className={clsx(
-                    'flex w-full shrink flex-col',
-                    option.id == selected && 'visible'
-                  )}
-                >
-                  <div className="ml-2 text-sm">
-                    <label
-                      htmlFor={'helper-radio' + option.title.replace(' ', '')}
-                      className="font-medium text-gray-900 dark:text-gray-300"
-                    >
-                      <div>{option.title}</div>
-                      <p
-                        id="helper-radio-text-4"
-                        className="mb-0 text-xs font-normal text-gray-500 dark:text-gray-300"
-                      >
-                        {option.description}
-                      </p>
-                    </label>
-                  </div>
-                  {option.id == selected && (
-                    <>
-                      <div className="ml-2 mt-2 text-xs">
-                        <label
-                          htmlFor="feedback-comment"
-                          className="font-medium text-gray-900 dark:text-gray-300"
-                        >
-                          Feedback
-                        </label>
-                        <textarea
-                          id="feedback-comment"
-                          placeholder="Your feedback ..."
-                          className={clsx(
-                            'mx-2 mt-2 h-14 w-full resize-none rounded-md border border-gray-300 p-3 text-xs shadow-sm',
-                            'dark:border-darkBorder dark:bg-black dark:focus:border-primary dark:focus:ring-primary',
-                            'focus:border-primary focus:ring-primary'
-                          )}
-                          onChange={(e) => {
-                            setComment(e.currentTarget.value);
-                          }}
-                        />
-                      </div>
-                      <div className="ml-2 mt-1 text-xs">
-                        <label
-                          htmlFor="feedback-email"
-                          className="font-medium text-gray-900 dark:text-gray-300"
-                        >
-                          Email
-                        </label>
-                        <input
-                          id="feedback-email"
-                          type="email"
-                          placeholder="Your email address ... "
-                          className={clsx(
-                            'm-2 h-[40px] w-full resize-none rounded-md border border-gray-300 p-3 text-xs shadow-sm',
-                            'dark:border-darkBorder dark:bg-black dark:focus:border-primary dark:focus:ring-primary',
-                            'focus:border-primary focus:ring-primary'
-                          )}
-                          onChange={(e) => {
-                            setEmail(e.currentTarget.value);
-                          }}
-                        />
-                      </div>
-                    </>
-                  )}
-                </div>
-              </div>
-            </li>
-          ))}
-        </ul>
+          < div className="ml-2 mt-2 text-xs" >
+            <label
+              htmlFor="feedback-comment"
+              className="font-medium text-gray-900 dark:text-gray-300"
+            >
+              Feedback
+            </label>
+            <textarea
+              id="feedback-comment"
+              placeholder=""
+              className={clsx(
+                'mx-2 mt-2 h-14 w-full resize-none rounded-md border border-gray-300 p-3 text-xs shadow-sm',
+                'dark:border-darkBorder dark:bg-black dark:focus:border-primary dark:focus:ring-primary',
+                'focus:border-primary focus:ring-primary'
+              )}
+              onChange={(e) => {
+                setComment(e.currentTarget.value);
+              }}
+            />
+          </div>
+           
+        </ul >
         <button
           className={clsx(
             'mt-4 flex h-[28px] w-[60px] items-center justify-center rounded border-lightBorder bg-primary py-2',
@@ -168,31 +85,25 @@ export const FeedbackForm = ({ title, options }: Props) => {
             'disabled:cursor-not-allowed disabled:bg-gray-400/80 disabled:opacity-50'
           )}
           type="submit"
-          disabled={selected === undefined}
+          
           onClick={(e) => {
             e.preventDefault();
             setFeedbackSubmitted(true);
-
-            // Get the option that was selected
-            const selectedOption =
-              options.find((option) => option.id == selected) ?? options[0];
-
-            // Send the feedback to the server
             sendFeedback({
               additionalFeedback: comment,
               email,
-              
-              option: selectedOption.title,
+
+              option: title,
               path,
-              
+
               title: removeTrailingDocs(pageTitle)
-            } );
+            });
           }}
         >
           Submit
         </button>
-      </form>
-    </div>
+      </form >
+    </div >
   );
 };
 

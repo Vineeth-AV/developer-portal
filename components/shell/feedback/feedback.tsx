@@ -4,8 +4,6 @@ import { useEffect, useState } from 'react';
 import clsx from 'clsx';
 
 import {
-  negativeFeedbackOptions,
-  positiveFeedbackOptions,
   FeedbackForm
 } from './feedback-form';
 import { usePath } from 'context/state';
@@ -42,14 +40,14 @@ export const Feedback = () => {
       return (
         <FeedbackForm
           title="What went wrong?"
-          options={negativeFeedbackOptions}
+           
         />
       );
     case FeedbackType.Positive:
       return (
         <FeedbackForm
           title="What did you like?"
-          options={positiveFeedbackOptions}
+           
         />
       );
     default:
