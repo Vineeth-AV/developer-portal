@@ -2,7 +2,7 @@ This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next
 
 ## Getting Started
 
-First, goto terminal in the visual studo 
+First, goto terminal in the visual studio code 
 ```bash
 npm install
 ```
