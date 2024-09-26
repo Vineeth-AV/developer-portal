@@ -30,14 +30,14 @@ export const positiveFeedbackOptions: FeedbackOption[] = [
 // Send feedback to the server
 const sendFeedback = async (feedback: FeedbackData) => {
   try {
-    var link = "mailto:vineeth.av@verteil.com"
-               + "?cc=vineeth.av@verteil.com"
-               + "&subject=" + encodeURIComponent(feedback.title)
-               + "&body=" + encodeURIComponent("Feeback: "+ feedback.additionalFeedback!! +"\n\n" +"Email:  "+ feedback.email+"\n\n");
-      ;
-      
-      window.location.href = link;
-    
+    const response = await fetch('/api/sendEmail', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(feedback)
+    });
+    return response.status === 200;
   } catch (e) {
     console.error(e);
     return false;
