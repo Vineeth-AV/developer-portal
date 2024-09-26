@@ -28,7 +28,7 @@ export const TopNav = () => (
           <Logo />
 
 
-          <ul className="absolute left-72 flex flex-row text-[13px] items-start justify-start space-x-2 lg:ml-8 w-full">
+          <ul className="absolute left-60 flex flex-row text-[13px] items-start justify-start space-x-2 lg:ml-8 w-full">
             <TopHeaderItems />
           </ul>
           <div className="hidden pt-4 items-center lg:flex justify-between">
