@@ -2,7 +2,21 @@ This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next
 
 ## Getting Started
 
-First, goto terminal in the visual studio code 
+### Prerequisites
+
+1. Node.js 18.18 or later.
+ 
+
+### Installation
+
+1. Clone the repo
+  
+```bash
+git clone https://github.com/verteiltech/developer-portal.git
+```
+
+2. Install NPM packages in the visual studio code by opening the new terminal
+
 ```bash
 npm install
 ```
