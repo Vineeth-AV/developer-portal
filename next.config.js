@@ -1,5 +1,5 @@
 module.exports = {
-  async redirects() {
+    async redirects() {
     return [
       {
         source: '/',         // When the root path is accessed

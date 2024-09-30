@@ -1,3 +1,0 @@
----
-title: Handling large responses
----

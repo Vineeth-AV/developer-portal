@@ -1,3 +1,0 @@
----
-title: Steaming responses
----
