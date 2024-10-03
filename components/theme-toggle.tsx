@@ -28,11 +28,11 @@ export function ThemeToggle() {
   const isLightTheme = theme === 'light';
   const icon = isHovered
     ? isLightTheme
-      ? <Moon className="size-[1.7rem]" />
-      : <Image src="/icons/light_mode.svg" alt="Light Mode Icon" width={28} height={28} />
+      ? <Moon className="size-[1.6 rem]" />
+      : <Image src="/icons/light_mode.svg" sizes= '1.6 rem' alt="Light Mode Icon" width={24} height={24} />
     : isLightTheme
-      ? <Image src="/icons/light_mode.svg" alt="Light Mode Icon" width={28} height={28} />
-      : <Moon className="size-[1.7rem]" />;
+      ? <Image src="/icons/light_mode.svg" sizes= '1.6 rem' alt="Light Mode Icon" width={24} height={24} />
+      : <Moon className="size-[1.6rem]" />;
 
   return (
     <div
@@ -41,7 +41,7 @@ export function ThemeToggle() {
       onMouseLeave={() => setIsHovered(false)}
     >
       <button
-        className="relative flex items-center justify-center w-8 h-8 overflow-hidden rounded-full border border-gray-400"
+        className="relative flex items-center size-[1.6rem] justify-center overflow-hidden rounded-full border border-gray-400"
         onClick={handleClick}
         aria-label={`Switch to ${isLightTheme ? 'dark' : 'light'} mode`}
       >

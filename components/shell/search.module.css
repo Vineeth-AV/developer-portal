@@ -2,7 +2,7 @@
 .search :global(.DocSearch-Button) {
   --docsearch-text-color: rgb(28, 30, 33);
   --docsearch-muted-color: #6B7280;
-  background: #f7f7f7;
+  background: #fff;
   border: 1px solid #eaeaea;
 }
 
