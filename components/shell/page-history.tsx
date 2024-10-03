@@ -7,9 +7,11 @@ import {
   faChevronRight
 } from '@fortawesome/free-solid-svg-icons';
 
-import { sideBarData, baseUrls, flattenSideBarData } from 'data';
+import { sideBarData, baseUrls, flattenSideBarData, SidebarNavigation } from 'data';
 import { SideBarLink, isLink } from 'types';
 import { Divider } from '@/components/divider';
+import { getMarkdownContent } from '@/lib/markdown';
+import React from 'react';
 
  
 const stripTrailingSlash = (str: string) => {
@@ -18,18 +20,22 @@ const stripTrailingSlash = (str: string) => {
 
 const usePageLinks = (path: string) => {
   const basePath = path.split('#')[0];
+  console.log('basepath1'+basePath)
   const pathSegments = basePath.split('/');
+  console.log('pathSegments1'+path)
   const baseUrl = baseUrls.find((item) => item === `/${pathSegments[1]}`) ?? '';
   const links: SideBarLink[] = flattenSideBarData(sideBarData(baseUrl)).filter(
     isLink
   );
 
-  const index = links
-    .map((item) => stripTrailingSlash(item.path))
-    .indexOf(basePath);
+  console.log('isLink1'+links)
 
-  const previous = index > 0 ? links[index - 1] : undefined;
-  const next = index < links.length - 1 ? links[index + 1] : undefined;
+  const data  = SidebarNavigation(path)
+  
+  const previous = data.previous
+  const next = data.next
+  console.log('previous1'+data.previous)
+  console.log('next1'+data.next)
 
   return { previous, next };
 };

@@ -1,6 +1,7 @@
 import { ReactElement } from 'react';
 import { AsideItem, Divider, Title } from 'components';
 import { PageHistory,Aside, Feedback } from '@/components/shell';
+import React from 'react';
 
 type Props = {
   children: ReactElement[] | ReactElement;
