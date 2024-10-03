@@ -2,6 +2,8 @@
 export const GETTING_STARTED_BASE_URL = '/getting-started';
 export const AIRLINE_NUANCES = '/airline-nuances';
 export const UPCOMING_FEATURES = '/upcoming-features';
+export const TOOLS_AND_LIBRARIES = '/getting-started/tools-and-libraries';
+export const CHANGELOG = '/getting-started/changelog';
 
 export interface SideBarLink {
   title: string;

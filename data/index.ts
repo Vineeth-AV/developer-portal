@@ -8,6 +8,8 @@ import {
   SideBarLink,
   AIRLINE_NUANCES,
   UPCOMING_FEATURES,
+  TOOLS_AND_LIBRARIES,
+  CHANGELOG,
 } from "../types";
 import { useEffect, useState } from "react";
 import { resourceLimits } from "worker_threads";
@@ -16,6 +18,8 @@ export const baseUrls = [
   GETTING_STARTED_BASE_URL,
   AIRLINE_NUANCES,
   UPCOMING_FEATURES,
+  TOOLS_AND_LIBRARIES,
+  CHANGELOG
 ];
 
 interface LinkItem {

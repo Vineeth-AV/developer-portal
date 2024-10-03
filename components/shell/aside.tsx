@@ -99,7 +99,7 @@ export const Aside = ({
               <span className="text-xs font-nomral text-[11px]">Edit this page</span>
             </ActionItem>
             <Divider margin='my-2' />
-            <ActionItem href="">
+            <ActionItem href="https://github.com/Vineeth-AV/deveoper-portal-docs/discussions">
             <Image
                 src= {isDarkMode ? "/icons/github_dark.svg" : "/icons/github.svg"} // Path to the share icon
                 alt="Profile icon"
@@ -117,7 +117,11 @@ export const Aside = ({
 };
 
 const resolvePath = (pathName: string): string => {
-  return baseUrls.some((baseUrl) => pathName == baseUrl)
+  console.log("basepath11 path"+pathName)
+  console.log("basepath11 baseurl"+baseUrls.map((baseUrl) => baseUrl))
+
+  return baseUrls.map((baseUrl) =>
+    baseUrl.replace("/", "")).some((baseUrl) => pathName == baseUrl)
     ? pathName + '/index.md'
     : pathName + '.md';
 };
@@ -171,7 +175,9 @@ type ActionItemProps = {
 const ActionItem = ({ href, children }: ActionItemProps) => {
   return (
     <li className="m-0 my-0 text-sm">
-      <Link href={href} className=" dark:text-[rgba(255,255,255,0.8)]">
+      <Link href={href} className=" dark:text-[rgba(255,255,255,0.8)]"
+       target={"_blank" }
+       rel={"noopener noreferrer"}>
         <div className="flex items-center gap-[0.2em]">{children}</div>
       </Link>
     </li>
@@ -210,10 +216,13 @@ const ListItem = ({ item, activeId }: ListItemProps) => {
 
 const editPageUrl = (path: string) => {
   const baseEditPath =
-    '';
+    'https://github.com/Vineeth-AV/deveoper-portal-docs/blob/main/content/';
+    console.log("basepath11"+baseEditPath)
   let basePath = path.split('#')[0];
   basePath = resolvePath(path);
-  if (!basePath.endsWith('.md')) basePath += '.md'; // ensure that basePath ends with .md
+  if (!basePath.endsWith('.md')) basePath += '.md';
+  
+  console.log("basepath11 basePath"+basePath)
 
   return baseEditPath + basePath;
 };
