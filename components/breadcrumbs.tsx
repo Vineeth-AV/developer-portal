@@ -1,4 +1,4 @@
-
+"use client"
 import React from 'react';
 import Link from 'next/link';
 import clsx from 'clsx';
@@ -30,6 +30,7 @@ export const Breadcrumbs = ({ breadcrumbs }: Props) => {
         {breadcrumbs.map((crumb, index) => {
           const name = crumb.name;
           const href = crumb.href;
+          console.log("crumb.href"+ crumb.href)
           const isLast = crumb === breadcrumbs[breadcrumbs.length - 1];
 
           return (
@@ -40,7 +41,7 @@ export const Breadcrumbs = ({ breadcrumbs }: Props) => {
                 index == 0 && 'pl-1'
               )}
             >
-              <Link href={href} className="dark:text-white/80">
+              <Link href={href} onClick={(e) => e.preventDefault()} className="dark:text-white/80">
                 {name}
               </Link>
               {!isLast ? (
