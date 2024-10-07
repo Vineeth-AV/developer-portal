@@ -1,54 +1,86 @@
-import { baseUrls, currentNavItem, sideBarData } from 'data';
-import { Breadcrumb } from '@/components/breadcrumbs';
-import { SideBarLink, isCategory, isLink } from 'types';
 
+import contentMap from 'data/contentMap.json';
+
+interface LinkItem {
+  title: string;
+  path?: string;
+  bold?: boolean;
+  links?: LinkItem[];
+}
+
+interface Breadcrumb {
+  name: string;
+  href: string;
+}
+
+interface FlatLinkItem {
+  title: string;
+  path: string;
+  fullHierarchy: string[]; // Track full hierarchy for breadcrumb construction
+}
+
+// Recursively flatten the hierarchical structure, tracking parent hierarchy
+const flattenLinks = (data: { [key: string]: LinkItem[] }): FlatLinkItem[] => {
+  const result: FlatLinkItem[] = [];
+
+  const traverse = (items: LinkItem[], parentPath: string, hierarchy: string[]) => {
+    items.forEach((item) => {
+      const currentHierarchy = [...hierarchy, item.title]; // Track hierarchy
+
+      if (item.path) {
+        const fullPath = `${parentPath}${item.path}`.replace(/\/\//g, '/'); // Normalize slashes
+        result.push({ title: item.title, path: fullPath, fullHierarchy: currentHierarchy });
+      }
+
+      if (item.links) {
+        traverse(item.links, `${parentPath}${item.path ? item.path : ''}`, currentHierarchy); // Pass the current hierarchy
+      }
+    });
+  };
+
+  // Traverse all top-level categories in the content map
+  Object.values(data).forEach((category) => traverse(category, '', []));
+
+  return result;
+};
+
+// Generate breadcrumbs for the clicked path, considering the hierarchy
 export const getBreadcrumbs = (path: string): Breadcrumb[] => {
-  const baseUrl = getBaseUrlFromPath(path);
-  if (!baseUrl) return [];
+  const flatContentMap = flattenLinks(contentMap); // Flatten the content map
+  if (!flatContentMap.length) return [];
 
-  return [
-    ...getNavBreadcrumb(baseUrl),
-    ...getCategoryBreadcrumb(path, baseUrl)
-  ];
-};
+  // Normalize the path by removing trailing slashes
+  const normalizedPath = path.replace(/\/$/, '');
 
-const getBaseUrlFromPath = (path: string): string | null => {
-  const pathSegments = path.split('/');
-  return baseUrls.find((item) => item === `/${pathSegments[1]}`) ?? null;
-};
+  const breadcrumbs: Breadcrumb[] = [];
+  let accumulatedPath = '';
 
-// Adds the current nav item to the breadcrumb
-const getNavBreadcrumb = (baseUrl: string): Breadcrumb[] => [
-  {
-    name: currentNavItem(baseUrl),
-    href: baseUrl
-  }
-];
+  // Split the path into segments and build breadcrumbs
+  const pathSegments = normalizedPath.split('/').filter(Boolean);
 
-// Adds the current category and subcategory to the breadcrumb
-const getCategoryBreadcrumb = (path: string, baseUrl: string): Breadcrumb[] => {
-  const categories = sideBarData(baseUrl).filter(isCategory);
+  pathSegments.forEach((segment, index) => {
+    accumulatedPath += `/${segment}`;
 
-  for (const category of categories) {
-    const linkFound = category.links
-      .filter(isLink)
-      .find(
-        (link: SideBarLink) =>
-          stripTrailingSlash(link.path) === stripTrailingSlash(path)
-      );
+    // Find the matched item in the flatContentMap
+    const matchedItem = flatContentMap.find((item) => item.path === accumulatedPath + '/');
 
-    if (linkFound) {
-      return [
-        {
-          name: category.title,
-          href: linkFound.path
+    if (matchedItem) {
+      matchedItem.fullHierarchy.forEach((hierarchyItem, idx) => {
+        // Skip the "Overview" and remove the last item
+        if (hierarchyItem === 'Overview' || (index === pathSegments.length - 1 && idx === matchedItem.fullHierarchy.length - 1)) {
+          return; // Skip the overview and the last clicked item
         }
-      ];
-    }
-  }
-  return [];
-};
 
-const stripTrailingSlash = (str: string) => {
-  return str.endsWith('/') ? str.slice(0, -1) : str;
+        // Add breadcrumbs for the hierarchy up to the parent
+        if (!breadcrumbs.some((crumb) => crumb.name === hierarchyItem)) {
+          breadcrumbs.push({
+            name: hierarchyItem,
+            href: matchedItem.path.split('/').slice(0, idx + 2).join('/'),
+          });
+        }
+      });
+    }
+  });
+
+  return breadcrumbs;
 };

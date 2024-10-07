@@ -78,7 +78,7 @@ export const Aside = ({
         {/* Reduced the height and padding of this container */}
         <div
           style={{
-            border:  isDarkMode ? "1px solid dark:bg-darkBorder" : "1px solid  #CBD3E1",
+            border: isDarkMode ? "1px solid dark:bg-darkBorder" : "1px solid  #CBD3E1",
             height: 70, // Reduced height
             padding: '0px',
             borderRadius: '4px',
@@ -100,8 +100,8 @@ export const Aside = ({
             </ActionItem>
             <Divider margin='my-2' />
             <ActionItem href="https://github.com/Vineeth-AV/deveoper-portal-docs/discussions">
-            <Image
-                src= {isDarkMode ? "/icons/github_dark.svg" : "/icons/github.svg"} // Path to the share icon
+              <Image
+                src={isDarkMode ? "/icons/github_dark.svg" : "/icons/github.svg"} // Path to the share icon
                 alt="Profile icon"
                 width={32}
                 height={32}
@@ -117,8 +117,6 @@ export const Aside = ({
 };
 
 const resolvePath = (pathName: string): string => {
-  console.log("basepath11 path"+pathName)
-  console.log("basepath11 baseurl"+baseUrls.map((baseUrl) => baseUrl))
 
   return baseUrls.map((baseUrl) =>
     baseUrl.replace("/", "")).some((baseUrl) => pathName == baseUrl)
@@ -176,8 +174,8 @@ const ActionItem = ({ href, children }: ActionItemProps) => {
   return (
     <li className="m-0 my-0 text-sm">
       <Link href={href} className=" dark:text-[rgba(255,255,255,0.8)]"
-       target={"_blank" }
-       rel={"noopener noreferrer"}>
+        target={"_blank"}
+        rel={"noopener noreferrer"}>
         <div className="flex items-center gap-[0.2em]">{children}</div>
       </Link>
     </li>
@@ -217,12 +215,9 @@ const ListItem = ({ item, activeId }: ListItemProps) => {
 const editPageUrl = (path: string) => {
   const baseEditPath =
     'https://github.com/Vineeth-AV/deveoper-portal-docs/blob/main/content/';
-    console.log("basepath11"+baseEditPath)
   let basePath = path.split('#')[0];
   basePath = resolvePath(path);
   if (!basePath.endsWith('.md')) basePath += '.md';
-  
-  console.log("basepath11 basePath"+basePath)
 
   return baseEditPath + basePath;
 };

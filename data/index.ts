@@ -40,35 +40,25 @@ const flattenLinks = (data: LinkItem[]): FlatLinkItem[] => {
 
   const traverse = (items: LinkItem[]) => {
     items.forEach((item) => {
-      console.log('currentIndex1 item'+ item)
-      if (item.path) {
-        console.log('currentIndex1 item.path'+ item.path)
-        result.push({ title: item.title, path: item.path });
+       if (item.path) {
+         result.push({ title: item.title, path: item.path });
       }
       if (item.links) {
-        console.log('currentIndex1 item.links'+ item.links)
-        traverse(item.links);
+         traverse(item.links);
       }
     });
   };
 
   traverse(data);
-  console.log('currentIndex1 item.result'+ result)
-
   return result;
 };
 
 // Function to find previous and next links based on current path
 const findPrevNextPaths = (data: LinkItem[], currentPath: string) => {
   const flattenedLinks = flattenLinks(data);
-  console.log('currentIndex1 flattenedLinks'+ flattenedLinks)
-  console.log('currentIndex1 flattenedLinks path'+ flattenedLinks.map((item) => 
-    item.path))
-  console.log('currentIndex1 flattenedLinks current path'+ currentPath)
-  const currentIndex = flattenedLinks.findIndex((item) => 
+   const currentIndex = flattenedLinks.findIndex((item) => 
     item.path === '/'+currentPath+'/');
-  console.log('currentIndex1'+ currentIndex)
-  if (currentIndex === -1) {
+   if (currentIndex === -1) {
     return { previous: undefined, next: undefined };
   }
 
