@@ -23,30 +23,46 @@ export default ApiReference;
 // pages/docs.tsx
 // app/api-reference/page.tsx
 
-'use client'; // Ensure this component runs on the client side
-
-import { useEffect, useState } from 'react';
+"use client"
+import React, { useEffect, useState } from 'react';
 import { API } from '@stoplight/elements';
 import '@stoplight/elements/styles.min.css';
 
 const ApiReference = () => {
-  const [specUrl, setSpecUrl] = useState<string | null>(null);
+  const [apiUrl, setApiUrl] = useState<string | null>(null);
 
   useEffect(() => {
-    // Set the URL for your OpenAPI JSON document
-    setSpecUrl('/airshopping.yaml'); // Ensure this path is correct for your public folder
+    const fetchYamlFile = async () => {
+      // Append GitHub token to the URL
+      const token = process.env.NEXT_PUBLIC_GITHUB_TOKEN;  // Make sure this environment variable is set
+      const yamlUrl = `https://raw.githubusercontent.com/Vineeth-AV/deveoper-portal-docs/refs/heads/main/api-reference/airshopping.yaml?token=${token}`;
+
+      const response = await fetch(yamlUrl);
+      if (response.ok) {
+        setApiUrl(response.url);
+      } else {
+        console.error('Error fetching YAML:', response.statusText);
+      }
+    };
+    fetchYamlFile();
   }, []);
 
+
+  if (!apiUrl) {
+    return <div>Loading...</div>;
+  }
+
   return (
-    <div style={{marginTop: '100px', height: '200vh' }}>
-      {specUrl ? (
-        <API apiDescriptionUrl={specUrl} router="hash" />
-      ) : (
-        <p>Loading...</p>
-      )}
+    <div style={{ padding: '20px' }}>
+      <API
+        apiDescriptionUrl={apiUrl}
+        layout="sidebar"  // Customize layout if needed
+        router="hash"
+      />
     </div>
   );
 };
 
 export default ApiReference;
+
 

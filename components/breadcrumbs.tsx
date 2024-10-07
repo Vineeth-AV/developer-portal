@@ -30,7 +30,7 @@ export const Breadcrumbs = ({ breadcrumbs }: Props) => {
         {breadcrumbs.map((crumb, index) => {
           const name = crumb.name;
           const href = crumb.href;
-          console.log("crumb.href"+ crumb.href)
+          
           const isLast = crumb === breadcrumbs[breadcrumbs.length - 1];
 
           return (

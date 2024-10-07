@@ -6,7 +6,7 @@ import config from "markdoc/schema";
 import yaml from "js-yaml";
 
 const GITHUB_API_URL = process.env.GITHUB_API_URL;
-const GITHUB_TOKEN = process.env.GITHUB_TOKEN; // Ensure this is set in .env.local
+const GITHUB_TOKEN = process.env.NEXT_PUBLIC_GITHUB_TOKEN; // Ensure this is set in .env.local
 
 interface GitHubFile {
   name: string;
@@ -81,14 +81,14 @@ export async function getMarkdownContent(slug: string) {
   let filePath = `${basePathFromSlug}.md`;
  
   try {
-    const res = await fetch(filePath + `?token=${process.env.GITHUB_TOKEN}`);
+    const res = await fetch(filePath + `?token=${process.env.NEXT_PUBLIC_GITHUB_TOKEN}`);
 
     // Check if the markdown file exists
     if (res.status === 404) {
       // If it does not exist, try fetching the index.md file from the directory
       const indexPath = `${basePathFromSlug}/index.md`;
       const indexRes = await fetch(
-        indexPath + `?token=${process.env.GITHUB_TOKEN}`
+        indexPath + `?token=${process.env.NEXT_PUBLIC_GITHUB_TOKEN}`
       );
 
       if (indexRes.ok) {
