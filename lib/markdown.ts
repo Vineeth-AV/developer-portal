@@ -5,7 +5,7 @@ import Markdoc, { Config } from "@markdoc/markdoc";
 import config from "markdoc/schema";
 import yaml from "js-yaml";
 
-const GITHUB_API_URL = process.env.GITHUB_API_URL;
+const GITHUB_API_URL = process.env.NEXT_PUBLIC_GITHUB_API_URL;
 const GITHUB_TOKEN = process.env.NEXT_PUBLIC_GITHUB_TOKEN; // Ensure this is set in .env.local
 
 interface GitHubFile {
@@ -75,7 +75,7 @@ export async function getAllMarkdownFiles(
 }
 
 export async function getMarkdownContent(slug: string) {
-  const basePathFromSlug = `${process.env.GITHUB_RAW_URL}/${slug}`;
+  const basePathFromSlug = `${process.env.NEXT_PUBLIC_GITHUB_RAW_URL}/${slug}`;
 
   // Directly try to fetch the file
   let filePath = `${basePathFromSlug}.md`;
